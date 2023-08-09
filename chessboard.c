@@ -1,0 +1,55 @@
+#include "chessboard.h"
+
+ChessTable NewChessTable(){
+    char *re=malloc(sizeof(char)*BLEN);
+    for(int i=0;i<BLEN;i++)re[i]=0;
+    #ifdef DEBUG
+    printfD("Success");
+    #endif
+    return re;
+}
+
+void PrintChessTable(ChessTable ct){
+    printf("   ");
+    char a='a';
+    for(int i=0;i<LLN;i++,a++)printf("%c ",a);
+    printf("\n");
+    for(int i=0;i<LLN;i++){
+        printf(i<9?" %d ":"%d ",i+1);
+        for(int j=0;j<LLN;j++){
+            int k=GetChessXY(ct, j, i);
+            if(k==0)printf(". ");
+            else if(k==PlayerW)printf("O ");
+            else if(k==PlayerB)printf("# ");
+            else printf("? ");
+        }
+        printf("%d",i+1);
+        printf("\n");
+    }
+    printf("   ");
+    a='a';
+    for(int i=0;i<LLN;i++,a++)printf("%c ",a);
+    printf("\n");
+}
+
+int GetInputChess(int* x, int* y){
+    char c;
+    if(scanf("%d%c",y,&c)!=2)
+        if(scanf("%c%d", &c, y)!=2)
+            return 1;
+    *x=c-'a';
+    *y-=1;
+    return !IsLegalXY(*x, *y);
+}
+/*
+int main(){
+    ChessTable ct=NewChessTable();
+    int x,y;
+    Player now=PlayerB;
+    while(1){
+        while(GetInputChess(&x, &y));
+        SetChessXY(ct, x, y, now);
+        now=GetNextPlayer(now);
+        PrintChessTable(ct);
+    }
+}*/
