@@ -4,7 +4,7 @@ ChessTable NewChessTable(){
     char *re=malloc(sizeof(char)*BLEN);
     for(int i=0;i<BLEN;i++)re[i]=0;
     #ifdef DEBUG
-    printfD("Success");
+    printfD("New Board Success");
     #endif
     return re;
 }
@@ -41,15 +41,3 @@ int GetInputChess(int* x, int* y){
     *y-=1;
     return !IsLegalXY(*x, *y);
 }
-/*
-int main(){
-    ChessTable ct=NewChessTable();
-    int x,y;
-    Player now=PlayerB;
-    while(1){
-        while(GetInputChess(&x, &y));
-        SetChessXY(ct, x, y, now);
-        now=GetNextPlayer(now);
-        PrintChessTable(ct);
-    }
-}*/

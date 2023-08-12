@@ -22,7 +22,7 @@ typedef int Point;
   \   LB           RB
 */
 #define GetPoint(x, y) (((y)<<POINTBITS)|(x))
-#define ToXY(point, x, y) x=(point)&KEYXMASK;y=(point)>>POINTBITS
+#define PointToXY(point, x, y) x=(point)&KEYXMASK;y=(point)>>POINTBITS
 
 #define GetChessXY(chesstable, x, y) ((chesstable)[GetPoint(x, y)])
 #define SetChessXY(chesstable, x, y, v) GetChessXY(chesstable, x, y)=v
@@ -55,6 +55,10 @@ void PrintChessTable(ChessTable ct);
                                                     for(int _i=0;_i<len;_i++)printf("%1d ",chessboard[startpoint+(_i)*(len)]);\
                                                     printf("\n")
 #define printPoint(point, header) printfD(header "point: %d%c",PointTo2C(point)) 
+#define printPointList(list, count) printfD("List= %s, Count= %d",#list ,count);printf("  [");\
+                                    for(int _i=0;_i<(count);_i++) printf(_i==0?"%d%c":", %d%c",PointTo2C(list[_i]));\
+                                    printf("]\n");
+
 #endif
 
 #endif

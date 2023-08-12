@@ -127,7 +127,7 @@ PatternLib CompilePatterns(char **patterns, int *powers, int size) {
     #endif
     return re;
 }
-
+/*
 int main() {
     //                 11111,11110,01111,0111,1110,11010,01011,110,011
     int pattern[] = {31, 30, 15, 7, 14, 26, 11, 6, 3},
@@ -141,4 +141,4 @@ int main() {
     char s[] = "011120111102211";
     printf("%d\n", c[LineToKey(StrToLine(s))]);
     return 0;
-}
+}*/

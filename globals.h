@@ -13,6 +13,8 @@
 typedef int Player;
 
 #define GetNextPlayer(player) ((player)^FULL)
+#define Min(x, y) ((x)>(y)?(y):(x))
+#define Max(x, y) ((x)>(y)?(x):(y))
 
 #define DEBUG
 
