@@ -1,7 +1,7 @@
 #include "surroundmap.h"
+#include "chessmanual.h"
 
-
-int main(int args, char** argv){
+void surroundmaptest(){
     SurroundMapInit();
     ChessTable ct=NewChessTable();
     int x,y;
@@ -20,4 +20,23 @@ int main(int args, char** argv){
         //PrintChessTable(ct);
         PrintSurroundMap();
     }
+}
+
+void chessmanualtest(){
+    ChessTable ct=NewChessTable();
+    ChessManualInit();
+    int x,y;
+    Player now=PlayerB;
+    while(1){
+        while(GetInputChess(&x, &y));
+        SetChessXY(ct, x, y, now);
+        now=GetNextPlayer(now);
+        PrintChessTable(ct);
+        Key k = ChessTableDRowToKey(ct, 19, FULL);
+    }
+}
+
+int main(int args, char** argv){
+    surroundmaptest();
+    return 0;
 }

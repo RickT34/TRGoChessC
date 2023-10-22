@@ -23,6 +23,10 @@ typedef int Point;
 */
 #define GetPoint(x, y) (((y)<<POINTBITS)|(x))
 #define PointToXY(point, x, y) x=(point)&KEYXMASK;y=(point)>>POINTBITS
+// s=x+y
+#define GetPointS(point) (((point)&KEYXMASK)+((point)>>POINTBITS))
+// d=x-y
+#define GetPointD(point) (((point)&KEYXMASK)-((point)>>POINTBITS))
 
 #define GetChessXY(chesstable, x, y) ((chesstable)[GetPoint(x, y)])
 #define SetChessXY(chesstable, x, y, v) GetChessXY(chesstable, x, y)=v
@@ -51,7 +55,7 @@ void PrintChessTable(ChessTable ct);
 
 #ifdef DEBUG
 #define PointTo2C(point) ((point)>>POINTBITS)+1, ((point)&KEYXMASK)+'a' //exp: 5d
-#define printLine(chessboard ,startpoint, step, len) printfD("Start From %d%c, step %d, length %d.\n    ",PointTo2C(startpoint), step, len)\
+#define printRow(chessboard ,startpoint, step, len) printfD("Start From %d%c, step %d, length %d.\n    ",PointTo2C(startpoint), step, len)\
                                                     for(int _i=0;_i<len;_i++)printf("%1d ",chessboard[startpoint+(_i)*(len)]);\
                                                     printf("\n")
 #define printPoint(point, header) printfD(header "point: %d%c",PointTo2C(point)) 

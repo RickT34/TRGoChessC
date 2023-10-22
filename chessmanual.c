@@ -1,17 +1,5 @@
 #include "chessmanual.h"
-#define Merge10bit(array, iv, moveiv, ret)  ret=(*array)<<(moveiv); array+=iv;\
-                                            ret|=(*array)<<(2+moveiv); array+=iv;\
-                                            ret|=(*array)<<(4+moveiv); array+=iv;\
-                                            ret|=(*array)<<(6+moveiv); array+=iv;\
-                                            ret|=(*array)<<(8+moveiv); array+=iv
-
-#define ChessTableToKey(array, iv, k)   int _ret;\
-                                        Merge10bit(array, iv, 0, _ret);\
-                                        k=LineKeys[_ret];\
-                                        Merge10bit(array, iv, 10, _ret);\
-                                        k|=LineKeys[_ret]<<8;\
-                                        Merge10bit(array, iv, 20, _ret);\
-                                        k|=LineKeys[_ret]<<16;
+#include <stdio.h>
 
 struct patternlib {
     int *patterns;         // b11111, b11110, ...
@@ -21,7 +9,6 @@ struct patternlib {
 };
 
 static int LineKeys[1 << 10];
-static char inited = 0;
 static int keysCount = 0;
 
 void countKeys(Key line, int count) {
@@ -48,7 +35,7 @@ int countPower(Line line, PatternLib pattern) {
     return power;
 }
 
-void init() { 
+void ChessManualInit() { 
     countKeys(0, 0); 
     #ifdef DEBUG
     printfD("Count Keys Success, line keys: %d",keysCount);
@@ -64,11 +51,69 @@ Key LineToKey(Line line) {
     return k;
 }
 
-Key ChessTableToKeyX(ChessTable ct, int x){
+Key ChessTableXRowToKey(ChessTable ct, int x){
     x=GetPoint(x, 0);
     ct+=x;
     Key k=0;
-    ChessTableToKey(ct, XSTEP, k);
+    Line ret;
+    for(int i=0;i<3;i++){
+        ret=0;
+        for(int j=0;j<5;j++, ct+=YSTEP){
+            ret|=(*ct)<<(j*2);
+        }
+        #ifdef DEBUG
+        printfD("LinePart: %d", i);
+        printLine(ret, 5);
+        #endif
+        k=(k<<8)|LineKeys[ret];
+    }
+    return k;
+}
+
+Key ChessTableYRowToKey(ChessTable ct, int y){
+    y=GetPoint(0, y);
+    ct+=y;
+    Key k=0;
+    Line ret;
+    for(int i=0;i<3;i++){
+        ret=0;
+        for(int j=0;j<5;j++, ct+=XSTEP){
+            ret|=(*ct)<<(j*2);
+        }
+        #ifdef DEBUG
+        printfD("LinePart: %d", i);
+        printLine(ret, 5);
+        #endif
+        k=(k<<8)|LineKeys[ret];
+    }
+    return k;
+}
+
+Key ChessTableDRowToKey(ChessTable ct, int s, Player wall){
+    Line ret;
+    ret=Min(s, 14);
+    s=GetPoint(ret, s-ret);
+    ret=s-14;
+    int step=16-Abs(ret);
+    ct+=s-DSTEP;
+    Key k=0;
+    for(int i=0;i<3;i++){
+        ret=0;
+        for(int j=0;step&&j<5;j++, step--){
+            if(step==1){
+                ret|=wall<<(j*2);
+            }
+            else{
+                ct+=DSTEP;
+                ret|=(*ct)<<(j*2);
+            }
+        }
+        #ifdef DEBUG
+        printfD("LinePart: %d", i);
+        printLine(ret, 5);
+        #endif
+        k=(k<<8)|LineKeys[ret];
+    }
     return k;
 }
 
@@ -84,9 +129,7 @@ void countLib(ChessManual manual, Line line, int count, PatternLib pattern) {
 }
 
 // Power XXXXX=4096, XXXXO=32, XXXO=15, XXOXO=14, XXO=1
-ChessManual MakeLib(PatternLib pattern) {
-    if (!inited)
-        init();
+ChessManual ChessManualMake(PatternLib pattern) {
     ChessManual re = malloc(sizeof(int) * (1<<24));
     #ifdef DEBUG
     printfD("Start...");
@@ -105,6 +148,12 @@ Line StrToLine(char *s) {
         ++s;
     }
     return re;
+}
+
+void printLine(Line line,int n){
+    for(int i=0;i<n;i++,line>>=2)
+        printf("%d",line&3);
+    printf("\n");
 }
 
 PatternLib CompilePatterns(char **patterns, int *powers, int size) {
