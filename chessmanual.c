@@ -38,7 +38,7 @@ int countPower(Line line, PatternLib pattern) {
 void ChessManualInit() { 
     countKeys(0, 0); 
     #ifdef DEBUG
-    printfD("Count Keys Success, line keys: %d",keysCount);
+    printfD("Count Keys Success, line keys: %d\n",keysCount);
     #endif
 }
 
@@ -62,7 +62,7 @@ Key ChessTableXRowToKey(ChessTable ct, int x){
             ret|=(*ct)<<(j*2);
         }
         #ifdef DEBUG
-        printfD("LinePart: %d", i);
+        printfD("LinePart: %d\n", i);
         printLine(ret, 5);
         #endif
         k=(k<<8)|LineKeys[ret];
@@ -81,7 +81,7 @@ Key ChessTableYRowToKey(ChessTable ct, int y){
             ret|=(*ct)<<(j*2);
         }
         #ifdef DEBUG
-        printfD("LinePart: %d", i);
+        printfD("LinePart: %d\n", i);
         printLine(ret, 5);
         #endif
         k=(k<<8)|LineKeys[ret];
@@ -109,7 +109,7 @@ Key ChessTableDRowToKey(ChessTable ct, int s, Player wall){
             }
         }
         #ifdef DEBUG
-        printfD("LinePart: %d", i);
+        printfD("LinePart: %d\n", i);
         printLine(ret, 5);
         #endif
         k=(k<<8)|LineKeys[ret];
@@ -132,11 +132,11 @@ void countLib(ChessManual manual, Line line, int count, PatternLib pattern) {
 ChessManual ChessManualMake(PatternLib pattern) {
     ChessManual re = malloc(sizeof(int) * (1<<24));
     #ifdef DEBUG
-    printfD("Start...");
+    printfD("Start...\n");
     #endif
     countLib(re, 0, 0, pattern);
     #ifdef DEBUG
-    printfD("Success");
+    printfD("Success\n");
     #endif
     return re;
 }
@@ -172,7 +172,7 @@ PatternLib CompilePatterns(char **patterns, int *powers, int size) {
     re->powers = powers;
     re->size = size;
     #ifdef DEBUG
-    printfD("Success, size: %d",size);
+    printfD("Success, size: %d\n",size);
     #endif
     return re;
 }
