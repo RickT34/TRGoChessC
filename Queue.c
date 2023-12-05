@@ -1,4 +1,5 @@
 #include "Queue.h"
+#include <stdlib.h>
 //[head,tile)
 void QueuePushfront(Queue q, queueitem item)
 {
@@ -44,7 +45,7 @@ queueitem QueueBack(Queue q)
 
 Queue NewQueue(const int capbility)
 {
-    Queue re = (Queue)malloc(sizeof(struct _queue));
+    Queue re = malloc(sizeof(struct _queue));
     re->capbility = capbility;
     re->items = (queueitem*)malloc(sizeof(queueitem) * capbility);
     re->head = 0;

@@ -1,7 +1,9 @@
 #include "ACAutomaton.h"
 #include "chessmanual.h"
-#include "surroundmap.h"
 #include "globals.h"
+#include "surroundmap.h"
+#include <stdlib.h>
+#include <string.h>
 
 void surroundmaptest()
 {
@@ -61,7 +63,7 @@ void ACAutomatontest()
     Trie root = NewTrie();
     char* pats[32];
     int ret[20];
-    int id=0;
+    int id = 0;
     pats[id++] = "\1\0";
     pats[id++] = "\0\1";
     pats[id++] = "\0\1\1";
@@ -71,18 +73,44 @@ void ACAutomatontest()
     pats[id++] = "\0\1\1\1\1";
     pats[id++] = "\1\1\1\1\0";
     pats[id++] = "\1\1\1\1\1";
-    int lens[]={2,2,3,3,4,4,5,5,5};
-    for(int i=0;i<id;++i){
+    int lens[] = { 2, 2, 3, 3, 4, 4, 5, 5, 5 };
+    for (int i = 0; i < id; ++i) {
         TrieInsert(root, pats[i], lens[i], i);
     }
     TrieCompile(root);
-    char s[]="\0\0\0\1\1\1\2\1\1\0\1\1\1\1\1\0\2";
+    char s[] = "\0\0\0\1\1\1\2\1\1\0\1\1\1\1\1\0\2";
+    memset(ret, 0, sizeof(ret));
     TrieQuery(s, 1, 18, root, ret);
     printArray(ret, 0, id);
+    printf("\n");
+    int ret2[18][20];
+    int* ret2p[18];
+    for (int i = 0; i < 18; ++i) {
+        ret2p[i] = &ret2[i][0];
+    }
+    memset(ret2, 0, sizeof(ret2));
+    TrieQuery2(s, 1, 18, root, ret2p);
+    for (int i = 0; i < 18; ++i) {
+        printf("%d :", (int)s[i]);
+        printArray(&ret2[i][0], 0, id);
+        printf("\n");
+    }
+}
+
+void chesstableinftest()
+{
+    ChessTableInf ctinf = GetChessTableInf();
+    ChessTable ct = NewChessTable();
+    PrintChessTable(ct);
+    int x, y;
+    while (1) {
+        GetInputChess(&x, &y);
+        PrintPointInf(ctinf, GetPoint(x, y));
+    }
 }
 
 int main(int args, char** argv)
 {
-    ACAutomatontest();
+    chesstableinftest();
     return 0;
 }

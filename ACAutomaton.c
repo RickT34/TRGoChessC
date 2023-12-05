@@ -82,6 +82,25 @@ void TrieQuery(char* strin, int step, int len, Trie root, int* ret)
         }
     }
 }
+
+void TrieQuery2(char* strin, int step, int len, Trie root, int* ret[])
+{
+    Trie p = root;
+    for (int i = 0; i < len; i++) {
+        int k = strin[i];
+        while (!p->next[k] && p != root)
+            p = p->fail;
+        p = p->next[k];
+        if (p == NULL)
+            p = root;
+        Trie temp = p;
+        while (temp != root) {
+            if (temp->id != -1)
+                ret[i][temp->id]=1;
+            temp = temp->fail;
+        }
+    }
+}
 // int main()
 // {
 //     while (scanf("%d", &n)) {
