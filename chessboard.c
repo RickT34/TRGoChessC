@@ -2,10 +2,10 @@
 const char DireNames[4] = "XYCD";
 const int DireSteps[4] = { XSTEP, YSTEP, CSTEP, DSTEP };
 const char* ChessTableStyle[12] = {
-    "â”â”", "â”¯â”", "â”“ ",
-    "â” â”€", "â”¼â”€", "â”¨ ",
-    "â”—â”", "â”·â”", "â”› ",
-    "â— ", "â—‹ ", "â—‘ "
+    "©³©¥", "©Ó©¥", "©· ",
+    "©Ä©¤", "©à©¤", "©Ì ",
+    "©»©¥", "©Û©¥", "©¿ ",
+    "¡ñ ", "¡ğ ", "? "
 };
 
 ChessTable NewChessTable()

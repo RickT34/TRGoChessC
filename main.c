@@ -111,6 +111,6 @@ void chesstableinftest()
 
 int main(int args, char** argv)
 {
-    chesstableinftest();
+    chesstabletest();
     return 0;
 }
