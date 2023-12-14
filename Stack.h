@@ -1,6 +1,6 @@
 #ifndef _StackH
 #define _StackH
-typedef int stackitem;
+typedef void* stackitem;
 typedef struct _stack {
     int Count;
     int Capability;

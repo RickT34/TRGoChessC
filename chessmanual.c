@@ -95,7 +95,7 @@ Key ChessTableYRowToKey(ChessTable ct, int y)
     return k;
 }
 
-Key ChessTableDRowToKey(ChessTable ct, int s, Player wall)
+Key ChessTableDRowToKey(ChessTable ct, int s, ChessType wall)
 {
     Line ret;
     ret = Min(s, 14);

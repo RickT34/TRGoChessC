@@ -14,5 +14,6 @@ typedef struct _pqueue *PQueue;
 void PQueuePop(PQueue pq);
 void PQueuePush(PQueue pq, pqueueitem item);
 PQueue NewPQueue(int capbility);
+void FreePQueue(PQueue pq);
 
 #endif

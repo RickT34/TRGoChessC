@@ -5,6 +5,8 @@ struct trienode {
     int id; //这个单词的序号，只有单词的最后的结点才有
     Trie next[TRIEMAXFORK]; //如果为ASCII码可见字符，则为128
     Trie fail; //失败指针
+    int matchids[TRIEMAXID];
+    int matchidsLen;
 };
 
 Trie NewTrie()
@@ -12,12 +14,20 @@ Trie NewTrie()
     Trie re = (Trie)malloc(sizeof(struct trienode));
     re->fail = NULL;
     re->id = -1;
+    re->matchidsLen=0;
     for (int i = 0; i < TRIEMAXFORK; ++i)
         re->next[i] = NULL;
     return re;
 }
 
-void TrieInsert(Trie root, char* key, int len, int idx) //将字符串key放入字段树,idx>=0
+void FreeTrie(Trie root){
+    for(int i=0;i<TRIEMAXFORK;++i){
+        if(root->next[i]!=NULL)FreeTrie(root->next[i]);
+    }
+    free(root);
+}
+
+void TrieInsert(Trie root,const char* key,const int len,const int idx) //将字符串key放入字段树,idx>=0
 {
     // #ifdef DEBUG
     // printHead("key");
@@ -34,6 +44,19 @@ void TrieInsert(Trie root, char* key, int len, int idx) //将字符串key放入�
         root = root->next[k];
     }
     root->id = idx;
+}
+void TrieCompile2(Trie tr, Trie root)
+{
+    Trie temp = tr;
+    while (temp != root) {
+        if (temp->id != -1)
+            tr->matchids[tr->matchidsLen++] = temp->id;
+        temp = temp->fail;
+    }
+    for (int i = 0; i < TRIEMAXFORK; ++i) {
+        if (tr->next[i] != NULL)
+            TrieCompile2(tr->next[i], root);
+    }
 }
 void TrieCompile(Trie root) //用bfs建立失配指针
 {
@@ -63,32 +86,39 @@ void TrieCompile(Trie root) //用bfs建立失配指针
                 QueuePushback(q, temp->next[i]);
             }
     }
+    FreeQueue(q);
+    TrieCompile2(root, root);
 }
-void TrieQuery(char* strin, int step, int len, Trie root, int* ret)
+
+
+void TrieQuery(const char* strin,const int step,const int len,const Trie root, int* ret)
 {
     Trie p = root;
-    for (int i = 0; i < len; i++) {
-        int k = strin[i];
-        while (!p->next[k] && p != root)
+    for (int i = 0; i < len; i++, strin+=step) {
+        int k = *strin;
+        while (p->next[k]==NULL && p != root)
             p = p->fail;
         p = p->next[k];
         if (p == NULL)
             p = root;
-        Trie temp = p;
-        while (temp != root) {
-            if (temp->id != -1)
-                ret[temp->id]++;
-            temp = temp->fail;
+        // Trie temp = p;
+        // while (temp != root) {
+        //     if (temp->id != -1)
+        //         ret[temp->id]++;
+        //     temp = temp->fail;
+        // }
+        for (int j = 0; j < p->matchidsLen; ++j) {
+            ret[p->matchids[i]] += 1;
         }
     }
 }
 
-void TrieQuery2(char* strin, int step, int len, Trie root, int* ret[])
+void TrieQuery2(const char* strin,const int step,const int len,const Trie root, int* ret[])
 {
     Trie p = root;
-    for (int i = 0; i < len; i++) {
-        int k = strin[i];
-        while (!p->next[k] && p != root)
+    for (int i = 0; i < len; i++, strin += step) {
+        int k = *strin;
+        while (p->next[k]==NULL && p != root)
             p = p->fail;
         p = p->next[k];
         if (p == NULL)
@@ -98,6 +128,9 @@ void TrieQuery2(char* strin, int step, int len, Trie root, int* ret[])
             if (temp->id != -1)
                 ret[i][temp->id]=1;
             temp = temp->fail;
+        }
+        for (int j = 0; j < p->matchidsLen; ++j) {
+            ret[i][p->matchids[j]] += 1;
         }
     }
 }

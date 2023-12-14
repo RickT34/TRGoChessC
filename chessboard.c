@@ -1,12 +1,19 @@
 #include "chessboard.h"
 const char DireNames[4] = "XYCD";
 const int DireSteps[4] = { XSTEP, YSTEP, CSTEP, DSTEP };
-const char* ChessTableStyle[12] = {
-    "©³©¥", "©Ó©¥", "©· ",
-    "©Ä©¤", "©à©¤", "©Ì ",
-    "©»©¥", "©Û©¥", "©¿ ",
-    "¡ñ ", "¡ğ ", "? "
+const ChessTableStyle ChessTableStyle_Classic = {
+    "â”â”", "â”¯â”", "â”“ ",
+    "â” â”€", "â”¼â”€", "â”¨ ",
+    "â”—â”", "â”·â”", "â”› ",
+    "â— ", "â—‹ ", "â—‘ "
 };
+#define NEIGHBORRANGE 2
+
+const char* GetChessSkin(ChessType type,const ChessTableStyle style){
+    if(type==PlayerB)return style[10];
+    else if(type==PlayerW)return style[9];
+    else return style[11];
+}
 
 ChessTable NewChessTable()
 {
@@ -19,7 +26,26 @@ ChessTable NewChessTable()
     return re;
 }
 
-void PrintChessTable(ChessTable ct)
+void FreeChessTable(ChessTable ct){
+    free(ct);
+}
+
+int ChessTableSave(ChessTable ct, char* file){
+    for(int i=0;i<BLEN;++i){
+        file[i]=ct[i]+'0';
+    }
+    return BLEN;
+}
+
+int ChessTableLoad(ChessTable* ct, char* file){
+    *ct=NewChessTable();
+    for(int i=0;i<BLEN;++i){
+        *ct[i]=file[i]-'0';
+    }
+    return BLEN;
+}
+
+void PrintChessTable(const ChessTable ct,const ChessTableStyle style)
 {
     printf("   ");
     char a = 'a';
@@ -30,35 +56,35 @@ void PrintChessTable(ChessTable ct)
         printf(i < 9 ? " %d " : "%d ", i + 1);
         for (int j = 0; j < LLN; j++) {
             int k = GetChessXY(ct, j, i);
-            if (k == 0) {
+            if (k == BLANK) {
                 if (i == 0) {
                     if (j == 0)
-                        printf("%s", ChessTableStyle[0]);
+                        printf("%s",style[0]);
                     else if (j == LLN - 1)
-                        printf("%s", ChessTableStyle[2]);
+                        printf("%s",style[2]);
                     else
-                        printf("%s", ChessTableStyle[1]);
+                        printf("%s",style[1]);
                 } else if (i == LLN - 1) {
                     if (j == 0)
-                        printf("%s", ChessTableStyle[6]);
+                        printf("%s",style[6]);
                     else if (j == LLN - 1)
-                        printf("%s", ChessTableStyle[8]);
+                        printf("%s",style[8]);
                     else
-                        printf("%s", ChessTableStyle[7]);
+                        printf("%s",style[7]);
                 } else {
                     if (j == 0)
-                        printf("%s", ChessTableStyle[3]);
+                        printf("%s",style[3]);
                     else if (j == LLN - 1)
-                        printf("%s", ChessTableStyle[5]);
+                        printf("%s",style[5]);
                     else
-                        printf("%s", ChessTableStyle[4]);
+                        printf("%s",style[4]);
                 }
             } else if (k == PlayerW)
-                printf("%s", ChessTableStyle[9]);
+                printf("%s",style[9]);
             else if (k == PlayerB)
-                printf("%s", ChessTableStyle[10]);
+                printf("%s",style[10]);
             else
-                printf("%s", ChessTableStyle[11]);
+                printf("%s",style[11]);
         }
         printf("%d", i + 1);
         printf("\n");
@@ -70,18 +96,7 @@ void PrintChessTable(ChessTable ct)
     printf("\n");
 }
 
-int GetInputChess(int* x, int* y)
-{
-    char c;
-    if (scanf("%d%c", y, &c) != 2)
-        if (scanf("%c%d", &c, y) != 2)
-            return 1;
-    *x = c - 'a';
-    *y -= 1;
-    return !IsLegalXY(*x, *y);
-}
-
-ChessTableInf GetChessTableInf()
+ChessTableInf NewChessTableInf()
 {
     ChessTableInf re = malloc(sizeof(*re) * BLEN);
     for (int i = 0; i < LLN; ++i) {
@@ -107,7 +122,47 @@ ChessTableInf GetChessTableInf()
     return re;
 }
 
-void PrintPointInf(ChessTableInf ctinf, Point p)
+void FreeChessTableInf(ChessTableInf ctn){
+    free(ctn);
+}
+
+ChessTableNeighbor NewChessTableNeighbor()
+{
+    ChessTableNeighbor re = malloc(sizeof(*re) * BLEN);
+    for (int x = 0; x < LLN; ++x) {
+        for (int y = 0; y < LLN; ++y) {
+            int i;
+            const int lb = Max(0, x - NEIGHBORRANGE), rb = Min(LLN - 1, x + NEIGHBORRANGE),
+                bb = Min(LLN - 1, y + NEIGHBORRANGE), tb = Max(0, y - NEIGHBORRANGE);
+            Point p = GetPoint(x, y), t;
+            for (i = tb; i <= bb; i++) {
+                if (i == y)
+                    continue;
+                t = GetPoint(x, i);
+                re[p].neighbors[re[p].len++] = t;
+            }
+            for (i = -2; i <= 2; i++) {
+                if (i == 0)
+                    continue;
+                if (x + i >= lb && x + i <= rb) {
+                    t = GetPoint(x + i, y);
+                    re[p].neighbors[re[p].len++] = t;
+                }
+                if (x + i >= lb && x + i <= rb && y + i >= tb && y + i <= bb) {
+                    t = GetPoint(x + i, y + i);
+                    re[p].neighbors[re[p].len++] = t;
+                }
+                if (x + i >= lb && x + i <= rb && y - i >= tb && y - i <= bb) {
+                    t = GetPoint(x + i, y - i);
+                    re[p].neighbors[re[p].len++] = t;
+                }
+            }
+        }
+    }
+    return re;
+}
+
+void PrintPointInf(const ChessTableInf ctinf,const Point p)
 {
     printf("Point infmation of %d%c:\n", PointTo2C(p));
     for (int i = 0; i < 4; ++i) {

@@ -52,3 +52,8 @@ Queue NewQueue(const int capbility)
     re->tile = 0;
     return re;
 }
+
+void FreeQueue(Queue q){
+    free(q->items);
+    free(q);
+}

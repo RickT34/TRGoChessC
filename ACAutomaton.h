@@ -2,10 +2,12 @@
 #define _ACAutomatonH
 #include "globals.h"
 #define TRIEMAXFORK 3
+#define TRIEMAXID 20
 typedef struct trienode* Trie;
 Trie NewTrie();
-void TrieInsert(Trie root, char* key, int len, int idx);
+void FreeTrie(Trie root);
+void TrieInsert(Trie root,const char* key,const int len,const int idx);
 void TrieCompile(Trie root);
-void TrieQuery(char* strin, int step, int len, Trie root, int* ret);
-void TrieQuery2(char* strin, int step, int len, Trie root, int* ret[]);
+void TrieQuery(const char* strin,const int step,const int len,const Trie root, int* ret);
+void TrieQuery2(const char* strin,const int step,const int len,const Trie root, int* ret[]);
 #endif

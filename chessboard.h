@@ -2,6 +2,14 @@
 #define _chessboardH
 #include "globals.h"
 
+typedef char ChessType;
+#define LLN 15
+#define FULL (ChessType)3
+#define PlayerW (ChessType)1 // 01 O
+#define PlayerB (ChessType)2 // 10 #
+#define BLANK (ChessType)0
+#define BIT 2
+
 #define POINTBITS 4
 #define BWIDTH (1 << (POINTBITS))
 #define BLEN (BWIDTH * (BWIDTH - 1))
@@ -10,6 +18,7 @@
 
 typedef char* ChessTable;
 typedef int Point;
+#define PointNULL -1
 
 /*   Chess Table View
       0 x--         15
@@ -54,17 +63,31 @@ typedef int Point;
 #define IsLegalXY(x, y) ((x) >= 0 && (y) >= 0 && (x) < LLN && (y) < LLN)
 
 ChessTable NewChessTable();
-int GetInputChess(int* x, int* y);
-void PrintChessTable(ChessTable ct);
+int ChessTableSave(ChessTable ct, char* file);
+int ChessTableLoad(ChessTable *ct, char* file);
+void FreeChessTable(ChessTable ct);
+
+typedef char* ChessTableStyle[12];
+const extern ChessTableStyle ChessTableStyle_Classic;
+void PrintChessTable(const ChessTable ct,const ChessTableStyle style);
+const char* GetChessSkin(ChessType type,const ChessTableStyle style);
 
 const extern char DireNames[4];
 const extern int DireSteps[4];
+#define DireLen 4
 typedef struct {
     Point start[4]; //[X, Y, C, D]
     int lens[4];
 } * ChessTableInf;
-ChessTableInf GetChessTableInf();
-void PrintPointInf(ChessTableInf ctinf, Point p);
+ChessTableInf NewChessTableInf();
+void FreeChessTableInf(ChessTableInf ctn);
+void PrintPointInf(const ChessTableInf ctinf,const Point p);
+
+typedef struct{
+    Point neighbors[16];
+    int len;
+} * ChessTableNeighbor;
+ChessTableNeighbor NewChessTableNeighbor();
 
 #ifdef DEBUG
 #define PointTo2C(point) ((point) >> POINTBITS) + 1, ((point)&KEYXMASK) + 'a' // exp: 5d

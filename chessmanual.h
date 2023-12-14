@@ -17,7 +17,7 @@ void ChessManualInit();
 
 Key ChessTableXRowToKey(ChessTable ct, int x);
 Key ChessTableYRowToKey(ChessTable ct, int y);
-Key ChessTableDRowToKey(ChessTable ct, int s, Player wall);
+Key ChessTableDRowToKey(ChessTable ct, int s, ChessType wall);
 
 #define CheckLib(chessmanual, line) (chessmanual)[LineToKey(line)]
 

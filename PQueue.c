@@ -47,6 +47,11 @@ PQueue NewPQueue(int capbility)
     return re;
 }
 
+void FreePQueue(PQueue pq){
+    free(pq->items);
+    free(pq);
+}
+
 // int main(){
 //     PQueue pq=NewPQueue(100);
 //     int t;
