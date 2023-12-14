@@ -18,6 +18,6 @@ struct _player {
 };
 int PlayerSave(Player player, char* file);
 int PlayerLoad(Player* player, char* file);
-Player NewPlayer(char type, char* name, size_t namelen);
+Player NewPlayer(char type,const char* name, int namelen);
 
 #endif

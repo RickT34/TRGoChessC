@@ -133,7 +133,9 @@ void MakeUI(Game game)
     // system("clear");
     printf("Round: %d\n",game->history->Count);
     PrintChessTable(game->chesstable, ChessTableStyle_Classic);
-    printf("Now: %s\n",GetChessSkin(PlayerChessTypes[NextPlayerID(game->nowPlayerID)], ChessTableStyle_Classic));
+    printf("Now: %s -- %s\n",
+    GetChessSkin(PlayerChessTypes[NextPlayerID(game->nowPlayerID)], ChessTableStyle_Classic),
+    GameGetNowPlayer(game)->name);
 
 }
 Point GetInput(Game game)
@@ -146,6 +148,13 @@ Point GetInput(Game game)
         if (buff[0] == '-') {
             GameUndo(game);
             MakeUI(game);
+            continue;
+        }
+        if(buff[0]=='>'){
+            char file[1024];
+            int l = GameSave(game, file);
+            file[l]=0;
+            puts(file);
             continue;
         }
         int x, y;
@@ -166,7 +175,7 @@ Point GetInput(Game game)
 
 void Start()
 {
-    Player p1 = NewHumanPlayer(), p2 = NewHumanPlayer();
+    Player p1 = NewHumanPlayer("P1"), p2 = NewHumanPlayer("P2");
     Game game = NewGame(p1, p2);
     int ret;
     do {
@@ -178,7 +187,7 @@ void Start()
     } while ((ret = GameNextTurn(game)) == 0);
     MakeUI(game);
     if (ret == 1) {
-        printf("%d Win!\n", ~game->nowPlayerID);
+        printf("%s Win!\n", game->players[~game->nowPlayerID]->name);
     }
 }
 

@@ -1,4 +1,5 @@
 #include "AIPlayer.h"
+#include <string.h>
 Point AIGo(Player player, const ChessTable ct, const Point lastAction)
 {
     return PointNULL;
@@ -8,9 +9,9 @@ void AIUndo(Player player, const ChessTable ct, const Point lastAction)
 {
 }
 
-Player NewAIPlayer()
+Player NewAIPlayer(const char* name)
 {
-    Player re = NewPlayer(PlayerType_AI, "AI", 2);
+    Player re = NewPlayer(PlayerType_AI, name, strlen(name));
     SetAIPlayer(re);
     return re;
 }
