@@ -5,11 +5,7 @@
 #include "Stack.h"
 #include "chessboard.h"
 #include "globals.h"
-
-typedef struct {
-    Point point;
-    int playerid;
-} *Action,Action_Raw;
+#include "Action.h"
 
 typedef enum {
     GameStatus_Begin,
@@ -39,7 +35,7 @@ int GameNextTurn(Game game);
 int GameUndo(Game game);
 int GameSave(Game game, char* file);
 int GameLoad(Game* data, char* file);
-const extern ChessType PlayerChessTypes[2];
+
 
 typedef struct{
     Action_Raw data[BLEN];

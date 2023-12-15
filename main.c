@@ -4,11 +4,7 @@
 #include <string.h>
 
 
-void Input(char* buff, const int buffsize)
-{
-    printf(">:");
-    fgets(buff, buffsize, stdin);
-}
+
 void MakeUI(Game game)
 {
     // system("clear");
@@ -98,11 +94,12 @@ void PrintPlayer(Game game, int id){
     printf("%s %s",GetChessSkin(PlayerChessTypes[id], ChessBoardStyle_Classic),
     game->players[id]->name);
 }
-
+char buff[4096];
+#define BUFFSIZE 4096
 void Start(Game game)
 {
     int ret;
-    char buff[4096];
+    
     do {
         MakeUI(game);
         if (IsGameStopped(game)) {
@@ -112,14 +109,14 @@ void Start(Game game)
                     printf(" Win!\n");
                     }
             printf("Game stopped!\n");
-            Input(buff, 4096);
+            Input(buff, BUFFSIZE);
             InputCommamd(game, buff);
         }
         else{
             if (GameGetNextPlayer(game)->type == PlayerType_Human) {
                 Point p = PointNULL;
                 while (p == PointNULL) {
-                    Input(buff, 4096);
+                    Input(buff, BUFFSIZE);
                     if (InputCommamd(game, buff)) {
                         p = GetPointInput(game, buff);
                     }
@@ -134,11 +131,32 @@ void Start(Game game)
     } while (1);
     
 }
+//tests
+#include "ChessPot.h"
+void ChessPotTest()
+{
+    ChessPot pot = NewChessPot();
+    int p;
+    while(1){
+        scanf("%d",&p);
+        if(p>0)
+            ChessPotAdd(pot, p);
+        else ChessPotRemove(pot, -p);
+        for(Point p=pot->nodes[ChessPotHead].nxt;p!=ChessPotTail;p=pot->nodes[p].nxt){
+            printf("%d, ",p);
+        }
+        putchar('\n');
+    }
+}
+
 
 int main(int args, char** argv)
 {
     ChessBoardInit();
     GameManagerInit();
+    // ChessPotTest();
+    // NeighborMaptest();
+    // PowerMaptest();
     Player p1 = NewHumanPlayer("P1"), p2 = NewHumanPlayer("P2");
     Game game = NewGame(p1, p2);
     Start(game);

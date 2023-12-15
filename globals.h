@@ -10,6 +10,7 @@
 #define Max(x, y) ((x) > (y) ? (x) : (y))
 #define Abs(x) ((x) > 0 ? (x) : -(x))
 void printArray(int* an, int start, int len);
+void Input(char* buff, const int buffsize);
 
 int IntSave(int data, char* file);
 

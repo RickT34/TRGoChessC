@@ -10,6 +10,7 @@ typedef struct _stack {
 #define StackPush(stack, v) stack->Items[stack->Count++]=v
 #define StackPop(stack) stack->Items[--stack->Count]
 #define StackTop(stack) stack->Items[stack->Count-1]
+#define StackClean(stack) stack->Count=0;
 
 Stack NewStack(int capability);
 void FreeStack(Stack stack);

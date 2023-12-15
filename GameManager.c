@@ -6,7 +6,7 @@
 #define StartPlayerid GamePrePlayerID(0)
 
 
-const ChessType PlayerChessTypes[2] = { PlayerB, PlayerW };
+
 const char winPatterns[2][5] = { { PlayerB, PlayerB, PlayerB, PlayerB, PlayerB },
     { PlayerW, PlayerW, PlayerW, PlayerW, PlayerW } };
 
@@ -56,13 +56,7 @@ void FreeGame(Game game)
     free(game);
 }
 
-Action NewAction(int playerid, Point point)
-{
-    Action action = malloc(sizeof(*action));
-    action->playerid = playerid;
-    action->point = point;
-    return action;
-}
+
 
 int GameNextTurn(Game game)
 {
@@ -70,9 +64,8 @@ int GameNextTurn(Game game)
         return 2;
     game->status = GameStatus_Gaming;
     game->nowPlayerID = GameNextPlayerID(game->nowPlayerID);
-    Point last = game->history->Count ? ((Action)StackTop(game->history))->point : PointNULL;
     Player player = game->players[game->nowPlayerID];
-    Point act = player->Go(player, game->chessboard, last);
+    Point act = player->Go(player, game->chessboard, game->history);
     assert(GetChess(game->chessboard, act) == BLANK);
     SetChess(game->chessboard, act, PlayerChessTypes[game->nowPlayerID]);
     Action action = NewAction(game->nowPlayerID, act);
@@ -97,7 +90,7 @@ int GameUndo(Game game)
     Action act = StackPop(game->history);
     assert(act->playerid == game->nowPlayerID || game->nowPlayerID < 0);
     Player player = game->players[act->playerid];
-    player->Undo(player, game->chessboard, act->point);
+    player->Undo(player, game->chessboard, game->history);
     if (game->history->Count == 0) {
         game->nowPlayerID = StartPlayerid;
         game->status = GameStatus_Begin;
@@ -124,26 +117,7 @@ int ContinueGame(Game game){
     return 1;
 }
 
-int ActionSave(Action act, char* file)
-{
-    return IntSave((act->point << 4) | act->playerid, file);
-}
 
-int ActionLoad(Action* act, char* file)
-{
-    int a, d;
-    a = IntLoad(&d, file);
-    *act = NewAction(d & 0xf, d >> 4);
-    return a;
-}
-int ActionRawLoad(Action_Raw* act, char* file)
-{
-    int a, d;
-    a = IntLoad(&d, file);
-    act->playerid=d&0xf;
-    act->point=(d>>4);
-    return a;
-}
 
 int GameSave(Game game, char* file)
 {

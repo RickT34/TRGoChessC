@@ -1,6 +1,8 @@
 #include "chessboard.h"
+#include <string.h>
 const char DireNames[4] = "XYCD";
 const int DireSteps[4] = { XSTEP, YSTEP, CSTEP, DSTEP };
+const ChessType PlayerChessTypes[2] = { PlayerB, PlayerW };
 const ChessBoardStyle ChessBoardStyle_Classic = {
     "┏━", "┯━", "┓ ",
     "┠─", "┼─", "┨ ",
@@ -17,12 +19,16 @@ const char* GetChessSkin(ChessType type,const ChessBoardStyle style){
 
 ChessBoard NewChessBoard()
 {
-    char* re = malloc(sizeof(char) * BLEN);
-    for (int i = 0; i < BLEN; i++)
-        re[i] = 0;
+    char* re = calloc(BLEN,sizeof(char));
 #ifdef DEBUG
     printfD("New ChessBoard Success\n");
 #endif
+    return re;
+}
+
+ChessBoard CloneChessBoard(ChessBoard ct){
+    char* re = malloc(BLEN*sizeof(char));
+    memcpy(re,ct,BLEN);
     return re;
 }
 
@@ -161,6 +167,7 @@ ChessBoardNeighbor NewChessBoardNeighbor()
                     re[p].neighbors[re[p].len++] = t;
                 }
             }
+            re[p].neighbors[re[p].len++]=p;
         }
     }
     return re;

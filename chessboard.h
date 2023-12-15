@@ -3,6 +3,7 @@
 #include "globals.h"
 
 typedef char ChessType;
+const extern ChessType PlayerChessTypes[2];
 #define LLN 15
 #define FULL (ChessType)3
 #define PlayerW (ChessType)1 // 01 O
@@ -63,6 +64,7 @@ typedef int Point;
 #define IsLegalXY(x, y) ((x) >= 0 && (y) >= 0 && (x) < LLN && (y) < LLN)
 
 ChessBoard NewChessBoard();
+ChessBoard CloneChessBoard(ChessBoard ct);
 int ChessBoardSave(ChessBoard ct, char* file);
 int ChessBoardLoad(ChessBoard *ct, char* file);
 void FreeChessBoard(ChessBoard ct);
@@ -85,7 +87,7 @@ void FreeChessBoardInf(ChessBoardInf ctn);
 void PrintPointInf(const ChessBoardInf ctinf,const Point p);
 
 typedef struct{
-    Point neighbors[16];
+    Point neighbors[17];
     int len;
 } * ChessBoardNeighbor;
 ChessBoardNeighbor NewChessBoardNeighbor();

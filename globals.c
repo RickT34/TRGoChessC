@@ -24,3 +24,9 @@ int IntLoad(int* data, char* file){
     }
     return 8;
 }
+
+void Input(char* buff, const int buffsize)
+{
+    printf(">:");
+    fgets(buff, buffsize, stdin);
+}

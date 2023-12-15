@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <string.h>
 
-Point HumanGo(Player player, const ChessBoard ct, const Point lastAction)
+Point HumanGo(Player player, const ChessBoard ct, const Stack actionHistory)
 {
     Point re = *(Point*)player->data;
     assert(re != PointNULL);
@@ -10,7 +10,7 @@ Point HumanGo(Player player, const ChessBoard ct, const Point lastAction)
     return re;
 }
 
-void HumanUndo(Player player, const ChessBoard ct, const Point lastAction)
+void HumanUndo(Player player, const ChessBoard ct, const Stack actionHistory)
 {
 }
 

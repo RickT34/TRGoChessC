@@ -3,6 +3,7 @@
 #include "AIPlayer.h"
 #include "GameManager.h"
 #include "HumanPlayer.h"
+#include "globals.h"
 void Input(char* buff, const int buffsize);
 void MakeUI(Game game);
 void MakeProcessBar(int p, int len, const int width);
