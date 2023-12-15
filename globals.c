@@ -19,8 +19,8 @@ int IntSave(int data,char* file){
 int IntLoad(int* data, char* file){
     *data=0;
     for(int i=0;i<8;++i){
-        *data|=file[7-i]-'a';
         *data<<=4;
+        *data|=file[7-i]-'a';
     }
     return 8;
 }

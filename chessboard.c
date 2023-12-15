@@ -1,7 +1,7 @@
 #include "chessboard.h"
 const char DireNames[4] = "XYCD";
 const int DireSteps[4] = { XSTEP, YSTEP, CSTEP, DSTEP };
-const ChessTableStyle ChessTableStyle_Classic = {
+const ChessBoardStyle ChessBoardStyle_Classic = {
     "┏━", "┯━", "┓ ",
     "┠─", "┼─", "┨ ",
     "┗━", "┷━", "┛ ",
@@ -9,43 +9,43 @@ const ChessTableStyle ChessTableStyle_Classic = {
 };
 #define NEIGHBORRANGE 2
 
-const char* GetChessSkin(ChessType type,const ChessTableStyle style){
+const char* GetChessSkin(ChessType type,const ChessBoardStyle style){
     if(type==PlayerB)return style[10];
     else if(type==PlayerW)return style[9];
     else return style[11];
 }
 
-ChessTable NewChessTable()
+ChessBoard NewChessBoard()
 {
     char* re = malloc(sizeof(char) * BLEN);
     for (int i = 0; i < BLEN; i++)
         re[i] = 0;
 #ifdef DEBUG
-    printfD("New ChessTable Success\n");
+    printfD("New ChessBoard Success\n");
 #endif
     return re;
 }
 
-void FreeChessTable(ChessTable ct){
+void FreeChessBoard(ChessBoard ct){
     free(ct);
 }
 
-int ChessTableSave(ChessTable ct, char* file){
+int ChessBoardSave(ChessBoard ct, char* file){
     for(int i=0;i<BLEN;++i){
         file[i]=ct[i]+'0';
     }
     return BLEN;
 }
 
-int ChessTableLoad(ChessTable* ct, char* file){
-    *ct=NewChessTable();
+int ChessBoardLoad(ChessBoard* ct, char* file){
+    *ct=NewChessBoard();
     for(int i=0;i<BLEN;++i){
-        *ct[i]=file[i]-'0';
+        (*ct)[i]=file[i]-'0';
     }
     return BLEN;
 }
 
-void PrintChessTable(const ChessTable ct,const ChessTableStyle style)
+void PrintChessBoard(const ChessBoard ct,const ChessBoardStyle style)
 {
     printf("   ");
     char a = 'a';
@@ -96,9 +96,11 @@ void PrintChessTable(const ChessTable ct,const ChessTableStyle style)
     printf("\n");
 }
 
-ChessTableInf NewChessTableInf()
+ChessBoardInf CBINF;
+
+ChessBoardInf NewChessBoardInf()
 {
-    ChessTableInf re = malloc(sizeof(*re) * BLEN);
+    ChessBoardInf re = malloc(sizeof(*re) * BLEN);
     for (int i = 0; i < LLN; ++i) {
         for (int j = 0; j < LLN; ++j) {
             Point p = GetPoint(i, j);
@@ -117,18 +119,20 @@ ChessTableInf NewChessTableInf()
         }
     }
 #ifdef DEBUG
-    printfD("Get ChessTableInf Success\n");
+    printfD("Get ChessBoardInf Success\n");
 #endif
     return re;
 }
 
-void FreeChessTableInf(ChessTableInf ctn){
+void FreeChessBoardInf(ChessBoardInf ctn){
     free(ctn);
 }
 
-ChessTableNeighbor NewChessTableNeighbor()
+ChessBoardNeighbor CBNEI;
+
+ChessBoardNeighbor NewChessBoardNeighbor()
 {
-    ChessTableNeighbor re = malloc(sizeof(*re) * BLEN);
+    ChessBoardNeighbor re = malloc(sizeof(*re) * BLEN);
     for (int x = 0; x < LLN; ++x) {
         for (int y = 0; y < LLN; ++y) {
             int i;
@@ -162,10 +166,18 @@ ChessTableNeighbor NewChessTableNeighbor()
     return re;
 }
 
-void PrintPointInf(const ChessTableInf ctinf,const Point p)
+void PrintPointInf(const ChessBoardInf ctinf,const Point p)
 {
     printf("Point infmation of %d%c:\n", PointTo2C(p));
     for (int i = 0; i < 4; ++i) {
         printf("    Dir %c,\tStart = %d%c,\tLen = %d,\tStep = %d.\n", DireNames[i], PointTo2C(ctinf[p].start[i]), ctinf[p].lens[i], DireSteps[i]);
     }
+}
+
+void ChessBoardInit(){
+    static char inited=0;
+    if(inited)return;
+    CBINF=NewChessBoardInf();
+    CBNEI=NewChessBoardNeighbor();
+    inited=1;
 }

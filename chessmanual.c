@@ -55,7 +55,7 @@ Key LineToKey(Line line)
     return k;
 }
 
-Key ChessTableXRowToKey(ChessTable ct, int x)
+Key ChessBoardXRowToKey(ChessBoard ct, int x)
 {
     x = GetPoint(x, 0);
     ct += x;
@@ -75,7 +75,7 @@ Key ChessTableXRowToKey(ChessTable ct, int x)
     return k;
 }
 
-Key ChessTableYRowToKey(ChessTable ct, int y)
+Key ChessBoardYRowToKey(ChessBoard ct, int y)
 {
     y = GetPoint(0, y);
     ct += y;
@@ -95,7 +95,7 @@ Key ChessTableYRowToKey(ChessTable ct, int y)
     return k;
 }
 
-Key ChessTableDRowToKey(ChessTable ct, int s, ChessType wall)
+Key ChessBoardDRowToKey(ChessBoard ct, int s, ChessType wall)
 {
     Line ret;
     ret = Min(s, 14);

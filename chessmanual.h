@@ -15,9 +15,9 @@ Line StrToLine(char* s);
 void printLine(Line line, int n);
 void ChessManualInit();
 
-Key ChessTableXRowToKey(ChessTable ct, int x);
-Key ChessTableYRowToKey(ChessTable ct, int y);
-Key ChessTableDRowToKey(ChessTable ct, int s, ChessType wall);
+Key ChessBoardXRowToKey(ChessBoard ct, int x);
+Key ChessBoardYRowToKey(ChessBoard ct, int y);
+Key ChessBoardDRowToKey(ChessBoard ct, int s, ChessType wall);
 
 #define CheckLib(chessmanual, line) (chessmanual)[LineToKey(line)]
 

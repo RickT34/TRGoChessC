@@ -12,8 +12,8 @@ enum PlayerType {
 struct _player {
     char type;
     char* name;
-    Point (*Go)(Player player, const ChessTable ct, const Point lastAction);
-    void (*Undo)(Player player, const ChessTable ct, const Point lastAction);
+    Point (*Go)(Player player, const ChessBoard ct, const Point lastAction);
+    void (*Undo)(Player player, const ChessBoard ct, const Point lastAction);
     void* data;
 };
 int PlayerSave(Player player, char* file);

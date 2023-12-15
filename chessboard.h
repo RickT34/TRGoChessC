@@ -16,11 +16,11 @@ typedef char ChessType;
 #define KEYXMASK ((1 << POINTBITS) - 1) // b00001111
 #define KEYYMASK (KEYXMASK << POINTBITS) // b11110000
 
-typedef char* ChessTable;
+typedef char* ChessBoard;
 typedef int Point;
 #define PointNULL -1
 
-/*   Chess Table View
+/*   Chess Board View
       0 x--         15
   y 0 00000000000000X --TB  D
   | 1 00000000000000X      /
@@ -41,10 +41,10 @@ typedef int Point;
 // d=x-y
 #define GetPointD(point) (((point)&KEYXMASK) - ((point) >> POINTBITS))
 
-#define GetChessXY(chesstable, x, y) ((chesstable)[GetPoint(x, y)])
-#define SetChessXY(chesstable, x, y, v) GetChessXY(chesstable, x, y) = v
-#define GetChess(chesstable, point) chesstable[point]
-#define SetChess(chesstable, point, v) GetChess(chesstable, point) = v
+#define GetChessXY(chessboard, x, y) ((chessboard)[GetPoint(x, y)])
+#define SetChessXY(chessboard, x, y, v) GetChessXY(chessboard, x, y) = v
+#define GetChess(chessboard, point) chessboard[point]
+#define SetChess(chessboard, point, v) GetChess(chessboard, point) = v
 
 #define XSTEP 1
 #define YSTEP (1 << POINTBITS)
@@ -62,15 +62,15 @@ typedef int Point;
 #define IsLegal(point) ((point) >= 0 && (point) < BLEN && ((point)&KEYXMASK != LLN))
 #define IsLegalXY(x, y) ((x) >= 0 && (y) >= 0 && (x) < LLN && (y) < LLN)
 
-ChessTable NewChessTable();
-int ChessTableSave(ChessTable ct, char* file);
-int ChessTableLoad(ChessTable *ct, char* file);
-void FreeChessTable(ChessTable ct);
+ChessBoard NewChessBoard();
+int ChessBoardSave(ChessBoard ct, char* file);
+int ChessBoardLoad(ChessBoard *ct, char* file);
+void FreeChessBoard(ChessBoard ct);
 
-typedef char* ChessTableStyle[12];
-const extern ChessTableStyle ChessTableStyle_Classic;
-void PrintChessTable(const ChessTable ct,const ChessTableStyle style);
-const char* GetChessSkin(ChessType type,const ChessTableStyle style);
+typedef char* ChessBoardStyle[12];
+const extern ChessBoardStyle ChessBoardStyle_Classic;
+void PrintChessBoard(const ChessBoard ct,const ChessBoardStyle style);
+const char* GetChessSkin(ChessType type,const ChessBoardStyle style);
 
 const extern char DireNames[4];
 const extern int DireSteps[4];
@@ -78,16 +78,20 @@ const extern int DireSteps[4];
 typedef struct {
     Point start[4]; //[X, Y, C, D]
     int lens[4];
-} * ChessTableInf;
-ChessTableInf NewChessTableInf();
-void FreeChessTableInf(ChessTableInf ctn);
-void PrintPointInf(const ChessTableInf ctinf,const Point p);
+} * ChessBoardInf;
+ChessBoardInf NewChessBoardInf();
+extern ChessBoardInf CBINF;
+void FreeChessBoardInf(ChessBoardInf ctn);
+void PrintPointInf(const ChessBoardInf ctinf,const Point p);
 
 typedef struct{
     Point neighbors[16];
     int len;
-} * ChessTableNeighbor;
-ChessTableNeighbor NewChessTableNeighbor();
+} * ChessBoardNeighbor;
+ChessBoardNeighbor NewChessBoardNeighbor();
+extern ChessBoardNeighbor CBNEI;
+
+void ChessBoardInit();
 
 #ifdef DEBUG
 #define PointTo2C(point) ((point) >> POINTBITS) + 1, ((point)&KEYXMASK) + 'a' // exp: 5d

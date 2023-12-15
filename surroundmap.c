@@ -8,13 +8,13 @@
         push(point);          \
     existmap[point] += 1
 
-static ChessTable existmap;
+static ChessBoard existmap;
 Point SurroundList[BLEN];
 int SurroundListCount = 0;
 
 void SurroundMapInit()
 {
-    existmap = NewChessTable();
+    existmap = NewChessBoard();
 }
 
 void Clean()

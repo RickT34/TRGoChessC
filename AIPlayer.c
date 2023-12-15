@@ -1,11 +1,11 @@
 #include "AIPlayer.h"
 #include <string.h>
-Point AIGo(Player player, const ChessTable ct, const Point lastAction)
+Point AIGo(Player player, const ChessBoard ct, const Point lastAction)
 {
     return PointNULL;
 }
 
-void AIUndo(Player player, const ChessTable ct, const Point lastAction)
+void AIUndo(Player player, const ChessBoard ct, const Point lastAction)
 {
 }
 
