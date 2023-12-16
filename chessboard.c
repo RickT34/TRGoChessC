@@ -9,7 +9,7 @@ const ChessBoardStyle ChessBoardStyle_Classic = {
     "┗━", "┷━", "┛ ",
     "● ", "○ ", "◑ "
 };
-#define NEIGHBORRANGE 2
+#define NEIGHBORRANGE 1
 
 const char* GetChessSkin(ChessType type,const ChessBoardStyle style){
     if(type==PlayerB)return style[10];

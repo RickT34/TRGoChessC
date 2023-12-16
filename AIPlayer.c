@@ -25,11 +25,29 @@ const char* AIPatterns_Default[]={
 
     "11111"
 };
-const Power AIPatternPowers_Default[]={
+// const Power AIPatternPowers_Default[]={
+//     0,
+//     0,
+//     0,
+//     0,
+
+//     0,
+//     0,
+//     0,
+//     0,
+
+//     0,
+//     0,
+//     0,
+//     1<<20,
+
+//     1<<20
+// };
+const Power AIPatternPowers_Default[] = {
+    1,
     1,
     2,
-    2,
-    4,
+    3,
 
     15,
     32,
@@ -39,9 +57,9 @@ const Power AIPatternPowers_Default[]={
     14,
     28,
     32,
-    1<<20,
+    1 << 20,
 
-    1<<20
+    1 << 20
 };
 
 Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
@@ -93,41 +111,35 @@ Point Minimax(const AIData aidata, ChessBoard cb, const int player,const int sgn
         if (GetChess(cb, p) != BLANK)
             continue;
         SetChess(cb, p, PlayerChessTypes[player]);
+        Power ret;
         // PrintChessBoard(cb, ChessBoardStyle_Classic);
         if (dep == 0) {
             /*            Compute Power             */
-            // assert(sgn==1);
-            Power powersum = ComputePowerPoint(p, aidata, cb);
-            // PrintPowerMap(aidata->powerMap);
-            if (powersum >= maxpower) {
-                SetChess(cb, p, BLANK);
-                return PointNULL;
-            }
-            if (maxn < powersum || re == PointNULL) {
-                re = p;
-                maxn = powersum;
-                if(maxn>=Power_WinScale){
-                    SetChess(cb, p, BLANK);
-                    break;
-                }
-            }
+            ret = ComputePowerPoint(p, aidata, cb)*sgn;
         } else {
             /*             DFS                 */
-            Power ret;
-            NeighborMapAddChess(aidata->neighborMap, p);
             // Push
+            NeighborMapAddChess(aidata->neighborMap, p);
             PowerMap pm = aidata->powerMap;
             Power linep[DireLen], powersum = pm->powerSum;
             for (int d = 0; d < DireLen; ++d)
                 linep[d] = *(pm->linePower[p][d]);
-            UpdatePowerPoint(p, aidata, cb);
             //End Push
-
+            Power power = UpdatePowerPoint(p, aidata, cb)*sgn;
+            if(power>=Power_WinScale){
+                ret=power;
+            }
+            else{
+                if (Minimax(aidata, cb, GameNextPlayerID(player), -sgn, &ret,
+                        re == PointNULL ? Power_MAX : -maxn, dep - 1)
+                    != PointNULL) {
+                    ret = -ret;
+                }
+            }
+            
             // PrintChessBoard(cb, ChessBoardStyle_Classic);
             // PrintNeighborMap(aidata->neighborMap);
-            Point rep = Minimax(aidata, cb, player ^ 1,-sgn, &ret,
-                re == PointNULL ? Power_MAX : maxn*(-sgn), dep - 1);
-
+            
             //Pop
             for (int d = 0; d < DireLen; ++d)
                 *(pm->linePower[p][d]) = linep[d];
@@ -135,21 +147,19 @@ Point Minimax(const AIData aidata, ChessBoard cb, const int player,const int sgn
             NeighborMapUndo(aidata->neighborMap, p);
             //End Pop
 
-            if(rep!=PointNULL){
-                ret*=sgn;
-                if (ret >= maxpower) {
-                    SetChess(cb, p, BLANK);
-                    return PointNULL;
-                }
-                if (re == PointNULL || ret > maxn) {
-                    maxn = ret*sgn;
-                    re = rep;
-                }
+        }
+        if (re == PointNULL || ret > maxn) {
+            maxn = ret;
+            if (maxn >= maxpower) {
+                SetChess(cb, p, BLANK);
+                return PointNULL;
             }
+            re = p;
         }
         SetChess(cb, p, BLANK);
     }
     *rate = maxn;
+    // if(maxn!=0)printf("%d %d\n",dep,maxn);
     // printf("Best PointL %d%c",PointTo2C(re));
     return re;
 }
@@ -172,7 +182,7 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)
     // PrintPowerMap(data->powerMap);
     ChessBoard cb = CloneChessBoard(ct);
     Power rate;
-    Point re = Minimax(data, cb, data->playerid,1, &rate, Power_MAX, 4);
+    Point re = Minimax(data, cb, data->playerid,1, &rate, Power_MAX, AIDepth);
     assert(re!=PointNULL);
     SetChess(cb, re, PlayerChessTypes[data->playerid]);
     UpdatePowerPoint(re, data, cb);
@@ -258,5 +268,8 @@ void SetAIPlayer(Player player, const int playerid, const Power* powers)
 {
     player->Go = AIGo;
     player->Undo = AIUndo;
-    player->data = NewAIData(playerid, powers);
+    AIData data = NewAIData(playerid, powers);
+    data->powerMap->needflush=1;
+    data->neighborMap->needflush=1;
+    player->data=data;
 }

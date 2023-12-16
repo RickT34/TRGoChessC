@@ -71,6 +71,7 @@ Point GetPointInput(const Game game, const char* s)
 int InputCommamd(Game game, char* buff){
     if (buff[0] == '-') {
         GameUndo(game);
+        if(GameGetNextPlayer(game)->type==PlayerType_AI)GameUndo(game);
         return 0;
     } else if (buff[0] == '>') {
         char file[2048];
@@ -126,6 +127,8 @@ void Start(Game game)
                 *(Point*)GameGetNextPlayer(game)->data = p;
             }
             ret = GameNextTurn(game);
+            PrintPlayer(game, game->nowPlayerID);
+            printf(" on %d%c\n",PointTo2C(((Action)StackTop(game->history))->point));
         }
     } while (1);
     

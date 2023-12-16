@@ -127,6 +127,7 @@ void FixPlayer(Player player, int playerid)
         SetHumanPlayer(player);
     } else if (player->type == PlayerType_AI) {
         SetAIPlayer(player, playerid, AIPatternPowers_Default);
+        
     }
 }
 

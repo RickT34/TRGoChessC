@@ -96,8 +96,8 @@ extern ChessBoardNeighbor CBNEI;
 
 void ChessBoardInit();
 
-#ifdef DEBUG
 #define PointTo2C(point) ((point) >> POINTBITS) + 1, ((point)&KEYXMASK) + 'a' // exp: 5d
+#ifdef DEBUG
 #define printRow(chessboard, startpoint, step, len)                                                                                                                                 \
     printfD("Start From %d%c, step %d, length %d.\n    ", PointTo2C(startpoint), step, len) for (int _i = 0; _i < len; _i++) printf("%1d ", chessboard[startpoint + (_i) * (len)]); \
     printf("\n")

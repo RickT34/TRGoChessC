@@ -3,6 +3,7 @@
 #include "AIUtilities.h"
 #include "Action.h"
 #include <string.h>
+#include <assert.h>
 
 PowerMap NewPowerMap()
 {
@@ -145,8 +146,13 @@ void PrintNeighborMap(NeighborMap nbm)
     printf("\nPot: ");
 
     ChessPot pot = nbm->pot;
+    int count=0;
     for (Point p = pot->nxtnode[ChessPotHead]; p != ChessPotTail; p = pot->nxtnode[p]) {
         printf("%d%c, ", PointTo2C(p));
+        count+=1;
+        if(count>BLEN){
+            assert(0);
+        }
     }
     putchar('\n');
 }
