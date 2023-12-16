@@ -138,8 +138,12 @@ void Start(Game game)
 
 int main(int args, char** argv)
 {
+    GATest();
+    Input(buff, BUFFSIZE);
     ChessBoardInit();
     GameManagerInit();
+    
+    // TrainTestAI(AIPatternPowers_Default,AIPatternPowers_Default);
     // ChessPotTest();
     // NeighborMaptest();
     // PowerMaptest();
