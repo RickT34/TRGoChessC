@@ -15,6 +15,9 @@ void Input(char* buff, const int buffsize);
 int IntSave(int data, char* file);
 
 int IntLoad(int* data, char* file);
+
+typedef int Power;
+
 #define DEBUG
 
 #ifdef DEBUG

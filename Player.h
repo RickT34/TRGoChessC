@@ -3,8 +3,11 @@
 #include "Action.h"
 #include "Stack.h"
 #include "chessboard.h"
+#include "globals.h"
 
 typedef struct _player* Player;
+#define GameNextPlayerID(player) ((player) ^ 1)
+#define GamePrePlayerID(player) ((player) ^ 1)
 
 enum PlayerType {
     PlayerType_Human,

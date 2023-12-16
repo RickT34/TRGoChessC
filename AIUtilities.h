@@ -5,14 +5,15 @@
 #include "ChessPot.h"
 #include "Stack.h"
 #include "chessboard.h"
+#include "globals.h"
 
 #define POWERSLEN ((LLN * 3 - 1) * 2)
 #define SETPower(pm, point, d, power) pm->powerSum += power - *(pm->linePower)[point][d], *(pm->linePower)[point][d] = power
-typedef int Power;
 typedef struct {
     Power* linePower[BLEN][4];
     Power powers[POWERSLEN];
     Power powerSum;
+    char needflush;
 } * PowerMap;
 
 typedef struct {
@@ -27,11 +28,13 @@ typedef struct {
     NeighborMap neighborMap;
     Trie patterns;
     Power* patternPowers;
+    int playerid;
 } * AIData;
 void NeighborMaptest();
 void PowerMaptest();
 PowerMap NewPowerMap();
 void PrintPowerMap(PowerMap pm);
+void PowerMapFlush(AIData aidata, const ChessBoard cb, const int PatternLen);
 NeighborMap NewNeighborMap();
 void NeighborMapAddChess(NeighborMap nbm, Point p);
 void NeighborMapUndo(NeighborMap nbm, Point s);

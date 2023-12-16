@@ -29,13 +29,13 @@ void FreeTrie(Trie root){
 
 void TrieInsert(Trie root,const char* key,const int len,const int idx) //将字符串key放入字段树,idx>=0
 {
-    // #ifdef DEBUG
-    // printHead("key");
-    // for(int i=0;i<len;++i){
-    //     printf("%d",(int)(key[i]));
-    // }
-    // printf("\n");
-    // #endif
+    #ifdef DEBUG
+    printHead("Inserted : ");
+    for(int i=0;i<len;++i){
+        printf("%d",(int)(key[i]));
+    }
+    printf(" id=%d\n",idx);
+    #endif
     for (int i = 0; i < len; i++) {
         int k = key[i];
         if (root->next[k] == NULL) {
@@ -108,7 +108,7 @@ void TrieQuery(const char* strin,const int step,const int len,const Trie root, i
         //     temp = temp->fail;
         // }
         for (int j = 0; j < p->matchidsLen; ++j) {
-            ret[p->matchids[i]] += 1;
+            ret[p->matchids[j]] += 1;
         }
     }
 }

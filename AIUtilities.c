@@ -1,9 +1,8 @@
 
 
-#include "Action.h"
 #include "AIUtilities.h"
+#include "Action.h"
 #include <string.h>
-
 
 PowerMap NewPowerMap()
 {
@@ -22,6 +21,39 @@ PowerMap NewPowerMap()
         }
     }
     return re;
+}
+
+void PowerMapFlush(AIData aidata, const ChessBoard cb, const int PatternLen)
+{
+    PowerMap pm=aidata->powerMap;
+    memset(pm->powers, 0, sizeof(pm->powers));
+    pm->powerSum=0;
+    pm->needflush=0;
+
+    char computed[POWERSLEN];
+    memset(computed, 0, sizeof(computed));
+
+    int patn[PatternLen];
+    
+    for(int x=0;x<LLN;++x){
+        for(int y=0;y<LLN;++y){
+            Point p=GetPoint(x, y);
+            for (int d = 0; d < DireLen; ++d) {
+                int index = pm->linePower[p][d]-pm->powers;
+                if(computed[index])continue;
+                computed[index]=1;
+                memset(patn, 0, sizeof(patn));
+                TrieQuery(&GetChess(cb, CBINF[p].start[d]),
+                    DireSteps[d], CBINF[p].lens[d], aidata->patterns, patn);
+                Power ls = 0;
+                for (int k = 0; k < PatternLen; ++k) {
+                    ls += aidata->patternPowers[k] * aidata->patternPowers[k];
+                }
+                *(pm->linePower[p][d]) = ls;
+                pm->powerSum+=ls;
+            }
+        }
+    }
 }
 
 void PrintPowerMap(PowerMap pm)
@@ -53,7 +85,7 @@ void NeighborMapAddChess(NeighborMap nbm, Point p)
     ChessBoardNeighbor cbn = &CBNEI[p];
     ChessBoard cb = nbm->map;
     ChessPot pot = nbm->pot;
-    Point nxt = pot->nodes[ChessPotHead].nxt;
+    Point nxt = pot->nxtnode[ChessPotHead];
     StackPush(nbm->history, (void*)nxt);
     for (int i = 0; i < cbn->len; ++i) {
         Point p = cbn->neighbors[i];
@@ -113,7 +145,7 @@ void PrintNeighborMap(NeighborMap nbm)
     printf("\nPot: ");
 
     ChessPot pot = nbm->pot;
-    for (Point p = pot->nodes[ChessPotHead].nxt; p != ChessPotTail; p = pot->nodes[p].nxt) {
+    for (Point p = pot->nxtnode[ChessPotHead]; p != ChessPotTail; p = pot->nxtnode[p]) {
         printf("%d%c, ", PointTo2C(p));
     }
     putchar('\n');

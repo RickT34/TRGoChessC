@@ -99,7 +99,6 @@ char buff[4096];
 void Start(Game game)
 {
     int ret;
-    
     do {
         MakeUI(game);
         if (IsGameStopped(game)) {
@@ -131,23 +130,7 @@ void Start(Game game)
     } while (1);
     
 }
-//tests
-#include "ChessPot.h"
-void ChessPotTest()
-{
-    ChessPot pot = NewChessPot();
-    int p;
-    while(1){
-        scanf("%d",&p);
-        if(p>0)
-            ChessPotAdd(pot, p);
-        else ChessPotRemove(pot, -p);
-        for(Point p=pot->nodes[ChessPotHead].nxt;p!=ChessPotTail;p=pot->nodes[p].nxt){
-            printf("%d, ",p);
-        }
-        putchar('\n');
-    }
-}
+
 
 
 int main(int args, char** argv)
@@ -157,7 +140,7 @@ int main(int args, char** argv)
     // ChessPotTest();
     // NeighborMaptest();
     // PowerMaptest();
-    Player p1 = NewHumanPlayer("P1"), p2 = NewHumanPlayer("P2");
+    Player p1 = NewHumanPlayer("P1"), p2 = NewAIPlayer("AI", 1, AIPatternPowers_Default);
     Game game = NewGame(p1, p2);
     Start(game);
     return 0;

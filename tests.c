@@ -129,3 +129,20 @@ void ACAutomatontest()
 //         }
 //     }
 // }
+// #include "ChessPot.h"
+// void ChessPotTest()
+// {
+//     ChessPot pot = NewChessPot();
+//     int p;
+//     while (1) {
+//         scanf("%d", &p);
+//         if (p > 0)
+//             ChessPotAdd(pot, p);
+//         else
+//             ChessPotRemove(pot, -p);
+//         for (Point p = pot->nodes[ChessPotHead].nxt; p != ChessPotTail; p = pot->nodes[p].nxt) {
+//             printf("%d, ", p);
+//         }
+//         putchar('\n');
+//     }
+// }

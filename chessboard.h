@@ -5,10 +5,11 @@
 typedef char ChessType;
 const extern ChessType PlayerChessTypes[2];
 #define LLN 15
-#define FULL (ChessType)3
-#define PlayerW (ChessType)1 // 01 O
-#define PlayerB (ChessType)2 // 10 #
-#define BLANK (ChessType)0
+#define FULL ((ChessType)3)
+#define PlayerW ((ChessType)1) // 01 O
+#define PlayerB ((ChessType)2) // 10 #
+#define PlayerOther(chesstype) ((chesstype)^FULL)
+#define BLANK ((ChessType)0)
 #define BIT 2
 
 #define POINTBITS 4

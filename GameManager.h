@@ -22,8 +22,6 @@ typedef struct {
     int nowPlayerID;
     GameStatus status;
 } * Game;
-#define GameNextPlayerID(player) ((player) ^ 1)
-#define GamePrePlayerID(player) ((player) ^ 1)
 Player GameGetNextPlayer(Game game);
 Player GameGetNowPlayer(Game game);
 Game NewGame(Player player1, Player player2);
@@ -36,7 +34,8 @@ int GameUndo(Game game);
 int GameSave(Game game, char* file);
 int GameLoad(Game* data, char* file);
 
-
+#define GameGetNextPlayer(game) (game->players[GameNextPlayerID(game->nowPlayerID)])
+#define GameGetNowPlayer(game) (game->players[game->nowPlayerID])
 typedef struct{
     Action_Raw data[BLEN];
     int datalen;

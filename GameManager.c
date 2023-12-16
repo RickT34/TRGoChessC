@@ -5,8 +5,6 @@
 
 #define StartPlayerid GamePrePlayerID(0)
 
-
-
 const char winPatterns[2][5] = { { PlayerB, PlayerB, PlayerB, PlayerB, PlayerB },
     { PlayerW, PlayerW, PlayerW, PlayerW, PlayerW } };
 
@@ -29,21 +27,11 @@ Game NewGame(Player player1, Player player2)
     Game re = malloc(sizeof(*re));
     re->chessboard = NewChessBoard();
     re->history = NewStack(BLEN);
-    re->nowPlayerID = 0;
+    re->nowPlayerID = StartPlayerid;
     re->players[0] = player1;
     re->players[1] = player2;
     re->status = GameStatus_Begin;
     return re;
-}
-
-Player GameGetNextPlayer(Game game)
-{
-    return game->players[GameNextPlayerID(game->nowPlayerID)];
-}
-
-Player GameGetNowPlayer(Game game)
-{
-    return game->players[game->nowPlayerID];
 }
 
 void FreeGame(Game game)
@@ -56,15 +44,13 @@ void FreeGame(Game game)
     free(game);
 }
 
-
-
 int GameNextTurn(Game game)
 {
     if (IsGameStopped(game))
         return 2;
     game->status = GameStatus_Gaming;
     game->nowPlayerID = GameNextPlayerID(game->nowPlayerID);
-    Player player = game->players[game->nowPlayerID];
+    Player player = GameGetNowPlayer(game);
     Point act = player->Go(player, game->chessboard, game->history);
     assert(GetChess(game->chessboard, act) == BLANK);
     SetChess(game->chessboard, act, PlayerChessTypes[game->nowPlayerID]);
@@ -96,28 +82,29 @@ int GameUndo(Game game)
         game->status = GameStatus_Begin;
     } else {
         game->nowPlayerID = ((Action)StackTop(game->history))->playerid;
-        game->status=GameStatus_Gaming;
+        game->status = GameStatus_Gaming;
     }
     SetChess(game->chessboard, act->point, BLANK);
     free(act);
     return 0;
 }
 
-int PauseGame(Game game){
-    if(game->status&GameStatus_Pause)return 1;
-    game->status|=GameStatus_Pause;
+int PauseGame(Game game)
+{
+    if (game->status & GameStatus_Pause)
+        return 1;
+    game->status |= GameStatus_Pause;
     return 0;
 }
 
-int ContinueGame(Game game){
-    if(game->status&GameStatus_Pause){
-        game->status^=GameStatus_Pause;
+int ContinueGame(Game game)
+{
+    if (game->status & GameStatus_Pause) {
+        game->status ^= GameStatus_Pause;
         return 0;
     }
     return 1;
 }
-
-
 
 int GameSave(Game game, char* file)
 {
@@ -134,12 +121,12 @@ int GameSave(Game game, char* file)
     return i;
 }
 
-void FixPlayer(Player player)
+void FixPlayer(Player player, int playerid)
 {
-    if (player->type == 0) {
+    if (player->type == PlayerType_Human) {
         SetHumanPlayer(player);
-    } else if (player->type == 1) {
-        SetAIPlayer(player);
+    } else if (player->type == PlayerType_AI) {
+        SetAIPlayer(player, playerid, AIPatternPowers_Default);
     }
 }
 
@@ -154,13 +141,13 @@ int GameLoad(Game* data, char* file)
     for (int j = 0; j < count; ++j) {
         i += ActionLoad((Action*)&re->history->Items[j], file + i);
     }
-    re->history->Count=count;
+    re->history->Count = count;
     re->nowPlayerID = 0;
     Player player1, player2;
     i += PlayerLoad(&player1, file + i);
     i += PlayerLoad(&player2, file + i);
-    FixPlayer(player1);
-    FixPlayer(player2);
+    FixPlayer(player1, 0);
+    FixPlayer(player2, 1);
     re->players[0] = player1;
     re->players[1] = player2;
     i += IntLoad(&re->nowPlayerID, file + i);
@@ -169,42 +156,48 @@ int GameLoad(Game* data, char* file)
     return i;
 }
 
-GameRecord NewGameRecord(const Game game){
-    GameRecord re=malloc(sizeof(*re));
-    for(int i=0;i<game->history->Count;++i){
-        re->data[i]=*(Action)game->history->Items[i];
+GameRecord NewGameRecord(const Game game)
+{
+    GameRecord re = malloc(sizeof(*re));
+    for (int i = 0; i < game->history->Count; ++i) {
+        re->data[i] = *(Action)game->history->Items[i];
     }
-    re->datalen=game->history->Count;
+    re->datalen = game->history->Count;
     return re;
 }
 
-void FreeGameRecord(GameRecord gr){
+void FreeGameRecord(GameRecord gr)
+{
     free(gr);
 }
 
-int GameRecordSave(const GameRecord gr, char* file){
-    int i=0;
-    i+=IntSave(gr->datalen, file+i);
-    for(int j=0;j<gr->datalen;++j){
-        i+=ActionSave(&gr->data[j], file+i);
+int GameRecordSave(const GameRecord gr, char* file)
+{
+    int i = 0;
+    i += IntSave(gr->datalen, file + i);
+    for (int j = 0; j < gr->datalen; ++j) {
+        i += ActionSave(&gr->data[j], file + i);
     }
     return i;
 }
 
-int GameRecordLoad(GameRecord* gr,char* file){
-    *gr=malloc(sizeof(**gr));
-    int i=0;
-    i+=IntLoad(&(*gr)->datalen, file+i);
-    for(int j=0;j<(*gr)->datalen;++j){
-        i+=ActionRawLoad(&(*gr)->data[j], file+i);
+int GameRecordLoad(GameRecord* gr, char* file)
+{
+    *gr = malloc(sizeof(**gr));
+    int i = 0;
+    i += IntLoad(&(*gr)->datalen, file + i);
+    for (int j = 0; j < (*gr)->datalen; ++j) {
+        i += ActionRawLoad(&(*gr)->data[j], file + i);
     }
     return i;
 }
 
-ChessBoard GameRecordRead(const GameRecord gr,const int flame){
-    if(flame>=gr->datalen||flame<-1)return NULL;
-    ChessBoard re=NewChessBoard();
-    for(int i=0;i<=flame;++i){
+ChessBoard GameRecordRead(const GameRecord gr, const int flame)
+{
+    if (flame >= gr->datalen || flame < -1)
+        return NULL;
+    ChessBoard re = NewChessBoard();
+    for (int i = 0; i <= flame; ++i) {
         SetChess(re, gr->data[i].point, PlayerChessTypes[gr->data[i].playerid]);
     }
     return re;
