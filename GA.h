@@ -2,13 +2,17 @@
 #define _GAH
 
 typedef float GAScore;
-typedef float GAGene;
+typedef struct{
+    float x;
+    float y;
+} *GAGene;
 
 typedef struct
 {
     double ProbabilityOfVariation;
     double ProbabilityOfHybrid;
-    GAScore (*GetFitness)(const GAGene ind, const GAGene *allind, const int count);
+    GAScore (*GetOneFitness)(const GAGene ind);
+    GAScore* (*GetAllFitness)(const GAGene* allind, const int count);
     GAGene (*GetClone)(const GAGene ind);
     GAGene (*GetVariation)(const GAGene ind);
     GAGene (*GetHybrid)(const GAGene ind1, const GAGene ind2);
@@ -21,6 +25,7 @@ typedef struct
     GAConfig Config;
     GAGene *StartGene;
     int GeneCount;
+    int ElitismCount;
 } *GAInitData;
 
 GAGene GARun(GAInitData init, int display);
