@@ -38,7 +38,7 @@ void PowerMapFlush(AIData aidata, const ChessBoard cb, const int PatternLen)
     char computed[POWERSLEN];
     memset(computed, 0, sizeof(computed));
 
-    int patn[PatternLen];
+    int* patn=NewArray(int,PatternLen);
     
     for(int x=0;x<LLN;++x){
         for(int y=0;y<LLN;++y){
@@ -47,18 +47,20 @@ void PowerMapFlush(AIData aidata, const ChessBoard cb, const int PatternLen)
                 int index = pm->linePower[p][d]-pm->powers;
                 if(computed[index])continue;
                 computed[index]=1;
-                memset(patn, 0, sizeof(patn));
+                memset(patn, 0, sizeof(int)*PatternLen);
                 TrieQuery(&GetChess(cb, CBINF[p].start[d]),
                     DireSteps[d], CBINF[p].lens[d], aidata->patterns, patn);
                 Power ls = 0;
                 for (int k = 0; k < PatternLen; ++k) {
-                    ls += aidata->patternPowers[k] * patn[k];
+                    int n=patn[k];
+                    ls += aidata->patternPowers[k] * n;
                 }
                 *(pm->linePower[p][d]) = ls;
                 pm->powerSum+=ls;
             }
         }
     }
+    free(patn);
 }
 
 void PrintPowerMap(PowerMap pm)

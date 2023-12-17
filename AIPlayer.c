@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define Power_MAX (1e38)
-#define Power_WinScale (1e10)
+#define Power_WinScale (1e30)
 #define PatternLen (AIPatternLen * 2)
 
 const char* AIPatterns_Default[]={
@@ -63,18 +63,55 @@ const Power AIPatternPowers_Default[] = {
     1e10
 };
 
+const Power AIPatternPowers_G1[] = {
+    1.136995, 
+    1.395791, 
+    2.007843, 
+    3.696051, 
+    
+    15.709146, 
+    29.853954, 
+    20.147108, 
+    35.372406, 
+    
+    18.023699, 
+    18.129887, 
+    46.386669, 
+    5562150912.000000, 
+    
+    8561517568.000000};
+
+const Power AIPatternPowers_G2[] = {
+    0.911813, 0.849031, 2.387849, 3.271874, 18.597622, 30.074402, 25.624138, 15.309941, 10.785802, 11.181133, 34.819901, 3093752320.000000, 9901030400.000000};
+
+const Power AIPatternPowers_G3[] = {
+    1.188467, 0.714291, 2.579952, 2.907088, 14.939983, 26.953911, 25.564358, 12.080390, 8.308379, 14.380687, 30.184227, 3239552256.000000, 7264291840.000000};
+
+const Power AIPatternPowers_G4[] = {1.133725, 0.685558, 2.443594, 3.623527, 11.416673, 25.001036, 34.143860, 8.555811, 7.024811, 13.002838, 30.334917, 3395127296.000000, 8381179392.000000
+};
+
+const Power AIPatternPowers_G5[] = {
+    0.500172, 1.444892, 1.853331, 5.533819, 6.897872, 31.466316, 32.064472, 13.453710, 5.960551, 11.186614, 31.642395, 3201211136.000000, 8046429696.000000};
+
+const Power AIPatternPowers_G6[] = {
+    0.539338, 1.422554, 1.965024, 5.734164, 6.579944, 24.243271, 30.586210, 12.338979, 6.592598, 10.719052, 41.690468, 2897968896.000000, 7331763200.000000} ;
+
+const Power AIPatternPowers_G7[] = {
+    0.622565, 0.976759, 2.097358, 3.859794, 11.696328, 19.924452, 13.041954, 9.517824, 4.983074, 12.383042, 19.840626, 3169053184.000000, 9368916992.000000};
 Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
 {
     int patn[PatternLen];
     PowerMap pm = aidata->powerMap;
     Power powersum = pm->powerSum;
-    for (int d = 0; d < DireLen; ++d) {
+    for (int d = 0; d < DireLen; ++d)
+    {
         memset(patn, 0, sizeof(patn));
         TrieQuery(&GetChess(cb, CBINF[p].start[d]),
-            DireSteps[d], CBINF[p].lens[d], aidata->patterns, patn);
+                  DireSteps[d], CBINF[p].lens[d], aidata->patterns, patn);
         powersum -= *(pm->linePower[p][d]);
         Power ls = 0;
-        for (int k = 0; k < PatternLen; ++k) {
+        for (int k = 0; k < PatternLen; ++k)
+        {
             ls += aidata->patternPowers[k] * patn[k];
         }
         *(pm->linePower[p][d]) = ls;
@@ -185,8 +222,10 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)
     else{
         UpdatePowerPoint(lastpoint, data, ct);
     }
-    // PrintNeighborMap(data->neighborMap);
-    // PrintPowerMap(data->powerMap);
+#ifdef DEBUG
+    PrintNeighborMap(data->neighborMap);
+    PrintPowerMap(data->powerMap);
+#endif
     ChessBoard cb = CloneChessBoard(ct);
     Power rate;
     Point re = Minimax(data, cb, data->playerid,0, &rate, Power_MAX, AIDepth);

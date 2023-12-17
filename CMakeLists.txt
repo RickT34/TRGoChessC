@@ -5,7 +5,9 @@ include(CTest)
 enable_testing()
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/Inc)
-set(CMAKE_C_FLAGS "-fsanitize=undefined,address,leak -fno-omit-frame-pointer")
+
+# set(CMAKE_C_FLAGS "-fsanitize=undefined,address,leak -fno-omit-frame-pointer")
+set(CMAKE_C_FLAGS "-fopenmp")
 
 include_directories(${INCLUDE_DIR} ${PROJECT_SOURCE_DIR})
 

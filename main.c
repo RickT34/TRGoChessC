@@ -150,8 +150,8 @@ int main(int args, char** argv)
     // ChessPotTest();
     // NeighborMaptest();
     // PowerMaptest();
-    // Player p1 = NewHumanPlayer("P1"), p2 = NewAIPlayer("AI", 1, AIPatternPowers_Default);
-    // Game game = NewGame(p1, p2);
-    // Start(game);
+    Player p1 = NewHumanPlayer("P1"), p2 = NewAIPlayer("AI", 0, AIPatternPowers_G6);
+    Game game = NewGame(p2, p1);
+    Start(game);
     return 0;
 }
