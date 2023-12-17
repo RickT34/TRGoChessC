@@ -145,6 +145,7 @@ ChessBoardNeighbor NewChessBoardNeighbor()
             const int lb = Max(0, x - NEIGHBORRANGE), rb = Min(LLN - 1, x + NEIGHBORRANGE),
                 bb = Min(LLN - 1, y + NEIGHBORRANGE), tb = Max(0, y - NEIGHBORRANGE);
             Point p = GetPoint(x, y), t;
+            re[p].len=0;
             for (i = tb; i <= bb; i++) {
                 if (i == y)
                     continue;

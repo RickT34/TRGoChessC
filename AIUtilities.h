@@ -33,9 +33,11 @@ typedef struct {
 void NeighborMaptest();
 void PowerMaptest();
 PowerMap NewPowerMap();
+void FreePowerMap(PowerMap pm);
 void PrintPowerMap(PowerMap pm);
 void PowerMapFlush(AIData aidata, const ChessBoard cb, const int PatternLen);
 NeighborMap NewNeighborMap();
+void FreeNeighborMap(NeighborMap nbm);
 void NeighborMapAddChess(NeighborMap nbm, Point p);
 void NeighborMapUndo(NeighborMap nbm, Point s);
 void NeighborMapFlush(NeighborMap nbm, const Stack actionHistory);

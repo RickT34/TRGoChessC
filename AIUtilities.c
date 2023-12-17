@@ -24,6 +24,10 @@ PowerMap NewPowerMap()
     return re;
 }
 
+void FreePowerMap(PowerMap pm){
+    free(pm);
+}
+
 void PowerMapFlush(AIData aidata, const ChessBoard cb, const int PatternLen)
 {
     PowerMap pm=aidata->powerMap;
@@ -48,7 +52,7 @@ void PowerMapFlush(AIData aidata, const ChessBoard cb, const int PatternLen)
                     DireSteps[d], CBINF[p].lens[d], aidata->patterns, patn);
                 Power ls = 0;
                 for (int k = 0; k < PatternLen; ++k) {
-                    ls += aidata->patternPowers[k] * aidata->patternPowers[k];
+                    ls += aidata->patternPowers[k] * patn[k];
                 }
                 *(pm->linePower[p][d]) = ls;
                 pm->powerSum+=ls;
@@ -63,12 +67,12 @@ void PrintPowerMap(PowerMap pm)
         printf("%c:\n", DireNames[d]);
         for (int x = 0; x < LLN; ++x) {
             for (int y = 0; y < LLN; ++y) {
-                printf("%d ", *(pm->linePower)[GetPoint(y, x)][d]);
+                printf("%f ", *(pm->linePower)[GetPoint(y, x)][d]);
             }
             putchar('\n');
         }
     }
-    printf("Sum: %d\n", pm->powerSum);
+    printf("Sum: %f\n", pm->powerSum);
 }
 
 NeighborMap NewNeighborMap()
@@ -79,6 +83,12 @@ NeighborMap NewNeighborMap()
     re->history = NewStack(BLEN);
     re->needflush = 0;
     return re;
+}
+
+void FreeNeighborMap(NeighborMap nbm){
+    FreeChessPot(nbm->pot);
+    FreeStack(nbm->history);
+    free(nbm);
 }
 
 void NeighborMapAddChess(NeighborMap nbm, Point p)

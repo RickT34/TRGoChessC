@@ -17,15 +17,15 @@ int IntSave(int data, char* file);
 int IntLoad(int* data, char* file);
 void PrintTree(int dep, int num);
 
-typedef int Power;
+typedef float Power;
 
-#define DEBUG
+// #define DEBUG
 
-#ifdef DEBUG
+#define NewArray(an, count) (malloc(sizeof(an) * count))
+
 #define printHead(s) printf("> %s: " s ": ", __FUNCTION__)
 #define printfD(fmt, ...) printf("> %s: " fmt, __FUNCTION__, ##__VA_ARGS__)
 #define printBits(num) printfD("%32b", num)
 
-#endif
 
 #endif

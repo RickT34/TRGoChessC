@@ -17,10 +17,10 @@ void FreeStack(Stack stack)
     free(stack);
 }
 
-void PrintStack(Stack stack)
-{
-    for (int i = 0; i < stack->Count; ++i) {
-        printf("%d ", stack->Items[i]);
-    }
-    printf("\n");
-}
+// void PrintStack(Stack stack)
+// {
+//     for (int i = 0; i < stack->Count; ++i) {
+//         printf("%d ", stack->Items[i]);
+//     }
+//     printf("\n");
+// }

@@ -131,62 +131,62 @@ GAGene GARun(GAInitData init, int display)
     return re;
 }
 
-GAScore fitnesstest(const GAGene ind)
-{
-    return -(ind->x * ind->x + ind->y * ind->y - 2 * ind->x-5*ind->y);
-}
+// GAScore fitnesstest(const GAGene ind)
+// {
+//     return -(ind->x * ind->x + ind->y * ind->y - 2 * ind->x-5*ind->y);
+// }
 
-GAGene GetClonetest(const GAGene ind)
-{
-    GAGene re = malloc(sizeof(*re));
-    re->x = ind->x;
-    re->y = ind->y;
-    return re;
-}
-GAGene GetVariationtest(const GAGene ind)
-{
-    GAGene re = GetClonetest(ind);
-    re->x += ((double)rand() / RAND_MAX - 0.5) * 2;
-    re->y += ((double)rand() / RAND_MAX - 0.5) * 2;
-    return re;
-}
-GAGene GetHybridtest(const GAGene ind1, const GAGene ind2)
-{
-    double p = (double)rand() / RAND_MAX;
-    GAGene re = malloc(sizeof(*re));
-    re->x = ind1->x * p + ind2->x * (1 - p);
-    re->y = ind1->y * p + ind2->y * (1 - p);
-    return re;
-}
-void DeleteGenetest(GAGene ind) { free(ind); }
+// GAGene GetClonetest(const GAGene ind)
+// {
+//     GAGene re = malloc(sizeof(*re));
+//     re->x = ind->x;
+//     re->y = ind->y;
+//     return re;
+// }
+// GAGene GetVariationtest(const GAGene ind)
+// {
+//     GAGene re = GetClonetest(ind);
+//     re->x += ((double)rand() / RAND_MAX - 0.5) * 2;
+//     re->y += ((double)rand() / RAND_MAX - 0.5) * 2;
+//     return re;
+// }
+// GAGene GetHybridtest(const GAGene ind1, const GAGene ind2)
+// {
+//     double p = (double)rand() / RAND_MAX;
+//     GAGene re = malloc(sizeof(*re));
+//     re->x = ind1->x * p + ind2->x * (1 - p);
+//     re->y = ind1->y * p + ind2->y * (1 - p);
+//     return re;
+// }
+// void DeleteGenetest(GAGene ind) { free(ind); }
 
-void GATest()
-{
-    GAConfig config = malloc(sizeof(*config));
-    config->ProbabilityOfHybrid = 0.25;
-    config->ProbabilityOfVariation = 0.01;
-    config->GetClone = GetClonetest;
-    config->GetOneFitness = fitnesstest;
-    config->GetAllFitness = NULL;
-    config->GetVariation = GetVariationtest;
-    config->GetHybrid = GetHybridtest;
-    config->DeleteGene = DeleteGenetest;
-    GAInitData init = malloc(sizeof(*init));
-    init->MAXGenerations = 1000;
-    init->Config = config;
-    init->ElitismCount = 2;
-    int count = 20;
-    GAGene starts[20];
-    for (int i = 0; i < count; ++i) {
-        GAGene re = malloc(sizeof(*re));
-        re->x = rand() * 10.0 / RAND_MAX;
-        re->y = rand() * 10.0 / RAND_MAX;
-        starts[i] = re;
-    }
-    init->StartGene = starts;
-    init->GeneCount = count;
-    GAGene re = GARun(init, 1);
-    printf("Result: %f,%f\n", re->x, re->y);
-    free(config);
-    free(init);
-}
+// void GATest()
+// {
+//     GAConfig config = malloc(sizeof(*config));
+//     config->ProbabilityOfHybrid = 0.25;
+//     config->ProbabilityOfVariation = 0.01;
+//     config->GetClone = GetClonetest;
+//     config->GetOneFitness = fitnesstest;
+//     config->GetAllFitness = NULL;
+//     config->GetVariation = GetVariationtest;
+//     config->GetHybrid = GetHybridtest;
+//     config->DeleteGene = DeleteGenetest;
+//     GAInitData init = malloc(sizeof(*init));
+//     init->MAXGenerations = 1000;
+//     init->Config = config;
+//     init->ElitismCount = 2;
+//     int count = 20;
+//     GAGene starts[20];
+//     for (int i = 0; i < count; ++i) {
+//         GAGene re = malloc(sizeof(*re));
+//         re->x = rand() * 10.0 / RAND_MAX;
+//         re->y = rand() * 10.0 / RAND_MAX;
+//         starts[i] = re;
+//     }
+//     init->StartGene = starts;
+//     init->GeneCount = count;
+//     GAGene re = GARun(init, 1);
+//     printf("Result: %f,%f\n", re->x, re->y);
+//     free(config);
+//     free(init);
+// }

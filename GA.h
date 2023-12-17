@@ -2,10 +2,7 @@
 #define _GAH
 
 typedef float GAScore;
-typedef struct{
-    float x;
-    float y;
-} *GAGene;
+typedef void * GAGene;
 
 typedef struct
 {

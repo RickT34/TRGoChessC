@@ -66,6 +66,11 @@ int GameNextTurn(Game game)
             return 1;
         }
     }
+    if(game->history->Count==LLN*LLN){
+        game->nowPlayerID=1;
+        game->status=GameStatus_End;
+        return 1;
+    }
     return 0;
 }
 

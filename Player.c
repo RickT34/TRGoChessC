@@ -14,6 +14,11 @@ Player NewPlayer(char type,const char* name, int namelen)
     return re;
 }
 
+void FreePlayer(Player player){
+    free(player->name);
+    free(player);
+}
+
 int PlayerSave(Player player, char* file)
 {
     int l = strlen(player->name);

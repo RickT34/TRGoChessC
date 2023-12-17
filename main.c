@@ -138,17 +138,20 @@ void Start(Game game)
 
 int main(int args, char** argv)
 {
-    GATest();
-    Input(buff, BUFFSIZE);
+    // GATest();
     ChessBoardInit();
     GameManagerInit();
+    AIInit();
+    TrainRun();
+    Input(buff, BUFFSIZE);
+    
     
     // TrainTestAI(AIPatternPowers_Default,AIPatternPowers_Default);
     // ChessPotTest();
     // NeighborMaptest();
     // PowerMaptest();
-    Player p1 = NewHumanPlayer("P1"), p2 = NewAIPlayer("AI", 1, AIPatternPowers_Default);
-    Game game = NewGame(p1, p2);
-    Start(game);
+    // Player p1 = NewHumanPlayer("P1"), p2 = NewAIPlayer("AI", 1, AIPatternPowers_Default);
+    // Game game = NewGame(p1, p2);
+    // Start(game);
     return 0;
 }

@@ -14,6 +14,6 @@ typedef struct _stack {
 
 Stack NewStack(int capability);
 void FreeStack(Stack stack);
-void PrintStack(Stack stack);
+// void PrintStack(Stack stack);
 
 #endif

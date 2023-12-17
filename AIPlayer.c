@@ -3,8 +3,8 @@
 #include <assert.h>
 #include <string.h>
 
-#define Power_MAX (2147483647)
-#define Power_WinScale (1<<20)
+#define Power_MAX (1e38)
+#define Power_WinScale (1e10)
 #define PatternLen (AIPatternLen * 2)
 
 const char* AIPatterns_Default[]={
@@ -25,24 +25,25 @@ const char* AIPatterns_Default[]={
 
     "11111"
 };
-// const Power AIPatternPowers_Default[]={
-//     0,
-//     0,
-//     0,
-//     0,
+Trie AIPatterns[2];
+const Power AIPatternPowers_Naive[]={
+    0,
+    0,
+    0,
+    0,
 
-//     0,
-//     0,
-//     0,
-//     0,
+    0,
+    0,
+    0,
+    0,
 
-//     0,
-//     0,
-//     0,
-//     1<<20,
+    0,
+    0,
+    0,
+    1<<20,
 
-//     1<<20
-// };
+    1<<20
+};
 const Power AIPatternPowers_Default[] = {
     1,
     1,
@@ -57,9 +58,9 @@ const Power AIPatternPowers_Default[] = {
     14,
     28,
     32,
-    1 << 20,
+    1e10,
 
-    1 << 20
+    1e10
 };
 
 Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
@@ -101,7 +102,7 @@ Power ComputePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
     return powersum;
 }
 
-Point Minimax(const AIData aidata, ChessBoard cb, const int player,const int sgn, Power* rate, const Power maxpower, const int dep)
+Point Minimax(const AIData aidata, ChessBoard cb, const char player, const char sgn, Power* rate, const Power maxpower, const char dep)
 {
     NeighborMap nbm = aidata->neighborMap;
     ChessPot pot = nbm->pot;
@@ -115,7 +116,8 @@ Point Minimax(const AIData aidata, ChessBoard cb, const int player,const int sgn
         // PrintChessBoard(cb, ChessBoardStyle_Classic);
         if (dep == 0) {
             /*            Compute Power             */
-            ret = ComputePowerPoint(p, aidata, cb)*sgn;
+            ret = ComputePowerPoint(p, aidata, cb);
+            if(sgn)ret=-ret;
         } else {
             /*             DFS                 */
             // Push
@@ -125,12 +127,14 @@ Point Minimax(const AIData aidata, ChessBoard cb, const int player,const int sgn
             for (int d = 0; d < DireLen; ++d)
                 linep[d] = *(pm->linePower[p][d]);
             //End Push
-            Power power = UpdatePowerPoint(p, aidata, cb)*sgn;
+            Power power = UpdatePowerPoint(p, aidata, cb);
+            if (sgn)
+                power = -power;
             if(power>=Power_WinScale){
                 ret=power;
             }
             else{
-                if (Minimax(aidata, cb, GameNextPlayerID(player), -sgn, &ret,
+                if (Minimax(aidata, cb, GameNextPlayerID(player),sgn^1, &ret,
                         re == PointNULL ? Power_MAX : -maxn, dep - 1)
                     != PointNULL) {
                     ret = -ret;
@@ -166,6 +170,9 @@ Point Minimax(const AIData aidata, ChessBoard cb, const int player,const int sgn
 
 Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)
 {
+    if (actionHistory->Count == 0) {
+        return GetPoint(7, 7);
+    }
     AIData data = (AIData)player->data;
     Point lastpoint = ((Action)StackTop(actionHistory))->point;
     if (data->neighborMap->needflush)
@@ -174,7 +181,7 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)
         NeighborMapAddChess(data->neighborMap, lastpoint);
     }
     if (data->powerMap->needflush)
-        PowerMapFlush(data,ct,PatternLen);
+        PowerMapFlush(data, ct, PatternLen);
     else{
         UpdatePowerPoint(lastpoint, data, ct);
     }
@@ -182,7 +189,7 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)
     // PrintPowerMap(data->powerMap);
     ChessBoard cb = CloneChessBoard(ct);
     Power rate;
-    Point re = Minimax(data, cb, data->playerid,1, &rate, Power_MAX, AIDepth);
+    Point re = Minimax(data, cb, data->playerid,0, &rate, Power_MAX, AIDepth);
     assert(re!=PointNULL);
     SetChess(cb, re, PlayerChessTypes[data->playerid]);
     UpdatePowerPoint(re, data, cb);
@@ -212,49 +219,73 @@ int IsParadistr(const char* s, int l){
     return 1;
 }
 
+void AIInit(){
+    static char inited=0;
+    if(inited)return;
+    inited=1;
+    for(int playerid=0;playerid<2;++playerid){
+        AIPatterns[playerid] = NewTrie();
+        char buff1[20], buff2[20];
+        int pati = 0;
+        for (int i = 0, id = playerid; i < 2; ++i, id = GameNextPlayerID(id)) {
+            for (int j = 0; j < AIPatternLen; ++j) {
+                int l = strlen(AIPatterns_Default[j]);
+                for (int k = 0; k < l; ++k) {
+                    switch (AIPatterns_Default[j][k]) {
+                    case '1':
+                        buff1[k] = PlayerChessTypes[id];
+                        break;
+                    case '2':
+                        buff1[k] = PlayerChessTypes[GameNextPlayerID(id)];
+                        break;
+                    case '0':
+                        buff1[k] = BLANK;
+                        break;
+                    default:
+                        assert(0);
+                        break;
+                    }
+                    buff2[l - 1 - k] = buff1[k];
+                }
+                buff1[l] = buff2[l] = 0;
+                if (strcmp(buff1, buff2)) {
+                    TrieInsert(AIPatterns[playerid], buff2, l, pati);
+                }
+                TrieInsert(AIPatterns[playerid], buff1, l, pati);
+                ++pati;
+            }
+        }
+        assert(pati == PatternLen);
+        TrieCompile(AIPatterns[playerid]);
+    }
+}
+
 AIData NewAIData(const int playerid,  const Power* powers)
 {
     AIData re = malloc(sizeof(*re));
     re->powerMap = NewPowerMap();
     re->neighborMap = NewNeighborMap();
-    re->patterns = NewTrie();
     re->playerid = playerid;
     // TODO
     re->patternPowers = malloc(sizeof(Power) * PatternLen);
+    re->patterns=AIPatterns[playerid];
     char buff1[20],buff2[20];
     int pati = 0;
     for (int i = 0, id = playerid; i < 2; ++i, id = GameNextPlayerID(id)) {
         for (int j = 0; j < AIPatternLen; ++j) {
-            int l = strlen(AIPatterns_Default[j]);
-            for (int k = 0; k < l; ++k) {
-                switch (AIPatterns_Default[j][k]) {
-                case '1':
-                    buff1[k] = PlayerChessTypes[id];
-                    break;
-                case '2':
-                    buff1[k] = PlayerChessTypes[GameNextPlayerID(id)];
-                    break;
-                case '0':
-                    buff1[k] = BLANK;
-                    break;
-                default:
-                    assert(0);
-                    break;
-                }
-                buff2[l-1-k]=buff1[k];
-            }
-            buff1[l]=buff2[l]=0;
-            if(strcmp(buff1, buff2)){
-                TrieInsert(re->patterns, buff2, l, pati);
-            }
-            TrieInsert(re->patterns, buff1, l, pati);
             re->patternPowers[pati] = (id == playerid ? powers[j]*AIAttackScale : -powers[j]*AIDefendScale);
             ++pati;
         }
     }
-    assert(pati == PatternLen);
-    TrieCompile(re->patterns);
     return re;
+}
+void FreeAIPlayer(Player player){
+    AIData data=(AIData)player->data;
+    free(data->patternPowers);
+    FreePowerMap(data->powerMap);
+    FreeNeighborMap(data->neighborMap);
+    free(data);
+    FreePlayer(player);
 }
 // patterns: 1 for chess, 2 for op, 0 for blank
 Player NewAIPlayer(const char* name, const int playerid, const Power* powers)

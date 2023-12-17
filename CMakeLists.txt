@@ -4,8 +4,8 @@ project(TRGoChessC VERSION 0.1.0 LANGUAGES C)
 include(CTest)
 enable_testing()
 set(CMAKE_C_FLAGS_RELEASE "-O3")
-set(CMAKE_C_FLAGS_RELEASE "-O3")
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/Inc)
+set(CMAKE_C_FLAGS "-fsanitize=undefined,address,leak -fno-omit-frame-pointer")
 
 include_directories(${INCLUDE_DIR} ${PROJECT_SOURCE_DIR})
 
