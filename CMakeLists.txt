@@ -11,7 +11,7 @@ set(CMAKE_C_FLAGS "-fopenmp")
 
 include_directories(${INCLUDE_DIR} ${PROJECT_SOURCE_DIR})
 
-add_executable(TRGoChessC main.c chessboard.c chessmanual.c surroundmap.c LinkedList.c Stack.c Queue.c ACAutomaton.c globals.c GameManager.c Player.c HumanPlayer.c AIPlayer.c ChessPot.c Action.c AIUtilities.c Train.c GA.c)
+add_executable(TRGoChessC main.c ChessBoard.c Stack.c Queue.c ACAutomaton.c globals.c GameManager.c Player.c HumanPlayer.c AIPlayer.c ChessPot.c Action.c AIUtilities.c Train.c GA.c)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

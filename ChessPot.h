@@ -1,6 +1,6 @@
 #ifndef _ChessPotH
 #define _ChessPotH
-#include "chessboard.h"
+#include "ChessBoard.h"
 
 #define ChessPotNULL -1
 #define ChessPotHead BLEN

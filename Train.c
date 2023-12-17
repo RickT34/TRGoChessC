@@ -3,6 +3,14 @@
 #include "AIPlayer.h"
 #include "omp.h"
 #include <stdio.h>
+#define VariationPoint 2
+#define VariationRange 0.2f
+#define StartVariationRange 0.1f
+#define AICount 10
+#define GENS 10
+#define HYBRID 0.4
+#define VARIATION 0.1
+#define STARTPATTERN AIPatternPowersPruned_Default
 
 int TrainGetResult(Game game)
 {
@@ -48,19 +56,19 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
                 GameNextTurn(game);
                 // PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
             }
-
+            float score=10000.0f/(game->history->Count+50);
             if (game->nowPlayerID == 0)
             {
 #pragma omp critical
                 {
-                    re[i] += 1000.0f - game->history->Count;
+                    re[i] += score;
                 }
             }
             else
             {
 #pragma omp critical
                 {
-                    re[j] += (1000.0f - game->history->Count) * 1.2f;
+                    re[j] += score * 1.2f;
                 }
             }
             putchar('.');
@@ -89,8 +97,8 @@ GAGene GetVariation(const GAGene ind)
     do
     {
         int k = rand() % AIPatternLen;
-        re[k] *= 1.0f + (rand() / (float)RAND_MAX - 0.5f) * 0.4f;
-    } while (rand() % 3);
+        re[k] *= 1.0f + (rand() / (float)RAND_MAX - 0.5f) * VariationRange*2;
+    } while (rand() % VariationPoint);
 
     return re;
 }
@@ -124,11 +132,14 @@ void PrintGene(GAGene gene)
     printf("}\n");
 }
 
+
+
 void TrainRun()
 {
+    printf("Start Train!\n");
     GAConfig config = malloc(sizeof(*config));
-    config->ProbabilityOfHybrid = 0.4;
-    config->ProbabilityOfVariation = 0.1;
+    config->ProbabilityOfHybrid = HYBRID;
+    config->ProbabilityOfVariation = VARIATION;
     config->GetClone = GetClone;
     config->GetOneFitness = NULL;
     config->GetAllFitness = GetAllFitness;
@@ -136,18 +147,19 @@ void TrainRun()
     config->GetHybrid = GetHybrid;
     config->DeleteGene = DeleteGene;
     GAInitData init = malloc(sizeof(*init));
-    init->MAXGenerations = 10;
+    init->MAXGenerations = GENS;
     init->Config = config;
     init->ElitismCount = 1;
-    int count = 10;
-    GAGene starts[10];
+    int count = AICount;
+    GAGene starts[AICount];
     for (int i = 0; i < count; ++i)
     {
-        starts[i] = GetClone((Power *)AIPatternPowers_G6);
+        starts[i] = GetClone((Power *)STARTPATTERN);
+        if(i==0)continue;
         Power *re = starts[i];
         for (int j = 0; j < AIPatternLen; ++j)
         {
-            re[j] *= 1.0f + (rand() / (float)RAND_MAX - 0.5f) * 0.8f;
+            re[j] *= 1.0f + (rand() / (float)RAND_MAX - 0.5f) * StartVariationRange*2;
         }
         // printf("Start gene %d:\n",i);
         // PrintGene(starts[i]);

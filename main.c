@@ -48,6 +48,7 @@ void StartGameRecord(Game game)
         Input(buff, 64);
         sscanf(buff,"%d", &flame);
     } while (buff[0] != 'q');
+    MakeUI(game);
 }
 
 
@@ -142,15 +143,16 @@ int main(int args, char** argv)
     ChessBoardInit();
     GameManagerInit();
     AIInit();
-    TrainRun();
-    Input(buff, BUFFSIZE);
+    // TrainRun();
+    // Input(buff, BUFFSIZE);
     
     
     // TrainTestAI(AIPatternPowers_Default,AIPatternPowers_Default);
     // ChessPotTest();
     // NeighborMaptest();
     // PowerMaptest();
-    Player p1 = NewHumanPlayer("P1"), p2 = NewAIPlayer("AI", 0, AIPatternPowers_G6);
+    Player p1 = NewAIPlayer("AI0", 1, AIPatternPowersPruned_Default); // NewHumanPlayer("P1");
+    Player p2 = NewAIPlayer("AI", 0, AIPatternPowersPruned_G1);
     Game game = NewGame(p2, p1);
     Start(game);
     return 0;

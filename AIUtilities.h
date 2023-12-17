@@ -4,7 +4,7 @@
 #include "ACAutomaton.h"
 #include "ChessPot.h"
 #include "Stack.h"
-#include "chessboard.h"
+#include "ChessBoard.h"
 #include "globals.h"
 
 #define POWERSLEN ((LLN * 3 - 1) * 2)

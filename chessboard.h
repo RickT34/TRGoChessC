@@ -1,5 +1,5 @@
-#ifndef _chessboardH
-#define _chessboardH
+#ifndef _ChessBoardH
+#define _ChessBoardH
 #include "globals.h"
 
 typedef char ChessType;

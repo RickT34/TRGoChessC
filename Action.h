@@ -1,6 +1,6 @@
 #ifndef _ActionH
 #define _ActionH
-#include "chessboard.h"
+#include "ChessBoard.h"
 
 typedef struct {
     Point point;

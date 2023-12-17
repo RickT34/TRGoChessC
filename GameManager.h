@@ -3,7 +3,7 @@
 #include "ACAutomaton.h"
 #include "Player.h"
 #include "Stack.h"
-#include "chessboard.h"
+#include "ChessBoard.h"
 #include "globals.h"
 #include "Action.h"
 
