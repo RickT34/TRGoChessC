@@ -119,7 +119,7 @@ GAGene GARun(GAInitData init, int display)
         }
         free(inds);
         if (display)
-            printf("MAX: %f, Min:%f\n", maxn, minn);
+            printf("MAX: %lf, Min:%lf\n", maxn, minn);
         inds = nxt;
     }
     GAGene re = inds[maxi].gene;

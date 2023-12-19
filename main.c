@@ -136,7 +136,7 @@ void Start(Game game)
 }
 
 
-
+#include"AIUtilities.h"
 int main(int args, char** argv)
 {
     // GATest();
@@ -148,12 +148,13 @@ int main(int args, char** argv)
     
     
     // TrainTestAI(AIPatternPowers_Default,AIPatternPowers_Default);
-    // ChessPotTest();
+    // NeighborMaptest();
     // NeighborMaptest();
     // PowerMaptest();
-    Player p1 = NewAIPlayer("AI0", 1, AIPatternPowersPruned_Default); // NewHumanPlayer("P1");
-    Player p2 = NewAIPlayer("AI", 0, AIPatternPowersPruned_G1);
-    Game game = NewGame(p2, p1);
+    Player p1 = NewAIPlayer("AI0", 0, AIPatternPowers_Default);
+    // Player p1 = NewHumanPlayer("P1");
+    Player p2 = NewAIPlayer("AI1", 1, AIPatternPowersPruned_N1);
+    Game game = NewGame(p1, p2);
     Start(game);
     return 0;
 }

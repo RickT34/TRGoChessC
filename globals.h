@@ -19,7 +19,7 @@ void PrintTree(int dep, int num);
 
 typedef float Power;
 
-// #define DEBUG
+#define DEBUG
 
 #define NewArray(an, count) (malloc(sizeof(an) * count))
 

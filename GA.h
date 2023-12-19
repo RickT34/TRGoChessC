@@ -1,7 +1,7 @@
 #ifndef _GAH
 #define _GAH
 
-typedef float GAScore;
+typedef double GAScore;
 typedef void * GAGene;
 
 typedef struct

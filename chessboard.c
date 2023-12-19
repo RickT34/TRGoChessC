@@ -196,7 +196,7 @@ ChessBoardNeighbor NewChessBoardNeighbor()
                     re[p].neighbors[re[p].len++] = t;
                 }
             }
-            re[p].neighbors[re[p].len++] = p;
+            // re[p].neighbors[re[p].len++] = p;
         }
     }
     return re;

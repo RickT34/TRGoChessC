@@ -96,10 +96,11 @@ void FreeNeighborMap(NeighborMap nbm){
 void NeighborMapAddChess(NeighborMap nbm, Point p)
 {
     ChessBoardNeighbor cbn = &CBNEI[p];
-    ChessBoard cb = nbm->map;
+    char* cb = nbm->map;
     ChessPot pot = nbm->pot;
-    Point nxt = pot->nxtnode[ChessPotHead];
-    StackPush(nbm->history, (void*)nxt);
+    if(cb[p]>0)ChessPotRemove(pot,p);
+    cb[p]|=64;
+    Point nxt = pot->nodes[ChessPotHead].nxt;
     for (int i = 0; i < cbn->len; ++i) {
         Point p = cbn->neighbors[i];
         if (cb[p] == 0) {
@@ -115,12 +116,13 @@ void NeighborMapUndo(NeighborMap nbm, Point s)
 {
     ChessBoard cb = nbm->map;
     ChessPot pot = nbm->pot;
-    Point p = (Point)StackPop(nbm->history);
-    ChessPotTie(nbm->pot, ChessPotHead, p);
+    cb[s]^=64;
+    if(cb[s])ChessPotAdd(pot,s);
     ChessBoardNeighbor cbn = &CBNEI[s];
     for (int i = 0; i < cbn->len; ++i) {
         Point p = cbn->neighbors[i];
         cb[p] -= 1;
+        if(cb[p]==0)ChessPotRemove(pot,p);
     }
 }
 
@@ -159,14 +161,14 @@ void PrintNeighborMap(NeighborMap nbm)
 
     ChessPot pot = nbm->pot;
     int count=0;
-    for (Point p = pot->nxtnode[ChessPotHead]; p != ChessPotTail; p = pot->nxtnode[p]) {
+    for (Point p = pot->nodes[ChessPotHead].nxt; p != ChessPotTail; p = pot->nodes[p].nxt) {
         printf("%d%c, ", PointTo2C(p));
         count+=1;
         if(count>BLEN){
             assert(0);
         }
     }
-    putchar('\n');
+    printf("Count: %d\n",count);
 }
 
 void NeighborMaptest()
