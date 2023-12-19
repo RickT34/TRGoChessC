@@ -4,6 +4,7 @@
 #include <string.h>
 
 #define Power_MAX (1e30)
+#define Power_WIN (1e10)
 #define PatternLen (AIPatternLen * 2)
 
 const char *AIPatterns_Default[] = {
@@ -146,16 +147,22 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, const char 
             for (int d = 0; d < DireLen; ++d)
                 linep[d] = *(pm->linePower[p][d]);
             // End Push
-            UpdatePowerPoint(p, aidata, cb);
-            if (Minimax(aidata, cb, GameNextPlayerID(player), sgn ^ 1, &ret,
-                        re == PointNULL ? Power_MAX : -*rate, dep - 1) != PointNULL)
-            {
-                ret = -ret;
+            Power power= UpdatePowerPoint(p, aidata, cb);
+            if(power>=Power_WIN){
+                ret=power;
             }
-            else
-            {
-                ret = *rate;
+            else{
+                if (Minimax(aidata, cb, GameNextPlayerID(player), sgn ^ 1, &ret,
+                            re == PointNULL ? Power_MAX : -*rate, dep - 1) != PointNULL)
+                {
+                    ret = -ret;
+                }
+                else
+                {
+                    ret = *rate;
+                }
             }
+            
 
             // PrintChessBoard(cb, ChessBoardStyle_Classic);
             // PrintNeighborMap(aidata->neighborMap);
@@ -176,6 +183,10 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, const char 
                 return PointNULL;
             }
             re = p;
+            if(*rate>=Power_WIN){
+                SetChess(cb, p, BLANK);
+                return re;
+            }
         }
         SetChess(cb, p, BLANK);
     }

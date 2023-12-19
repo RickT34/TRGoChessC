@@ -4,14 +4,15 @@
 #include "omp.h"
 #include <stdio.h>
 #include<math.h>
+#include<stdlib.h>
 #define VariationPoint 2
-#define VariationRange 0.05f
+#define VariationRange 0.1f
 #define StartVariationRange 0.1f
 #define AICount 10
 #define GENS 10
 #define HYBRID 0.4
 #define VARIATION 0.1
-#define STARTPATTERN AIPatternPowersPruned_Default_G2
+#define STARTPATTERN AIPatternPowersPruned_Default_G3
 
 int TrainGetResult(Game game)
 {
@@ -48,6 +49,7 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
         {
             if (i == j)
                 continue;
+            putchar('<');
             // printf("%d-%d\n",i,j);
             Player aii = NewAIPlayer("", 0, allind[i]);
             Player aij = NewAIPlayer("", 1, allind[j]);
@@ -55,8 +57,10 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
             while (game->status != GameStatus_End)
             {
                 GameNextTurn(game);
-                // PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
+                if((game->history->Count)&1)
+                    putchar('.');
             }
+            PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
             GAScore score=game->history->Count/100.0;
             score*=score;
             score=100.0*exp(-1.5*score)+200.0;
@@ -74,7 +78,7 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
                     re[j] += score * 1.2f;
                 }
             }
-            putchar('.');
+            putchar('>');
             // getchar();
             FreeGame(game);
             FreeAIPlayer(aij);
@@ -140,6 +144,7 @@ void PrintGene(GAGene gene)
 void TrainRun()
 {
     printf("Start Train!\n");
+    srand(time(NULL));
     GAConfig config = malloc(sizeof(*config));
     config->ProbabilityOfHybrid = HYBRID;
     config->ProbabilityOfVariation = VARIATION;

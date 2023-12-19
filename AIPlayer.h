@@ -6,7 +6,7 @@
 #define AIPatternLen 6
 #define AIAttackScale 2
 #define AIDefendScale 3
-#define AIDepth 5
+#define AIDepth 4
 #define AIUsePattern AIPatterns_Pruned
 
 const extern char* AIPatterns_Default[];
