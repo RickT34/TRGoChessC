@@ -143,18 +143,18 @@ int main(int args, char** argv)
     ChessBoardInit();
     GameManagerInit();
     AIInit();
-    // TrainRun();
-    // Input(buff, BUFFSIZE);
+    TrainRun();
+    Input(buff, BUFFSIZE);
     
     
     // TrainTestAI(AIPatternPowers_Default,AIPatternPowers_Default);
     // NeighborMaptest();
     // NeighborMaptest();
     // PowerMaptest();
-    Player p1 = NewAIPlayer("AI0", 0, AIPatternPowers_Default);
-    // Player p1 = NewHumanPlayer("P1");
-    Player p2 = NewAIPlayer("AI1", 1, AIPatternPowersPruned_N1);
-    Game game = NewGame(p1, p2);
+    // Player p1 = NewAIPlayer("AI0", 0, AIPatternPowers_Default);
+    Player p1 = NewHumanPlayer("P1");
+    Player p2 = NewAIPlayer("AI1", 0, AIPatternPowersPruned_Default);
+    Game game = NewGame(p2, p1);
     Start(game);
     return 0;
 }

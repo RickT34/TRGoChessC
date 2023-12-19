@@ -65,31 +65,9 @@ const Power AIPatternPowers_Default[] = {
     1024,
 
     1e10};
-const Power AIPatternPowers_Default_G1[] = {
-    1.199206, 0.975945, 2.178399, 1.968902, 9.907188, 28.006382, 17.631662, 33.853901, 12.609698, 29.168789, 31.888348, 660.451416, 10000000000.000000};
 
 const Power AIPatternPowersPruned_Default[] = {
     1, 15, 14, 14, 32, 1e10};
-const Power AIPatternPowersPruned_N1[] = {
-    0,
-    0,
-    1.047754,
-    1.047754 * 2,
-
-    14.185651,
-    14.185651 * 2,
-    14.065654,
-    14.065654 * 2,
-
-    13.949972,
-    13.949972 * 2,
-    37.252007,
-    37.252007 * 2,
-
-    10463434752.000000};
-
-const Power AIPatternPowersPruned_G1[] = {
-    1.047754, 14.185651, 14.065654, 13.949972, 37.252007, 10463434752.000000};
 
 Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
 {
@@ -139,10 +117,9 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, const char 
     NeighborMap nbm = aidata->neighborMap;
     ChessPot pot = nbm->pot;
     Point re = PointNULL;
-    for (Point p = pot->nodes[ChessPotHead].nxt; p != ChessPotTail; p = pot->nodes[p].nxt)
+    for (Point p = pot->nxtnode[ChessPotHead]; p != ChessPotTail; p=pot->nxtnode[p])
     {
-        // if (GetChess(cb, p) != BLANK)
-        //     continue;
+        if(cb[p]!=BLANK)continue;
         SetChess(cb, p, PlayerChessTypes[player]);
         Power ret;
         // PrintChessBoard(cb, ChessBoardStyle_Classic);
@@ -175,7 +152,7 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, const char 
             }
 
             // PrintChessBoard(cb, ChessBoardStyle_Classic);
-            PrintNeighborMap(aidata->neighborMap);
+            // PrintNeighborMap(aidata->neighborMap);
 
             // Pop
             for (int d = 0; d < DireLen; ++d)
@@ -227,7 +204,7 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)
         }
 #ifdef DEBUG
         PrintNeighborMap(data->neighborMap);
-        PrintPowerMap(data->powerMap);
+        // PrintPowerMap(data->powerMap);
 #endif
         Power rate;
         re = Minimax(data, cb, data->playerid, 0, &rate, Power_MAX, AIDepth);

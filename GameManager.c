@@ -52,10 +52,12 @@ int GameNextTurn(Game game)
     game->nowPlayerID = GameNextPlayerID(game->nowPlayerID);
     Player player = GameGetNowPlayer(game);
     Point act = player->Go(player, game->chessboard, game->history);
+
     assert(GetChess(game->chessboard, act) == BLANK);
     SetChess(game->chessboard, act, PlayerChessTypes[game->nowPlayerID]);
     Action action = NewAction(game->nowPlayerID, act);
     StackPush(game->history, action);
+
     int win[2];
     for (int d = 0; d < DireLen; ++d) {
         win[0] = win[1] = 0;
@@ -66,6 +68,7 @@ int GameNextTurn(Game game)
             return 1;
         }
     }
+    
     if(game->history->Count==LLN*LLN){
         game->nowPlayerID=1;
         game->status=GameStatus_End;

@@ -11,7 +11,7 @@
 #define GENS 10
 #define HYBRID 0.4
 #define VARIATION 0.1
-#define STARTPATTERN AIPatternPowers_Default
+#define STARTPATTERN AIPatternPowersPruned_Default
 
 int TrainGetResult(Game game)
 {
@@ -59,7 +59,7 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
             }
             GAScore score=game->history->Count/100.0;
             score*=score;
-            score=100.0*exp(-1.5*score)+1000.0;
+            score=100.0*exp(-1.5*score)+200.0;
             if (game->nowPlayerID == 0)
             {
 #pragma omp critical

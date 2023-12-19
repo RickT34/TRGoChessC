@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-
 // #define GetNextPlayer(player) ((player) ^ FULL)
 #define Min(x, y) ((x) > (y) ? (y) : (x))
 #define Max(x, y) ((x) > (y) ? (x) : (y))
@@ -19,7 +17,7 @@ void PrintTree(int dep, int num);
 
 typedef float Power;
 
-#define DEBUG
+// #define DEBUG
 
 #define NewArray(an, count) (malloc(sizeof(an) * count))
 

@@ -3,8 +3,7 @@
 ChessPot NewChessPot()
 {
     ChessPot re = malloc(sizeof(*re));
-    re->nodes[ChessPotHead].nxt = ChessPotTail;
-    re->nodes[ChessPotTail].pre = ChessPotHead;
+    ChessPotTie(re,ChessPotHead,ChessPotTail);
     return re;
 }
 

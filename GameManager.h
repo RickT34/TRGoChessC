@@ -22,8 +22,6 @@ typedef struct {
     int nowPlayerID;
     GameStatus status;
 } * Game;
-Player GameGetNextPlayer(Game game);
-Player GameGetNowPlayer(Game game);
 Game NewGame(Player player1, Player player2);
 int PauseGame(Game game);
 int ContinueGame(Game game);
