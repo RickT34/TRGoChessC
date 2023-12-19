@@ -1,8 +1,9 @@
 #include "GA.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include<time.h>
 
-#define InstanceTest(p) (rand() >= RAND_MAX * (p))
+#define InstanceTest(p) (rand() <= RAND_MAX * (p))
 #define NewArray(an, count) (malloc(sizeof(an) * count))
 
 typedef struct
@@ -103,8 +104,12 @@ GAGene GARun(GAInitData init, int display)
     int maxi;
     for (int g = 1; g <= init->MAXGenerations; ++g) {
         if (display)
-            printf("Generation: %d ...\n", g);
+            printf("Generation: %d / %d\n", g,init->MAXGenerations);
+        clock_t startt=clock();
         GAIndividual* nxt = GANextGen(config, inds, init->GeneCount, init->ElitismCount);
+        startt=clock()-startt;
+        if(display)
+            printf("Time cost: %.3f sec.\n",(float)startt/CLOCKS_PER_SEC);
         GAScore maxn, minn;
         maxn = minn = nxt[0].score;
         maxi = 0;
@@ -119,7 +124,7 @@ GAGene GARun(GAInitData init, int display)
         }
         free(inds);
         if (display)
-            printf("MAX: %lf, Min:%lf\n", maxn, minn);
+            printf("Max: %lf, Min:%lf\n", maxn, minn);
         inds = nxt;
     }
     GAGene re = inds[maxi].gene;

@@ -4,14 +4,14 @@
 #include "omp.h"
 #include <stdio.h>
 #include<math.h>
-#define VariationPoint 3
-#define VariationRange 0.2f
-#define StartVariationRange 0.4f
+#define VariationPoint 2
+#define VariationRange 0.05f
+#define StartVariationRange 0.1f
 #define AICount 10
 #define GENS 10
 #define HYBRID 0.4
 #define VARIATION 0.1
-#define STARTPATTERN AIPatternPowersPruned_Default
+#define STARTPATTERN AIPatternPowersPruned_Default_G2
 
 int TrainGetResult(Game game)
 {

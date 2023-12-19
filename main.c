@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-
 void MakeUI(Game game)
 {
     // system("clear");
@@ -143,17 +141,18 @@ int main(int args, char** argv)
     ChessBoardInit();
     GameManagerInit();
     AIInit();
-    TrainRun();
-    Input(buff, BUFFSIZE);
+
+    // TrainRun();
+    // Input(buff, BUFFSIZE);
     
     
     // TrainTestAI(AIPatternPowers_Default,AIPatternPowers_Default);
     // NeighborMaptest();
     // NeighborMaptest();
     // PowerMaptest();
-    // Player p1 = NewAIPlayer("AI0", 0, AIPatternPowers_Default);
+    // Player p2 = NewAIPlayer("AI0", 1, AIPatternPowersPruned_Default_G2);
     Player p1 = NewHumanPlayer("P1");
-    Player p2 = NewAIPlayer("AI1", 0, AIPatternPowersPruned_Default);
+    Player p2 = NewAIPlayer("AI1", 0, AIPatternPowersPruned_Default_G3);
     Game game = NewGame(p2, p1);
     Start(game);
     return 0;

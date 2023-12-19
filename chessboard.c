@@ -8,7 +8,7 @@ const ChessBoardStyle ChessBoardStyle_Classic = {
     "┠─", "┼─", "┨ ",
     "┗━", "┷━", "┛ ",
     "● ", "○ ", "◑ "};
-#define NEIGHBORRANGE 1
+#define NEIGHBORRANGE 2
 
 const char *GetChessSkin(ChessType type, const ChessBoardStyle style)
 {

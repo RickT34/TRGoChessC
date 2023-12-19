@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <string.h>
 
-#define Power_MAX (1e38)
+#define Power_MAX (1e30)
 #define PatternLen (AIPatternLen * 2)
 
 const char *AIPatterns_Default[] = {
@@ -68,6 +68,12 @@ const Power AIPatternPowers_Default[] = {
 
 const Power AIPatternPowersPruned_Default[] = {
     1, 15, 14, 14, 32, 1e10};
+const Power AIPatternPowersPruned_Default_G1[] = {
+    1.149223, 15.488806, 12.214859, 6.216610, 22.963440, 10753844224.000000};
+const Power AIPatternPowersPruned_Default_G2[] = {
+    1.168401, 15.162420, 14.000000, 8.567827, 21.539915, 8915616768.000000};//Good
+const Power AIPatternPowersPruned_Default_G3[] = {
+    1.215701, 14.281790, 14.783039, 9.156700, 22.695276, 9806633984.000000};
 
 Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
 {
