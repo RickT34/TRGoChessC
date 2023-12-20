@@ -11,7 +11,6 @@
 
 const extern char* AIPatterns_Default[];
 const extern Power AIPatternPowers_Default[];
-const extern Power AIPatternPowers_Naive[];
 const extern Power AIPatternPowers_Default_G1[];
 
 const extern char *AIPatterns_Pruned[];

@@ -31,24 +31,8 @@ const char *AIPatterns_Pruned[] = {
     "10110",
     "11110",
     "11111"};
-Trie AIPatterns[2];
-const Power AIPatternPowers_Naive[] = {
-    0,
-    0,
-    0,
-    0,
 
-    0,
-    0,
-    0,
-    0,
 
-    0,
-    0,
-    0,
-    1 << 20,
-
-    1 << 20};
 const Power AIPatternPowers_Default[] = {
     1,
     1,
@@ -78,6 +62,8 @@ const Power AIPatternPowersPruned_Default_G2[] = {
     1.168401, 15.162420, 14.000000, 8.567827, 21.539915, 8915616768.000000}; // Good
 const Power AIPatternPowersPruned_Default_G3[] = {
     1.215701, 14.281790, 14.783039, 9.156700, 22.695276, 9806633984.000000};
+
+Trie AIPatterns[2];
 
 Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
 {

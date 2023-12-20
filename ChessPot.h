@@ -14,8 +14,7 @@ ChessPot NewChessPot();
 void FreeChessPot(ChessPot pot);
 
 #define ChessPotTie(pot, p1, p2) ((pot)->nxtnode[p1] = (p2))
-void ChessPotAdd(ChessPot pot, const Point p);
-// void ChessPotRemove(ChessPot pot, const Point p);
+
 #define ChessPotClean(pot) ChessPotTie(pot, ChessPotHead, ChessPotTail)
 
 #endif

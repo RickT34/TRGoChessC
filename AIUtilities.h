@@ -5,10 +5,10 @@
 #include "ChessPot.h"
 #include "Stack.h"
 #include "ChessBoard.h"
-#include "globals.h"
+#include "Globals.h"
 
 #define POWERSLEN ((LLN * 3 - 1) * 2)
-#define SETPower(pm, point, d, power) pm->powerSum += power - *(pm->linePower)[point][d], *(pm->linePower)[point][d] = power
+
 typedef struct {
     Power* linePower[BLEN][4];
     Power powers[POWERSLEN];
@@ -19,7 +19,8 @@ typedef struct {
 typedef struct {
     char map[BLEN];
     ChessPot pot;
-    Stack history;
+    Point history[BLEN];
+    int historyCount;
     char needflush;
 } * NeighborMap;
 
@@ -30,8 +31,7 @@ typedef struct {
     Power* patternPowers;
     int playerid;
 } * AIData;
-void NeighborMaptest();
-void PowerMaptest();
+
 PowerMap NewPowerMap();
 void FreePowerMap(PowerMap pm);
 void PrintPowerMap(PowerMap pm);

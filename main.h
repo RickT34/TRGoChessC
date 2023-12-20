@@ -3,7 +3,7 @@
 #include "AIPlayer.h"
 #include "GameManager.h"
 #include "HumanPlayer.h"
-#include "globals.h"
+#include "Globals.h"
 #include"Train.h"
 #include"GA.h"
 void Input(char* buff, const int buffsize);

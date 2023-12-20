@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "Stack.h"
 #include "ChessBoard.h"
-#include "globals.h"
+#include "Globals.h"
 #include "Action.h"
 
 typedef enum {

@@ -2,9 +2,9 @@
 #include "Queue.h"
 #include <stdlib.h>
 struct trienode {
-    int id; //这个单词的序号，只有单词的最后的结点才有
-    Trie next[TRIEMAXFORK]; //如果为ASCII码可见字符，则为128
-    Trie fail; //失败指针
+    int id;
+    Trie next[TRIEMAXFORK];
+    Trie fail;
     int matchids[TRIEMAXID];
     int matchidsLen;
 };
@@ -101,12 +101,6 @@ void TrieQuery(const char* strin,const int step,const int len,const Trie root, i
         p = p->next[k];
         if (p == NULL)
             p = root;
-        // Trie temp = p;
-        // while (temp != root) {
-        //     if (temp->id != -1)
-        //         ret[temp->id]++;
-        //     temp = temp->fail;
-        // }
         for (int j = 0; j < p->matchidsLen; ++j) {
             ret[p->matchids[j]] += 1;
         }
@@ -134,19 +128,3 @@ void TrieQuery2(const char* strin,const int step,const int len,const Trie root, 
         }
     }
 }
-// int main()
-// {
-//     while (scanf("%d", &n)) {
-//         Trie root = NewNode();
-//         int idx = 0;
-//         for (int i = 1; i <= n; i++) {
-//             scanf("%s", strx[i]);
-//             idx++;
-//             inserttrie(root, strx[i], idx);
-//         }
-//         buildfail(root);
-//         scanf("%s", strin);
-//         TrieQuery(root);
-//     }
-//     return 0;
-// }

@@ -82,14 +82,13 @@ NeighborMap NewNeighborMap()
     NeighborMap re = malloc(sizeof(*re));
     memset(re->map, 0, sizeof(re->map));
     re->pot = NewChessPot();
-    re->history = NewStack(BLEN);
+    re->historyCount=0;
     re->needflush = 0;
     return re;
 }
 
 void FreeNeighborMap(NeighborMap nbm){
     FreeChessPot(nbm->pot);
-    FreeStack(nbm->history);
     free(nbm);
 }
 
@@ -99,7 +98,7 @@ void NeighborMapAddChess(NeighborMap nbm, Point p)
     char* cb = nbm->map;
     ChessPot pot = nbm->pot;
     Point nxt = pot->nxtnode[ChessPotHead];
-    StackPush(nbm->history, (void*)nxt);
+    nbm->history[nbm->historyCount++]=nxt;
     for (int i = 0; i < cbn->len; ++i) {
         Point p = cbn->neighbors[i];
         if (cb[p] == 0) {
@@ -115,7 +114,7 @@ void NeighborMapUndo(NeighborMap nbm, Point s)
 {
     char* cb = nbm->map;
     ChessPot pot = nbm->pot;
-    Point p = (Point)StackPop(nbm->history);
+    Point p = nbm->history[--nbm->historyCount];
     ChessPotTie(nbm->pot, ChessPotHead, p);
     ChessBoardNeighbor cbn = &CBNEI[s];
     for (int i = 0; i < cbn->len; ++i) {
@@ -126,7 +125,7 @@ void NeighborMapUndo(NeighborMap nbm, Point s)
 
 void NeighborMapFlush(NeighborMap nbm, const Stack actionHistory)
 {
-    StackClean(nbm->history);
+    nbm->historyCount=0;
     ChessPotClean(nbm->pot);
     memset(nbm->map, 0, sizeof(nbm->map));
     nbm->needflush = 0;
@@ -183,7 +182,7 @@ void NeighborMaptest()
             NeighborMapAddChess(nbm, GetPoint(x, y));
     }
 }
-
+#define SETPower(pm, point, d, power) pm->powerSum += power - *(pm->linePower)[point][d], *(pm->linePower)[point][d] = power
 void PowerMaptest()
 {
     char buff[64];

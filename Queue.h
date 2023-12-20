@@ -14,7 +14,7 @@ void QueuePushfront(Queue q, queueitem item);
 void QueuePushback(Queue q, queueitem item);
 queueitem QueueBack(Queue q);
 void QueuePopfront(Queue q);
-void QueuePopBack(Queue q);
+void QueuePopback(Queue q);
 Queue NewQueue(int capability);
 void FreeQueue(Queue q);
 

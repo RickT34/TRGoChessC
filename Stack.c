@@ -16,11 +16,3 @@ void FreeStack(Stack stack)
     free(stack->Items);
     free(stack);
 }
-
-// void PrintStack(Stack stack)
-// {
-//     for (int i = 0; i < stack->Count; ++i) {
-//         printf("%d ", stack->Items[i]);
-//     }
-//     printf("\n");
-// }

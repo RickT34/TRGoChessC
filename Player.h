@@ -3,7 +3,7 @@
 #include "Action.h"
 #include "Stack.h"
 #include "ChessBoard.h"
-#include "globals.h"
+#include "Globals.h"
 
 typedef struct _player* Player;
 #define GameNextPlayerID(player) ((player) ^ 1)

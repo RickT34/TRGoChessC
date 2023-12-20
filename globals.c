@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "Globals.h"
 
 void printArray(int* an, int start, int len)
 {
@@ -29,11 +29,4 @@ void Input(char* buff, const int buffsize)
 {
     printf(">:");
     fgets(buff, buffsize, stdin);
-}
-
-void PrintTree(int dep, int num){
-    for(int i=0;i<dep;++i){
-        putchar('\t');
-    }
-    printf("/%d\n",num);
 }

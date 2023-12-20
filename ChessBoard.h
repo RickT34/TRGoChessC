@@ -1,6 +1,6 @@
 #ifndef _ChessBoardH
 #define _ChessBoardH
-#include "globals.h"
+#include "Globals.h"
 
 typedef char ChessType;
 const extern ChessType PlayerChessTypes[2];
@@ -33,15 +33,6 @@ typedef int Point;
   \   LB           RB
 */
 #define GetPoint(x, y) (((y) << POINTBITS) | (x))
-#define GetPointX(point) ((point)&KEYXMASK)
-#define GetPointY(point) ((point) >> POINTBITS)
-#define PointToXY(point, x, y) \
-    x = GetPointX(point);      \
-    y = GetPointY(point);
-// s=x+y
-#define GetPointS(point) (((point)&KEYXMASK) + ((point) >> POINTBITS))
-// d=x-y
-#define GetPointD(point) (((point)&KEYXMASK) - ((point) >> POINTBITS))
 
 #define GetChessXY(chessboard, x, y) ((chessboard)[GetPoint(x, y)])
 #define SetChessXY(chessboard, x, y, v) GetChessXY(chessboard, x, y) = v
@@ -52,14 +43,6 @@ typedef int Point;
 #define YSTEP (1 << POINTBITS)
 #define CSTEP (YSTEP + XSTEP)
 #define DSTEP (YSTEP - XSTEP)
-
-/*d from [X, Y, C, D]*/
-#define Next(point, d) point += d##STEP
-
-#define IsInLB(point) (((point)&KEYXMASK) == 0)
-#define IsInRB(point) (((point)&KEYXMASK) == (LLN - 1))
-#define IsInTB(point) (((point)&KEYYMASK) == 0)
-#define IsInBB(point) (((point)&KEYYMASK) == ((LLN - 1) << POINTBITS))
 
 #define IsLegal(point) ((point) >= 0 && (point) < BLEN && ((point)&KEYXMASK != LLN))
 #define IsLegalXY(x, y) ((x) >= 0 && (y) >= 0 && (x) < LLN && (y) < LLN)

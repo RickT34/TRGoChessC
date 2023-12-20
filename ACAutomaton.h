@@ -1,6 +1,6 @@
 #ifndef _ACAutomatonH
 #define _ACAutomatonH
-#include "globals.h"
+#include "Globals.h"
 #define TRIEMAXFORK 3
 #define TRIEMAXID 20
 typedef struct trienode* Trie;
