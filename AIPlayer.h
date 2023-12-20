@@ -3,15 +3,16 @@
 #include "Player.h"
 
 //Default 13, Pruned 6
-#define AIPatternLen 6
+#define AIPatternLen 13
 #define AIAttackScale 2
 #define AIDefendScale 3
 #define AIDepth 4
-#define AIUsePattern AIPatterns_Pruned
+#define AIUsePattern AIPatterns_Default
 
 const extern char* AIPatterns_Default[];
 const extern Power AIPatternPowers_Default[];
 const extern Power AIPatternPowers_Naive[];
+const extern Power AIPatternPowers_Default_G1[];
 
 const extern char *AIPatterns_Pruned[];
 const extern Power AIPatternPowersPruned_Default[];
