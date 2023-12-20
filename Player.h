@@ -2,7 +2,7 @@
 #define _PlayerH
 #include "Action.h"
 #include "Stack.h"
-#include "chessboard.h"
+#include "ChessBoard.h"
 #include "globals.h"
 
 typedef struct _player* Player;

@@ -128,7 +128,7 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, const char 
     {
         if(cb[p]!=BLANK)continue;
         SetChess(cb, p, PlayerChessTypes[player]);
-        Power ret;
+        Power ret,power;
         // PrintChessBoard(cb, ChessBoardStyle_Classic);
         if (dep == 0)
         {
@@ -147,7 +147,8 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, const char 
             for (int d = 0; d < DireLen; ++d)
                 linep[d] = *(pm->linePower[p][d]);
             // End Push
-            Power power= UpdatePowerPoint(p, aidata, cb);
+            power= UpdatePowerPoint(p, aidata, cb);
+            if(sgn)power=-power;
             if(power>=Power_WIN){
                 ret=power;
             }
@@ -156,6 +157,7 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, const char 
                             re == PointNULL ? Power_MAX : -*rate, dep - 1) != PointNULL)
                 {
                     ret = -ret;
+                    if(ret>=Power_WIN)ret=Power_WIN+1;
                 }
                 else
                 {
@@ -163,7 +165,6 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, const char 
                 }
             }
             
-
             // PrintChessBoard(cb, ChessBoardStyle_Classic);
             // PrintNeighborMap(aidata->neighborMap);
 
@@ -183,7 +184,7 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, const char 
                 return PointNULL;
             }
             re = p;
-            if(*rate>=Power_WIN){
+            if(power>=Power_WIN){
                 SetChess(cb, p, BLANK);
                 return re;
             }
@@ -221,7 +222,7 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)
         }
 #ifdef DEBUG
         PrintNeighborMap(data->neighborMap);
-        // PrintPowerMap(data->powerMap);
+        PrintPowerMap(data->powerMap);
 #endif
         Power rate;
         re = Minimax(data, cb, data->playerid, 0, &rate, Power_MAX, AIDepth);

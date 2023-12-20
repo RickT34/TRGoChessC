@@ -1,4 +1,4 @@
-#include "chessboard.h"
+#include "ChessBoard.h"
 #include <string.h>
 const char DireNames[4] = "XYCD";
 const int DireSteps[4] = {XSTEP, YSTEP, CSTEP, DSTEP};

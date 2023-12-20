@@ -125,6 +125,12 @@ void Start(Game game)
                 }
                 *(Point*)GameGetNextPlayer(game)->data = p;
             }
+            #ifdef DEBUG
+            else{
+                printf("Continue?");
+                getchar();
+            }
+            #endif
             ret = GameNextTurn(game);
             PrintPlayer(game, game->nowPlayerID);
             printf(" on %d%c\n",PointTo2C(((Action)StackTop(game->history))->point));
@@ -150,9 +156,9 @@ int main(int args, char** argv)
     // NeighborMaptest();
     // NeighborMaptest();
     // PowerMaptest();
-    // Player p2 = NewAIPlayer("AI0", 1, AIPatternPowersPruned_Default_G2);
-    Player p2 = NewHumanPlayer("P1");
-    Player p1 = NewAIPlayer("AI1", 0, AIPatternPowersPruned_Default_G3);
+    // Player p1 = NewAIPlayer("AI0", 0, AIPatternPowersPruned_Default_G2);
+    Player p1 = NewHumanPlayer("P1");
+    Player p2 = NewAIPlayer("AI1", 1, AIPatternPowersPruned_Default_G3);
     Game game = NewGame(p1, p2);
     Start(game);
     return 0;

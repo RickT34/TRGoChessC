@@ -1,10 +1,11 @@
 #include "Train.h"
 #include "GA.h"
 #include "AIPlayer.h"
-#include "omp.h"
-#include <stdio.h>
 #include<math.h>
+#include <stdio.h>
 #include<stdlib.h>
+#include<time.h>
+#include "omp.h"
 #define VariationPoint 2
 #define VariationRange 0.1f
 #define StartVariationRange 0.1f
@@ -63,7 +64,7 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
             PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
             GAScore score=game->history->Count/100.0;
             score*=score;
-            score=100.0*exp(-1.5*score)+200.0;
+            // score=100.0* exp(-1.5*score)+200.0;
             if (game->nowPlayerID == 0)
             {
 #pragma omp critical
