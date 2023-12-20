@@ -157,7 +157,7 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, const char 
                             re == PointNULL ? Power_MAX : -*rate, dep - 1) != PointNULL)
                 {
                     ret = -ret;
-                    if(ret>=Power_WIN)ret=Power_WIN+1;
+                    if(ret>=Power_WIN)ret=Power_WIN;
                 }
                 else
                 {
