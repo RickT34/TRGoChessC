@@ -4,7 +4,7 @@
 
 typedef char ChessType;
 const extern ChessType PlayerChessTypes[2];
-#define LLN 15
+#define LLN 19
 #define FULL ((ChessType)3)
 #define PlayerW ((ChessType)1) // 01 O
 #define PlayerB ((ChessType)2) // 10 #
@@ -12,7 +12,7 @@ const extern ChessType PlayerChessTypes[2];
 #define BLANK ((ChessType)0)
 #define BIT 2
 
-#define POINTBITS 4
+#define POINTBITS 5
 #define BWIDTH (1 << (POINTBITS))
 #define BLEN (BWIDTH * (BWIDTH - 1))
 #define KEYXMASK ((1 << POINTBITS) - 1) // b00001111

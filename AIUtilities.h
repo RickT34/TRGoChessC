@@ -9,28 +9,45 @@
 
 #define POWERSLEN ((LLN * 3 - 1) * 2)
 
-typedef struct {
-    Power* linePower[BLEN][4];
+typedef struct
+{
+    Power *linePower[BLEN][4];
     Power powers[POWERSLEN];
     Power powerSum;
-    char needflush;
-} * PowerMap;
+} *PowerMap;
 
-typedef struct {
+typedef struct
+{
     char map[BLEN];
     ChessPot pot;
     Point history[BLEN];
     int historyCount;
-    char needflush;
-} * NeighborMap;
+} *NeighborMap;
 
-typedef struct {
+#define HASHLEN 1000003
+#define HASHSTEP 13
+typedef struct
+{
+    uint64 turnTable[2][BLEN];
+    uint64 start;
+    uint64 hashTable[HASHLEN];
+} *ZobristTable;
+ZobristTable NewZobristTable();
+int ZobristTableFindAndInsert(ZobristTable zt, const uint64 key);
+void FreeZobristTable(ZobristTable zt);
+#define ZobristNextKey(zt, key, point, player) ((key) ^ (zt->turnTable[player][point]))
+#define ZobristClean(zt) memset(zt->hashTable, 0, sizeof(zt->hashTable))
+
+typedef struct
+{
     PowerMap powerMap;
     NeighborMap neighborMap;
     Trie patterns;
-    Power* patternPowers;
+    Power *patternPowers;
+    ZobristTable zobristTable;
     int playerid;
-} * AIData;
+    char needflush;
+} *AIData;
 
 PowerMap NewPowerMap();
 void FreePowerMap(PowerMap pm);

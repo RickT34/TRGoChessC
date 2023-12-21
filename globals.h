@@ -15,6 +15,9 @@ int IntSave(int data, char* file);
 int IntLoad(int* data, char* file);
 
 typedef float Power;
+typedef unsigned int uint;
+typedef unsigned long long uint64;
+typedef unsigned char byte;
 
 // #define DEBUG
 
