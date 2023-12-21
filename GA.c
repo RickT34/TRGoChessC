@@ -121,11 +121,16 @@ GAGene GARun(GAInitData init, int display)
             }
             if (nxt[i].score < minn)
                 minn = nxt[i].score;
+        }
+        if (display)
+        {
+            printf("Max: %lf, Min:%lf\n", maxn, minn);
+            config->PrintGene(nxt[maxi].gene);
+        }
+        for(int i=0;i<init->GeneCount;++i){
             config->DeleteGene(inds[i].gene);
         }
         free(inds);
-        if (display)
-            printf("Max: %lf, Min:%lf\n", maxn, minn);
         inds = nxt;
     }
     GAGene re = inds[maxi].gene;

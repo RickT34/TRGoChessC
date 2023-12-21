@@ -155,9 +155,9 @@ int main(int args, char** argv)
     // NeighborMaptest();
     // NeighborMaptest();
     // PowerMaptest();
-    Player p2 = NewAIPlayer("AI0", 1, AIPatternPowers_Default_G1);
-    // Player p1 = NewHumanPlayer("P1");
-    Player p1 = NewAIPlayer("AI1",0, AIPatternPowers_Default_G2);
+    // Player p1 = NewAIPlayer("AI0", 0, AIPatternPowers_Default_G2);
+    Player p2 = NewHumanPlayer("P1");
+    Player p1 = NewAIPlayer("AI1",0, AIPatternPowers_Default_G1);
     Game game = NewGame(p1, p2);
     Start(game);
     return 0;

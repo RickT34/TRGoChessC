@@ -14,6 +14,7 @@ typedef struct
     GAGene (*GetVariation)(const GAGene ind);
     GAGene (*GetHybrid)(const GAGene ind1, const GAGene ind2);
     void (*DeleteGene)(GAGene ind);
+    void (*PrintGene)(const GAGene ind);
 } *GAConfig;
 
 typedef struct

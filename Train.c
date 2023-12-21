@@ -8,21 +8,20 @@
 #include "omp.h"
 #include "mt19937.h"
 #include <assert.h>
-#define VariationPoint 2
+#define VariationPoint 3
 #define VariationRange 0.1f
 // #define StartVariationRange 0.1f
-#define AICount 20
-#define GENS 10
+#define AICount 25
+#define GENS 60
 #define HYBRID 0.4
 #define VARIATION 0.1
-#define STARTPATTERN AIPatternPowers_Default_G1
+#define STARTPATTERN AIPatternPowers_Default_G2
 #define RACECount (AICount * (AICount - 1))
 // GAGene = Power*
 
 GAScore *GetAllFitness(const GAGene *allind, const int count)
 {
     GAScore *re = calloc(count, sizeof(GAScore));
-    omp_set_num_threads(16);
     int tasks[RACECount][2];
     int tc = 0;
     for (int i = 0; i < count; ++i)
@@ -37,6 +36,7 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
         }
     }
     assert(tc == RACECount);
+    omp_set_num_threads(16);
 #pragma omp parallel for
     for (tc = 0; tc < RACECount; ++tc)
     {
@@ -53,7 +53,7 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
             // if((game->history->Count)&4)
             //     putchar('.');
         }
-        // PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
+        PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
         GAScore score = game->history->Count / 100.0;
         score *= score;
         score = 100.0 * exp(-1.5 * score) + 200.0;
@@ -113,7 +113,7 @@ GAGene GetHybrid(const GAGene ind1, const GAGene ind2)
 }
 void DeleteGene(GAGene ind) { free(ind); }
 
-void PrintGene(GAGene gene)
+void PrintGene(const GAGene gene)
 {
     printf("Gene:  {");
     for (int i = 0; i < AIPatternLen; ++i)
@@ -135,6 +135,7 @@ void TrainRun()
     config->GetVariation = GetVariation;
     config->GetHybrid = GetHybrid;
     config->DeleteGene = DeleteGene;
+    config->PrintGene=PrintGene;
     GAInitData init = malloc(sizeof(*init));
     init->MAXGenerations = GENS;
     init->Config = config;
