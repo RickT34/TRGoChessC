@@ -12,12 +12,12 @@
 const extern char* AIPatterns_Default[];
 const extern Power AIPatternPowers_Default[];
 const extern Power AIPatternPowers_Default_G1[];
+const extern Power AIPatternPowers_Default_G2[];
 
 const extern char *AIPatterns_Pruned[];
 const extern Power AIPatternPowersPruned_Default[];
 const extern Power AIPatternPowersPruned_Default_G1[];
 const extern Power AIPatternPowersPruned_Default_G2[];
-const extern Power AIPatternPowersPruned_Default_G3[];
 
 Player NewAIPlayer(const char* name, const int playerid, const Power* powers);
 void SetAIPlayer(Player player, const int playerid, const Power* powers);

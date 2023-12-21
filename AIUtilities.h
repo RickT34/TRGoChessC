@@ -44,7 +44,6 @@ typedef struct
     NeighborMap neighborMap;
     Trie patterns;
     Power *patternPowers;
-    ZobristTable zobristTable;
     int playerid;
     char needflush;
 } *AIData;

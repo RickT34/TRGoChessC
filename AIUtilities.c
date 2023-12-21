@@ -242,7 +242,6 @@ void FreeZobristTable(ZobristTable zt)
 
 int ZobristTableFindAndInsert(ZobristTable zt, const uint64 key)
 {
-    return 0;
     int k = key % HASHLEN;
     if (zt->hashTable[k] == 0)
     {

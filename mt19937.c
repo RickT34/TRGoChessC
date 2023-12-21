@@ -54,8 +54,8 @@
    email: m-mat @ math.sci.hiroshima-u.ac.jp (remove spaces)
 */
 
-#include <stdio.h>
 #include "mt19937.h"
+#include <time.h>
 
 #define NN 312
 #define MM 156
@@ -127,7 +127,7 @@ unsigned long long genrand64_int64(void)
         /* if init_genrand64() has not been called, */
         /* a default initial seed is used     */
         if (mti == NN + 1)
-            init_genrand64(5489ULL);
+            init_genrand64(time(NULL));
 
         for (i = 0; i < NN - MM; i++)
         {
