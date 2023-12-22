@@ -3,7 +3,7 @@
 ChessPot NewChessPot()
 {
     ChessPot re = malloc(sizeof(*re));
-    ChessPotTie(re,ChessPotHead,ChessPotTail);
+    ChessPotTie(re, ChessPotHead, ChessPotTail);
     return re;
 }
 

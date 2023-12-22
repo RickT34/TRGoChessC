@@ -1,9 +1,8 @@
-
-
 #include "AIUtilities.h"
 #include "Action.h"
 #include <string.h>
 #include <assert.h>
+#include "mt19937.h"
 
 PowerMap NewPowerMap()
 {
@@ -218,20 +217,21 @@ void PowerMaptest()
         }
     }
 }
-#include "mt19937.h"
+
 ZobristTable NewZobristTable()
 {
     ZobristTable re = malloc(sizeof(*re));
     memset(re->hashTable, 0, sizeof(re->hashTable));
-    init_genrand64(38907452ull);
     re->start = genrand64_int64();
-    for(int p=0;p<2;++p){
+    for (int p = 0; p < 2; ++p)
+    {
+        init_genrand64(3213123442ull ^ p);
         for (int i = 0; i < BLEN; ++i)
         {
             re->turnTable[p][i] = genrand64_int64();
         }
     }
-    
+
     return re;
 }
 
@@ -242,12 +242,16 @@ void FreeZobristTable(ZobristTable zt)
 
 int ZobristTableFindAndInsert(ZobristTable zt, const uint64 key)
 {
+    return 0;
     int k = key % HASHLEN;
+    if (k == 0)
+        k = 1;
     if (zt->hashTable[k] == 0)
     {
         zt->hashTable[k] = key;
         return 0;
     }
+    return 1;
     while (zt->hashTable[k] != key && zt->hashTable[k] != 0)
     {
         k = (k + HASHSTEP) % HASHLEN;
@@ -257,6 +261,7 @@ int ZobristTableFindAndInsert(ZobristTable zt, const uint64 key)
     }
     if (zt->hashTable[k] == key)
         return 1;
-    zt->hashTable[k] = key;
+    if (zt->hashTable[k] == 0)
+        zt->hashTable[k] = key;
     return 0;
 }

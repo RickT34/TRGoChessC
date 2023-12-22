@@ -4,9 +4,9 @@
 
 Point HumanGo(Player player, const ChessBoard ct, const Stack actionHistory)
 {
-    Point re = *(Point*)player->data;
+    Point re = *(Point *)player->data;
     assert(re != PointNULL);
-    *(Point*)player->data = PointNULL;
+    *(Point *)player->data = PointNULL;
     return re;
 }
 
@@ -14,7 +14,7 @@ void HumanUndo(Player player, const ChessBoard ct, const Stack actionHistory)
 {
 }
 
-Player NewHumanPlayer(const char* name)
+Player NewHumanPlayer(const char *name)
 {
     Player re = NewPlayer(PlayerType_Human, name, strlen(name));
     SetHumanPlayer(re);

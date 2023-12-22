@@ -91,7 +91,8 @@ Power ComputePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
     }
     return powersum;
 }
-Point Minimax(const AIData aidata, ChessBoard cb, const char player, Power *rate, const Power maxpower, const char dep)
+Point Minimax(const AIData aidata, ChessBoard cb, const char player,
+              Power *rate, const Power maxpower, const char dep)
 {
     NeighborMap nbm = aidata->neighborMap;
     ChessPot pot = nbm->pot;
@@ -100,9 +101,9 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, Power *rate
     {
         if (cb[p] != BLANK)
             continue;
-        SetChess(cb, p, PlayerChessTypes[player]);
         Power ret, power;
         // PrintChessBoard(cb, ChessBoardStyle_Classic);
+        SetChess(cb, p, PlayerChessTypes[player]);
         if (dep == 0)
         {
             /*            Compute Power             */
@@ -129,18 +130,14 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player, Power *rate
                             re == PointNULL ? Power_MAX : -*rate, dep - 1) != PointNULL)
                 {
                     ret = -ret;
-                    // if (ret >= Power_WIN)
-                    //     ret = Power_WIN;
                 }
                 else
                 {
                     ret = *rate;
                 }
             }
-
             // PrintChessBoard(cb, ChessBoardStyle_Classic);
             // PrintNeighborMap(aidata->neighborMap);
-
             // Pop
             for (int d = 0; d < DireLen; ++d)
                 *(pm->linePower[p][d]) = linep[d];
@@ -182,10 +179,8 @@ void SortPoint(Point *points, const int count, const PowerMap pm)
     {
         for (int d = 0; d < DireLen; ++d)
         {
-            powers[i] += *(pm->linePower[points[i]][d]);
+            powers[i] += (*(pm->linePower[points[i]][d])) * (*(pm->linePower[points[i]][d]));
         }
-        if (powers[i] < 0)
-            powers[i] = -powers[i];
     }
     for (int i = 1; i < count; ++i)
     {
@@ -218,6 +213,8 @@ Point GetBestMove(const AIData aidata, ChessBoard cb, Power *rate, const char de
         points[count++] = p;
     }
     SortPoint(points, count, aidata->powerMap);
+    // ZobristTable zt = aidata->zobristTable;
+    // ZobristClean(zt);
     for (int ip = 0; ip < count; ++ip)
     {
         Point p = points[ip];
@@ -391,7 +388,7 @@ AIData NewAIData(const int playerid, const Power *powers)
     re->powerMap = NewPowerMap();
     re->neighborMap = NewNeighborMap();
     re->playerid = playerid;
-    // TODO
+    // re->zobristTable = NewZobristTable();
     re->patternPowers = malloc(sizeof(Power) * PatternLen);
     re->patterns = AIPatterns[playerid];
     char buff1[20], buff2[20];
@@ -412,6 +409,7 @@ void FreeAIPlayer(Player player)
     free(data->patternPowers);
     FreePowerMap(data->powerMap);
     FreeNeighborMap(data->neighborMap);
+    // FreeZobristTable(data->zobristTable);
     free(data);
     FreePlayer(player);
 }

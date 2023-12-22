@@ -135,7 +135,7 @@ void TrainRun()
     config->GetVariation = GetVariation;
     config->GetHybrid = GetHybrid;
     config->DeleteGene = DeleteGene;
-    config->PrintGene=PrintGene;
+    config->PrintGene = PrintGene;
     GAInitData init = malloc(sizeof(*init));
     init->MAXGenerations = GENS;
     init->Config = config;

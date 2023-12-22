@@ -12,46 +12,51 @@ void MakeUI(Game game)
     PrintPlayer(game, GameNextPlayerID(game->nowPlayerID));
     putchar('\n');
 }
-void MakeProcessBar(int p, int len,const int width){// p in [1,len]
+void MakeProcessBar(int p, int len, const int width)
+{ // p in [1,len]
     putchar('[');
-    char last='[';
-    for(int i=1;i<=width;++i){
-        if(i*len<p*width)putchar(last='=');
-        else {
-            if(last=='=')putchar(last='>');
+    char last = '[';
+    for (int i = 1; i <= width; ++i)
+    {
+        if (i * len < p * width)
+            putchar(last = '=');
+        else
+        {
+            if (last == '=')
+                putchar(last = '>');
             else
-            putchar('-');
+                putchar('-');
         }
     }
     putchar(']');
-    printf(" (%d/%d)\n",p,len);
+    printf(" (%d/%d)\n", p, len);
 }
 
 void StartGameRecord(Game game)
 {
     char buff[64];
-    buff[0]=0;
+    buff[0] = 0;
     ChessBoard re;
-    int flame=game->history->Count;
-    GameRecord gr=NewGameRecord(game);
-    do{
-        re=GameRecordRead(gr, flame-1);
-        if(re!=NULL){
-            printf("Recode Flame: %d\n",flame);
+    int flame = game->history->Count;
+    GameRecord gr = NewGameRecord(game);
+    do
+    {
+        re = GameRecordRead(gr, flame - 1);
+        if (re != NULL)
+        {
+            printf("Recode Flame: %d\n", flame);
             PrintChessBoard(re, ChessBoardStyle_Classic);
             MakeProcessBar(flame, gr->datalen, 30);
             FreeChessBoard(re);
-            re=NULL;
+            re = NULL;
         }
         Input(buff, 64);
-        sscanf(buff,"%d", &flame);
+        sscanf(buff, "%d", &flame);
     } while (buff[0] != 'q');
     MakeUI(game);
 }
 
-
-
-Point GetPointInput(const Game game, const char* s)
+Point GetPointInput(const Game game, const char *s)
 {
     int x, y;
     char c;
@@ -67,20 +72,29 @@ Point GetPointInput(const Game game, const char* s)
     return GetPoint(x, y);
 }
 
-int InputCommamd(Game game, char* buff){
-    if (buff[0] == '-') {
+int InputCommamd(Game game, char *buff)
+{
+    if (buff[0] == '-')
+    {
         GameUndo(game);
-        if(GameGetNextPlayer(game)->type==PlayerType_AI)GameUndo(game);
+        if (GameGetNextPlayer(game)->type == PlayerType_AI)
+            GameUndo(game);
         return 0;
-    } else if (buff[0] == '>') {
+    }
+    else if (buff[0] == '>')
+    {
         char file[2048];
         int l = GameSave(game, file);
         file[l] = 0;
         puts(file);
         return 0;
-    } else if (buff[0] == 'r') {
+    }
+    else if (buff[0] == 'r')
+    {
         StartGameRecord(game);
-    } else if (buff[0] == '<') {
+    }
+    else if (buff[0] == '<')
+    {
         Game loadgame;
         GameLoad(&loadgame, buff + 1);
         Start(loadgame);
@@ -90,59 +104,66 @@ int InputCommamd(Game game, char* buff){
     return 1;
 }
 
-void PrintPlayer(Game game, int id){
-    printf("%s %s",GetChessSkin(PlayerChessTypes[id], ChessBoardStyle_Classic),
-    game->players[id]->name);
+void PrintPlayer(Game game, int id)
+{
+    printf("%s %s", GetChessSkin(PlayerChessTypes[id], ChessBoardStyle_Classic),
+           game->players[id]->name);
 }
 char buff[4096];
 #define BUFFSIZE 4096
 void Start(Game game)
 {
     int ret;
-    do {
+    do
+    {
         MakeUI(game);
-        if (IsGameStopped(game)) {
-            if(game->status==GameStatus_End)
-                {
-                    PrintPlayer(game, game->nowPlayerID);
-                    printf(" Win!\n");
-                    }
+        if (IsGameStopped(game))
+        {
+            if (game->status == GameStatus_End)
+            {
+                PrintPlayer(game, game->nowPlayerID);
+                printf(" Win!\n");
+            }
             printf("Game stopped!\n");
             Input(buff, BUFFSIZE);
             InputCommamd(game, buff);
         }
-        else{
-            if (GameGetNextPlayer(game)->type == PlayerType_Human) {
+        else
+        {
+            if (GameGetNextPlayer(game)->type == PlayerType_Human)
+            {
                 Point p = PointNULL;
-                while (p == PointNULL) {
+                while (p == PointNULL)
+                {
                     Input(buff, BUFFSIZE);
-                    if (InputCommamd(game, buff)) {
+                    if (InputCommamd(game, buff))
+                    {
                         p = GetPointInput(game, buff);
                     }
-                    else{
+                    else
+                    {
                         MakeUI(game);
                     }
                 }
-                *(Point*)GameGetNextPlayer(game)->data = p;
+                *(Point *)GameGetNextPlayer(game)->data = p;
             }
-            #ifdef DEBUG
-            else{
+#ifdef DEBUG
+            else
+            {
                 printf("Continue?");
                 getchar();
             }
-            #endif
+#endif
             ret = GameNextTurn(game);
             PrintPlayer(game, game->nowPlayerID);
-            printf(" on %d%c\n",PointTo2C(((Action)StackTop(game->history))->point));
+            printf(" on %d%c\n", PointTo2C(((Action)StackTop(game->history))->point));
         }
     } while (1);
-    
 }
-
 
 // #include"AIUtilities.h"
 // #include"mt19937.h"
-int main(int args, char** argv)
+int main(int args, char **argv)
 {
     // GATest();
     ChessBoardInit();
@@ -150,14 +171,14 @@ int main(int args, char** argv)
     AIInit();
     // TrainRun();
     // Input(buff, BUFFSIZE);
-    
+
     // TrainTestAI(AIPatternPowers_Default,AIPatternPowers_Default);
     // NeighborMaptest();
     // NeighborMaptest();
     // PowerMaptest();
-    // Player p1 = NewAIPlayer("AI0", 0, AIPatternPowers_Default_G2);
-    Player p2 = NewHumanPlayer("P1");
-    Player p1 = NewAIPlayer("AI1",0, AIPatternPowers_Default_G1);
+    Player p1 = NewAIPlayer("AI0", 0, AIPatternPowers_Default_G2);
+    // Player p2 = NewHumanPlayer("P1");
+    Player p2 = NewAIPlayer("AI1", 1, AIPatternPowers_Default_G1);
     Game game = NewGame(p1, p2);
     Start(game);
     return 0;

@@ -47,13 +47,14 @@ Queue NewQueue(const int capbility)
 {
     Queue re = malloc(sizeof(struct _queue));
     re->capbility = capbility;
-    re->items = (queueitem*)malloc(sizeof(queueitem) * capbility);
+    re->items = (queueitem *)malloc(sizeof(queueitem) * capbility);
     re->head = 0;
     re->tile = 0;
     return re;
 }
 
-void FreeQueue(Queue q){
+void FreeQueue(Queue q)
+{
     free(q->items);
     free(q);
 }
