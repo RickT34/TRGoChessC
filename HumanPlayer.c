@@ -21,6 +21,11 @@ Player NewHumanPlayer(const char *name)
     return re;
 }
 
+void FreeHumanPlayer(Player player){
+    free(player->data);
+    FreePlayer(player);
+}
+
 void SetHumanPlayer(Player player)
 {
     player->data = malloc(sizeof(Point));

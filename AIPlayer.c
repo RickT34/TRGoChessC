@@ -39,6 +39,8 @@ const Power AIPatternPowers_Default_G1[] = {
     1.264958, 1.128135, 2.360985, 3.413630, 14.196601, 32.206841, 15.003711, 25.843367, 14.462551, 25.108482, 33.186558, 1108.496338, 10000000000.000000}; // Very Good
 const Power AIPatternPowers_Default_G2[] = {
     1.251160, 1.107565, 2.243129, 3.074561, 15.295946, 32.378300, 15.342386, 25.843367, 14.360447, 26.023911, 33.409294, 1219.467163, 10000000000.000000};
+const Power AIPatternPowers_Default_G3h[] = {
+    1.265765, 1.139401, 2.573636, 3.415462, 14.763461, 32.287624, 14.929572, 25.641521, 14.462551, 24.830317, 30.056494, 1164.795654, 10000000000.000000};
 
 const Power AIPatternPowersPruned_Default[] = {
     1, 15, 14, 14, 32, 1e10};
@@ -276,7 +278,7 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)
     ChessBoard cb = CloneChessBoard(ct);
     if (actionHistory->Count == 0)
     {
-        re = GetPoint(7, 7);
+        re = GetPoint(LLN/2, LLN/2);
     }
     else
     {

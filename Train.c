@@ -9,13 +9,13 @@
 #include "mt19937.h"
 #include <assert.h>
 #define VariationPoint 3
-#define VariationRange 0.1f
+#define VariationRange 0.15f
 // #define StartVariationRange 0.1f
 #define AICount 25
-#define GENS 60
+#define GENS 30
 #define HYBRID 0.4
 #define VARIATION 0.1
-#define STARTPATTERN AIPatternPowers_Default_G2
+#define STARTPATTERN AIPatternPowers_Default_G1
 #define RACECount (AICount * (AICount - 1))
 // GAGene = Power*
 
@@ -53,7 +53,7 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
             // if((game->history->Count)&4)
             //     putchar('.');
         }
-        PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
+        // PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
         GAScore score = game->history->Count / 100.0;
         score *= score;
         score = 100.0 * exp(-1.5 * score) + 200.0;
@@ -146,7 +146,7 @@ void TrainRun()
     starts[0] = GetClone((Power *)STARTPATTERN);
     for (int i = 1; i < count; ++i)
     {
-        starts[i] = GetVariation((const GAGene *)STARTPATTERN);
+        starts[i] = GetVariation((GAGene *)STARTPATTERN);
         // starts[i] = GetClone((Power *)STARTPATTERN);
         // if(i==0)continue;
         // Power *re = starts[i];

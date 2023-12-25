@@ -20,6 +20,7 @@ const extern char *AIPatterns_Default[];
 const extern Power AIPatternPowers_Default[];
 const extern Power AIPatternPowers_Default_G1[];
 const extern Power AIPatternPowers_Default_G2[];
+const extern Power AIPatternPowers_Default_G3h[];
 
 // 轻量匹配模式集， 个数为 6
 const extern char *AIPatterns_Pruned[];

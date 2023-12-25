@@ -11,6 +11,7 @@ void MakeUI(Game game)
     printf("Next: ");
     PrintPlayer(game, GameNextPlayerID(game->nowPlayerID));
     putchar('\n');
+    printf("Input '?' for help.\n");
 }
 void MakeProcessBar(int p, int len, const int width)
 { // p in [1,len]
@@ -101,6 +102,15 @@ int InputCommamd(Game game, char *buff)
         FreeGame(game);
         return 0;
     }
+    else if (buff[0] == 'q')
+    {
+        return 2;
+    }
+    else if (buff[0] == '?')
+    {
+        printf("-\t悔棋\n>\t保存\n<\t读取\nr\t复盘\nq\t退出\n");
+        return 0;
+    }
     return 1;
 }
 
@@ -114,6 +124,7 @@ char buff[4096];
 void Start(Game game)
 {
     int ret;
+    int comret;
     do
     {
         MakeUI(game);
@@ -126,7 +137,9 @@ void Start(Game game)
             }
             printf("Game stopped!\n");
             Input(buff, BUFFSIZE);
-            InputCommamd(game, buff);
+            comret = InputCommamd(game, buff);
+            if (comret == 2)
+                return;
         }
         else
         {
@@ -136,8 +149,10 @@ void Start(Game game)
                 while (p == PointNULL)
                 {
                     Input(buff, BUFFSIZE);
-                    if (InputCommamd(game, buff))
+                    if (comret = InputCommamd(game, buff))
                     {
+                        if (comret == 2)
+                            return;
                         p = GetPointInput(game, buff);
                     }
                     else
@@ -161,25 +176,60 @@ void Start(Game game)
     } while (1);
 }
 
+int Run()
+{
+    Player p1, p2;
+    p1 = NewHumanPlayer("你");
+    p2 = NewAIPlayer("AI", 1, AIPatternPowers_Default_G3h);
+    Game game = NULL;
+    do
+    {
+        printf("Welcome!\n1 for 先手, 2 for 后手, q for 退出:\n");
+        Input(buff, BUFFSIZE);
+        if (buff[0] == '1')
+        {
+            game = NewGame(p1, p2);
+            break;
+        }
+        else if (buff[0] == '2')
+        {
+            game = NewGame(p2, p1);
+            break;
+        }
+        else if (buff[0] == 'q')
+        {
+            FreeHumanPlayer(p1);
+            FreeAIPlayer(p2);
+            return 1;
+        }
+        printf("Retry.\n");
+    } while (1);
+    if (game != NULL)
+    {
+        Start(game);
+        FreeGame(game);
+    }
+    FreeHumanPlayer(p1);
+    FreeAIPlayer(p2);
+    return 0;
+}
+
 // #include"AIUtilities.h"
 // #include"mt19937.h"
 int main(int args, char **argv)
 {
-    // GATest();
     ChessBoardInit();
     GameManagerInit();
     AIInit();
     // TrainRun();
     // Input(buff, BUFFSIZE);
-
-    // TrainTestAI(AIPatternPowers_Default,AIPatternPowers_Default);
-    // NeighborMaptest();
-    // NeighborMaptest();
-    // PowerMaptest();
-    Player p1 = NewAIPlayer("AI0", 0, AIPatternPowers_Default_G2);
-    // Player p2 = NewHumanPlayer("P1");
-    Player p2 = NewAIPlayer("AI1", 1, AIPatternPowers_Default_G1);
-    Game game = NewGame(p1, p2);
+    Player p1, p2;
+    p2 = NewAIPlayer("AI0",1,AIPatternPowers_Default_G1);
+    p1 = NewAIPlayer("AI1", 0, AIPatternPowers_Default_G3h);
+    Game game=NewGame(p1,p2);
     Start(game);
+    while (!Run())
+        ;
+
     return 0;
 }
