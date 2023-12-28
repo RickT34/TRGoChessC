@@ -6,7 +6,8 @@
 
 PowerMap NewPowerMap()
 {
-    PowerMap re = calloc(1, sizeof(*re));
+    PowerMap re = malloc(sizeof(*re));
+    memset(re->linePower,0,sizeof(re->linePower));
     int pl = 0;
     for (int x = 0; x < LLN; ++x)
     {
@@ -18,12 +19,14 @@ PowerMap NewPowerMap()
                 Point s = CBINF[p].start[d];
                 if (re->linePower[s][d] == NULL)
                 {
+                    re->powers[pl]=0;
                     re->linePower[s][d] = &re->powers[pl++];
                 }
                 re->linePower[p][d] = re->linePower[s][d];
             }
         }
     }
+    assert(pl==POWERSLEN);
     return re;
 }
 
@@ -41,8 +44,6 @@ void PowerMapFlush(AIData aidata, const ChessBoard cb, const int PatternLen)
     char computed[POWERSLEN];
     memset(computed, 0, sizeof(computed));
 
-    int *patn = NewArray(int, PatternLen);
-
     for (int x = 0; x < LLN; ++x)
     {
         for (int y = 0; y < LLN; ++y)
@@ -54,21 +55,13 @@ void PowerMapFlush(AIData aidata, const ChessBoard cb, const int PatternLen)
                 if (computed[index])
                     continue;
                 computed[index] = 1;
-                memset(patn, 0, sizeof(int) * PatternLen);
-                TrieQuery(&GetChess(cb, CBINF[p].start[d]),
-                          DireSteps[d], CBINF[p].lens[d], aidata->patterns, patn);
-                Power ls = 0;
-                for (int k = 0; k < PatternLen; ++k)
-                {
-                    int n = patn[k];
-                    ls += aidata->patternPowers[k] * n;
-                }
+                Power ls = TrieQuery(&GetChess(cb, CBINF[p].start[d]),
+                                     DireSteps[d], CBINF[p].lens[d], aidata->patterns);
                 *(pm->linePower[p][d]) = ls;
                 pm->powerSum += ls;
             }
         }
     }
-    free(patn);
 }
 
 void PrintPowerMap(PowerMap pm)
@@ -88,12 +81,45 @@ void PrintPowerMap(PowerMap pm)
     printf("Sum: %f\n", pm->powerSum);
 }
 
+PowerMap ClonePowerMap(const PowerMap pm){
+    PowerMap re = NewPowerMap();
+    memcpy(re->powers,pm->powers,sizeof(re->powers));
+    re->powerSum=pm->powerSum;
+    return re;
+}
+
+ChessPot NewChessPot()
+{
+    ChessPot re = malloc(sizeof(*re));
+    ChessPotTie(re, ChessPotHead, ChessPotTail);
+    return re;
+}
+
+ChessPot CloneChessPot(const ChessPot cp)
+{
+    ChessPot re = malloc(sizeof(*re));
+    memcpy(re,cp,sizeof(*cp));
+    return re;
+}
+
+void FreeChessPot(ChessPot pot)
+{
+    free(pot);
+}
+
 NeighborMap NewNeighborMap()
 {
     NeighborMap re = malloc(sizeof(*re));
     memset(re->map, 0, sizeof(re->map));
     re->pot = NewChessPot();
     re->historyCount = 0;
+    return re;
+}
+
+NeighborMap CloneNeighborMap(const NeighborMap nbm){
+    NeighborMap re = malloc(sizeof(*re));
+    memcpy(re,nbm,sizeof(*nbm));
+    re->pot=CloneChessPot(nbm->pot);
     return re;
 }
 
@@ -264,4 +290,22 @@ int ZobristTableFindAndInsert(ZobristTable zt, const uint64 key)
     if (zt->hashTable[k] == 0)
         zt->hashTable[k] = key;
     return 0;
+}
+
+AIData CloneAIData(const AIData aidata){
+    AIData re=malloc(sizeof(*re));
+    re->powerMap=ClonePowerMap(aidata->powerMap);
+    re->neighborMap=CloneNeighborMap(aidata->neighborMap);
+    re->patterns=aidata->patterns;
+    re->playerid=aidata->playerid;
+    re->needflush=aidata->needflush;
+    return re;
+}
+
+void PrintAIData(const AIData aidata){
+    printf("PowerMap:\n");
+    PrintPowerMap(aidata->powerMap);
+    printf("NeighborMap:\n");
+    PrintNeighborMap(aidata->neighborMap);
+    printf("Playerid: %d, needflush: %d\n",aidata->playerid,aidata->needflush);
 }

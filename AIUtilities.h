@@ -2,7 +2,6 @@
 #define _AIUtilitiesH
 
 #include "ACAutomaton.h"
-#include "ChessPot.h"
 #include "Stack.h"
 #include "ChessBoard.h"
 #include "Globals.h"
@@ -28,6 +27,30 @@ void FreePowerMap(PowerMap pm);
 /// @param pm 棋力图
 void PrintPowerMap(PowerMap pm);
 
+PowerMap ClonePowerMap(const PowerMap pm);
+
+/******************棋子集相关***************************/
+#define ChessPotNULL -1         // 棋子集空节点
+#define ChessPotHead BLEN       // 棋子集头节点
+#define ChessPotTail (BLEN + 1) // 棋子集尾节点
+
+typedef struct
+{
+    Point nxtnode[BLEN + 2];
+} *ChessPot; // 棋子集，采用数组化的单链表，实现O(1)随机访问，O(1)单点删除，O(1)端点区间删除
+
+/// @brief 实例化空棋子集
+/// @return 空棋子集
+ChessPot NewChessPot();
+/// @brief 释放棋子集
+/// @param pot 棋子集
+void FreeChessPot(ChessPot pot);
+ChessPot CloneChessPot(const ChessPot cp);
+
+#define ChessPotTie(pot, p1, p2) ((pot)->nxtnode[p1] = (p2)) // 节点链接
+
+#define ChessPotClean(pot) ChessPotTie(pot, ChessPotHead, ChessPotTail) // 清空棋子集
+
 /***********************动态邻居表相关*******************************/
 typedef struct
 {
@@ -43,6 +66,7 @@ NeighborMap NewNeighborMap();
 /// @brief 释放动态邻居表
 /// @param nbm 动态邻居表
 void FreeNeighborMap(NeighborMap nbm);
+NeighborMap CloneNeighborMap(const NeighborMap nbm);
 /// @brief 向动态邻居表中落子
 /// @param nbm 动态邻居表
 /// @param p 落子位置
@@ -90,7 +114,6 @@ typedef struct
     PowerMap powerMap;
     NeighborMap neighborMap;
     Trie patterns;
-    Power *patternPowers;
     int playerid;
     char needflush;
     // ZobristTable zobristTable;
@@ -101,5 +124,8 @@ typedef struct
 /// @param cb 棋盘
 /// @param PatternLen 匹配模式个数
 void PowerMapFlush(AIData aidata, const ChessBoard cb, const int PatternLen);
+
+AIData CloneAIData(const AIData aidata);
+void PrintAIData(const AIData aidata);
 
 #endif

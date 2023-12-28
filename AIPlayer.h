@@ -8,7 +8,7 @@
 
 #define AIPatternLen 15                 // 使用的匹配模式个数
 #define AIUsePattern AIPatterns_Default // 使用的匹配模式集
-#define AIDepth 4                       // 搜索层数
+#define AIDepth 6                       // 搜索层数
 
 /********************可用的匹配模式及权值************************/
 // 标准匹配模式集，个数为 15
@@ -48,7 +48,5 @@ void FreeAIPlayer(Player player);
 /// @param powers 使用权值
 void SetAIPlayer(Player player, const int playerid, const Power *powers);
 
-/// @brief AI相关初始化
-void AIInit();
 
 #endif

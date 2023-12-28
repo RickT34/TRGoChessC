@@ -7,7 +7,7 @@
 
 const char winPatterns[2][5] = {{PlayerB, PlayerB, PlayerB, PlayerB, PlayerB},
                                 {PlayerW, PlayerW, PlayerW, PlayerW, PlayerW}};
-
+const Power winpowers[]={1,1};
 Trie WinPattern;
 
 void GameManagerInit()
@@ -18,7 +18,7 @@ void GameManagerInit()
     WinPattern = NewTrie();
     TrieInsert(WinPattern, &winPatterns[0][0], 5, 0);
     TrieInsert(WinPattern, &winPatterns[1][0], 5, 1);
-    TrieCompile(WinPattern);
+    TrieCompile(WinPattern,winpowers);
     inited = 1;
 }
 
@@ -59,13 +59,11 @@ int GameNextTurn(Game game)
     Action action = NewAction(game->nowPlayerID, act);
     StackPush(game->history, action);
 
-    int win[2];
     for (int d = 0; d < DireLen; ++d)
     {
-        win[0] = win[1] = 0;
-        TrieQuery(&GetChess(game->chessboard, CBINF[act].start[d]),
-                  DireSteps[d], CBINF[act].lens[d], WinPattern, win);
-        if (win[0] || win[1])
+        Power win = TrieQuery(&GetChess(game->chessboard, CBINF[act].start[d]),
+                  DireSteps[d], CBINF[act].lens[d], WinPattern);
+        if (win)
         {
             game->status = GameStatus_End;
             return 1;

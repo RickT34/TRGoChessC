@@ -2,6 +2,7 @@
 #include "AIUtilities.h"
 #include <assert.h>
 #include <string.h>
+#include "omp.h"
 
 #define Power_MAX (1e30)
 #define Power_WIN (1e10)
@@ -54,24 +55,15 @@ const Power AIPatternPowersPruned_Default[] = {
 const Power AIPatternPowersPruned_Default_G2[] = {
     1.168401, 15.162420, 14.000000, 8.567827, 21.539915, 8915616768.000000}; // Good
 
-Trie AIPatterns[2];
-
 Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
 {
-    int patn[PatternLen];
     PowerMap pm = aidata->powerMap;
     Power powersum = pm->powerSum;
     for (int d = 0; d < DireLen; ++d)
     {
-        memset(patn, 0, sizeof(patn));
-        TrieQuery(&GetChess(cb, CBINF[p].start[d]),
-                  DireSteps[d], CBINF[p].lens[d], aidata->patterns, patn);
+        Power ls = TrieQuery(&GetChess(cb, CBINF[p].start[d]),
+                             DireSteps[d], CBINF[p].lens[d], aidata->patterns);
         powersum -= *(pm->linePower[p][d]);
-        Power ls = 0;
-        for (int k = 0; k < PatternLen; ++k)
-        {
-            ls += aidata->patternPowers[k] * patn[k];
-        }
         *(pm->linePower[p][d]) = ls;
         powersum += ls;
     }
@@ -80,20 +72,13 @@ Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
 }
 Power ComputePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
 {
-    int patn[PatternLen];
     PowerMap pm = aidata->powerMap;
     Power powersum = pm->powerSum;
     for (int d = 0; d < DireLen; ++d)
     {
-        memset(patn, 0, sizeof(patn));
-        TrieQuery(&GetChess(cb, CBINF[p].start[d]),
-                  DireSteps[d], CBINF[p].lens[d], aidata->patterns, patn);
+        Power ls = TrieQuery(&GetChess(cb, CBINF[p].start[d]),
+                             DireSteps[d], CBINF[p].lens[d], aidata->patterns);
         powersum -= *(pm->linePower[p][d]);
-        Power ls = 0;
-        for (int k = 0; k < PatternLen; ++k)
-        {
-            ls += aidata->patternPowers[k] * patn[k];
-        }
         powersum += ls;
     }
     return powersum;
@@ -160,8 +145,7 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player,
             {
                 return PointNULL;
             }
-            re = p;
-            return re;
+            return p;
         }
         if (re == PointNULL || ret > *rate)
         {
@@ -205,12 +189,11 @@ void SortPoint(Point *points, const int count, const PowerMap pm)
     }
     free(powers);
 }
-Point GetBestMove(const AIData aidata, ChessBoard cb, Power *rate, const char dep)
+Point GetBestMove(const AIData aidata, ChessBoard cb, Power *rate, const int player, const char dep, const Power maxpower)
 {
     NeighborMap nbm = aidata->neighborMap;
     ChessPot pot = nbm->pot;
     Point re = PointNULL;
-    int player = aidata->playerid;
     Point points[LLN * LLN];
     int count = 0;
     for (Point p = pot->nxtnode[ChessPotHead]; p != ChessPotTail; p = pot->nxtnode[p])
@@ -235,16 +218,21 @@ Point GetBestMove(const AIData aidata, ChessBoard cb, Power *rate, const char de
             linep[d] = *(pm->linePower[p][d]);
         // End Push
         power = UpdatePowerPoint(p, aidata, cb);
-        if (power >= Power_WIN)
+        if (player != aidata->playerid)
+            power = -power;
+        if (power < Power_WIN)
         {
-            *rate = power;
-            SetChess(cb, p, BLANK);
-            return p;
-        }
-        else
-        {
-            if (Minimax(aidata, cb, GameNextPlayerID(player), &ret,
-                        re == PointNULL ? Power_MAX : -*rate, dep - 1) != PointNULL)
+            Point nret;
+            if (dep > 1)
+            {
+                nret = GetBestMove(aidata, cb, &ret, GameNextPlayerID(player), dep - 1, re == PointNULL ? Power_MAX : -*rate);
+            }
+            else
+            {
+                nret = Minimax(aidata, cb, GameNextPlayerID(player), &ret,
+                               re == PointNULL ? Power_MAX : -*rate, dep - 1);
+            }
+            if (nret != PointNULL)
             {
                 ret = -ret;
             }
@@ -263,16 +251,92 @@ Point GetBestMove(const AIData aidata, ChessBoard cb, Power *rate, const char de
         pm->powerSum = powersum;
         NeighborMapUndo(aidata->neighborMap, p);
         // End Pop
-
+        if (power >= Power_WIN)
+        {
+            *rate = power;
+            SetChess(cb, p, BLANK);
+            if (power >= maxpower)
+            {
+                return PointNULL;
+            }
+            return p;
+        }
         if (re == PointNULL || ret > *rate)
         {
             *rate = ret;
+            if (*rate >= maxpower)
+            {
+                SetChess(cb, p, BLANK);
+                return PointNULL;
+            }
             re = p;
         }
         SetChess(cb, p, BLANK);
     }
     // if(maxn!=0)printf("%d %d\n",dep,maxn);
     // printf("Best PointL %d%c",PointTo2C(re));
+    return re;
+}
+
+Point GetBestMovePara(const AIData aidata, ChessBoard cb, Power *rate, const char dep)
+{
+    ChessPot pot = aidata->neighborMap->pot;
+    Point re = PointNULL;
+    int player = aidata->playerid;
+    Point points[LLN * LLN];
+    int count = 0;
+    for (Point p = pot->nxtnode[ChessPotHead]; p != ChessPotTail; p = pot->nxtnode[p])
+    {
+        if (cb[p] != BLANK)
+            continue;
+        points[count++] = p;
+    }
+    SortPoint(points, count, aidata->powerMap);
+    *rate = 0;
+    omp_set_num_threads(16);
+#pragma omp parallel for
+    for (int ip = 0; ip < count; ++ip)
+    {
+        // PrintAIData(aidata);
+        if (*rate >= Power_WIN)
+            continue;
+        Point p = points[ip];
+        ChessBoard cbb = CloneChessBoard(cb);
+        SetChess(cbb, p, PlayerChessTypes[player]);
+        AIData datab = CloneAIData(aidata);
+        Power powernow = UpdatePowerPoint(p, datab, cbb);
+        NeighborMapAddChess(datab->neighborMap, p);
+        if (powernow >= Power_WIN)
+        {
+#pragma omp critical
+            {
+                *rate = powernow;
+                re = p;
+            }
+        }
+        else
+        {
+            Power retb;
+            if (GetBestMove(datab, cbb, &retb, GameNextPlayerID(datab->playerid), dep - 1, re == PointNULL ? Power_MAX : -*rate) != PointNULL)
+            {
+                retb = -retb;
+#pragma omp critical
+                {
+                    if (re == PointNULL || retb > *rate)
+                    {
+
+                        *rate = retb;
+                        re = p;
+                    }
+                }
+            }
+        }
+
+        FreeChessBoard(cbb);
+        FreePowerMap(datab->powerMap);
+        FreeNeighborMap(datab->neighborMap);
+        free(datab);
+    }
     return re;
 }
 
@@ -301,15 +365,15 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)
             UpdatePowerPoint(lastpoint, data, ct);
         }
 #ifdef DEBUG
-        PrintNeighborMap(data->neighborMap);
-        PrintPowerMap(data->powerMap);
+        // PrintNeighborMap(data->neighborMap);
+        // PrintPowerMap(data->powerMap);
 #endif
         Power rate;
         // re = Minimax(data, cb, data->playerid, 0, &rate, Power_MAX, AIDepth);
-        re = GetBestMove(data, cb, &rate, AIDepth);
+        // re = GetBestMove(data, cb, &rate, data->playerid, AIDepth, Power_MAX);
+        re = GetBestMovePara(data, cb, &rate, AIDepth);
 #ifdef DEBUG
         printfD("Rate:%f\n", rate);
-        printfD("Inserted:%d\n", inserted);
 #endif
     }
     assert(re != PointNULL);
@@ -340,53 +404,58 @@ int IsParadistr(const char *s, int l)
     return 1;
 }
 
-void AIInit()
+Trie GetPatternTrie(const char *patterns[], const int patternlen, const Power *powers, const int playerid)
 {
-    static char inited = 0;
-    if (inited)
-        return;
-    inited = 1;
-    for (int playerid = 0; playerid < 2; ++playerid)
+    Trie re = NewTrie();
+    char buff1[20], buff2[20];
+    int pati = 0;
+    for (int i = 0, id = playerid; i < 2; ++i, id = GameNextPlayerID(id))
     {
-        AIPatterns[playerid] = NewTrie();
-        char buff1[20], buff2[20];
-        int pati = 0;
-        for (int i = 0, id = playerid; i < 2; ++i, id = GameNextPlayerID(id))
+        for (int j = 0; j < patternlen; ++j)
         {
-            for (int j = 0; j < AIPatternLen; ++j)
+            int l = strlen(patterns[j]);
+            for (int k = 0; k < l; ++k)
             {
-                int l = strlen(AIUsePattern[j]);
-                for (int k = 0; k < l; ++k)
+                switch (patterns[j][k])
                 {
-                    switch (AIUsePattern[j][k])
-                    {
-                    case '1':
-                        buff1[k] = PlayerChessTypes[id];
-                        break;
-                    case '2':
-                        buff1[k] = PlayerChessTypes[GameNextPlayerID(id)];
-                        break;
-                    case '0':
-                        buff1[k] = BLANK;
-                        break;
-                    default:
-                        assert(0);
-                        break;
-                    }
-                    buff2[l - 1 - k] = buff1[k];
+                case '1':
+                    buff1[k] = PlayerChessTypes[id];
+                    break;
+                case '2':
+                    buff1[k] = PlayerChessTypes[GameNextPlayerID(id)];
+                    break;
+                case '0':
+                    buff1[k] = BLANK;
+                    break;
+                default:
+                    assert(0);
+                    break;
                 }
-                buff1[l] = buff2[l] = 0;
-                if (strcmp(buff1, buff2))
-                {
-                    TrieInsert(AIPatterns[playerid], buff2, l, pati);
-                }
-                TrieInsert(AIPatterns[playerid], buff1, l, pati);
-                ++pati;
+                buff2[l - 1 - k] = buff1[k];
             }
+            buff1[l] = buff2[l] = 0;
+            if (strcmp(buff1, buff2))
+            {
+                TrieInsert(re, buff2, l, pati);
+            }
+            TrieInsert(re, buff1, l, pati);
+            ++pati;
         }
-        assert(pati == PatternLen);
-        TrieCompile(AIPatterns[playerid]);
     }
+    assert(pati == patternlen * 2);
+    Power *patternPowers = malloc(sizeof(Power) * pati);
+    pati = 0;
+    for (int i = 0, id = playerid; i < 2; ++i, id = GameNextPlayerID(id))
+    {
+        for (int j = 0; j < patternlen; ++j)
+        {
+            patternPowers[pati] = (id == playerid ? powers[j] * 2 : -powers[j] * powers[patternlen]);
+            ++pati;
+        }
+    }
+    TrieCompile(re, patternPowers);
+    free(patternPowers);
+    return re;
 }
 
 AIData NewAIData(const int playerid, const Power *powers)
@@ -396,24 +465,12 @@ AIData NewAIData(const int playerid, const Power *powers)
     re->neighborMap = NewNeighborMap();
     re->playerid = playerid;
     // re->zobristTable = NewZobristTable();
-    re->patternPowers = malloc(sizeof(Power) * PatternLen);
-    re->patterns = AIPatterns[playerid];
-    char buff1[20], buff2[20];
-    int pati = 0;
-    for (int i = 0, id = playerid; i < 2; ++i, id = GameNextPlayerID(id))
-    {
-        for (int j = 0; j < AIPatternLen; ++j)
-        {
-            re->patternPowers[pati] = (id == playerid ? powers[j] * 2 : -powers[j] * powers[AIPatternLen]);
-            ++pati;
-        }
-    }
+    re->patterns = GetPatternTrie(AIUsePattern, AIPatternLen, powers, playerid);
     return re;
 }
 void FreeAIPlayer(Player player)
 {
     AIData data = (AIData)player->data;
-    free(data->patternPowers);
     FreePowerMap(data->powerMap);
     FreeNeighborMap(data->neighborMap);
     // FreeZobristTable(data->zobristTable);

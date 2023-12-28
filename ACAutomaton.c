@@ -6,8 +6,7 @@ struct trienode
     int id;
     Trie next[TRIEMAXFORK];
     Trie fail;
-    int matchids[TRIEMAXID];
-    int matchidsLen;
+    Power powerAdd;
 };
 
 Trie NewTrie()
@@ -15,7 +14,7 @@ Trie NewTrie()
     Trie re = (Trie)malloc(sizeof(struct trienode));
     re->fail = NULL;
     re->id = -1;
-    re->matchidsLen = 0;
+    re->powerAdd=0;
     for (int i = 0; i < TRIEMAXFORK; ++i)
         re->next[i] = NULL;
     return re;
@@ -52,22 +51,22 @@ void TrieInsert(Trie root, const char *key, const int len, const int idx) // 将
     }
     root->id = idx;
 }
-void TrieCompile2(Trie tr, Trie root)
+void TrieCompile2(Trie tr, Trie root, const Power* powers)
 {
     Trie temp = tr;
     while (temp != root)
     {
-        if (temp->id != -1)
-            tr->matchids[tr->matchidsLen++] = temp->id;
+        if(temp->id!=-1)
+            tr->powerAdd+=powers[temp->id];
         temp = temp->fail;
     }
     for (int i = 0; i < TRIEMAXFORK; ++i)
     {
         if (tr->next[i] != NULL)
-            TrieCompile2(tr->next[i], root);
+            TrieCompile2(tr->next[i], root, powers);
     }
 }
-void TrieCompile(Trie root) // 用bfs建立失配指针
+void TrieCompile(Trie root, const Power* powers) // 用bfs建立失配指针
 {
     Queue q = NewQueue(100);
     QueuePushback(q, root);
@@ -101,12 +100,13 @@ void TrieCompile(Trie root) // 用bfs建立失配指针
             }
     }
     FreeQueue(q);
-    TrieCompile2(root, root);
+    TrieCompile2(root, root,powers);
 }
 
-void TrieQuery(const char *strin, const int step, const int len, const Trie root, int *ret)
+Power TrieQuery(const char *strin, const int step, const int len, const Trie root)
 {
     Trie p = root;
+    Power ret=0;
     for (int i = 0; i < len; i++, strin += step)
     {
         int k = *strin;
@@ -115,27 +115,7 @@ void TrieQuery(const char *strin, const int step, const int len, const Trie root
         p = p->next[k];
         if (p == NULL)
             p = root;
-        for (int j = 0; j < p->matchidsLen; ++j)
-        {
-            ret[p->matchids[j]] += 1;
-        }
+        ret+= p->powerAdd;
     }
-}
-
-void TrieQuery2(const char *strin, const int step, const int len, const Trie root, int *ret[])
-{
-    Trie p = root;
-    for (int i = 0; i < len; i++, strin += step)
-    {
-        int k = *strin;
-        while (p->next[k] == NULL && p != root)
-            p = p->fail;
-        p = p->next[k];
-        if (p == NULL)
-            p = root;
-        for (int j = 0; j < p->matchidsLen; ++j)
-        {
-            ret[i][p->matchids[j]] += 1;
-        }
-    }
+    return ret;
 }

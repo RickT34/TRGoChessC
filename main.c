@@ -220,7 +220,6 @@ int main(int args, char **argv)
 {
     ChessBoardInit();
     GameManagerInit();
-    AIInit();
     // TrainRun();
     // Input(buff, BUFFSIZE);
     // Player p1, p2;
