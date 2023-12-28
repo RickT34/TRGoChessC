@@ -180,7 +180,6 @@ int Run()
 {
     Player p1, p2;
     p1 = NewHumanPlayer("你");
-    p2 = NewAIPlayer("AI", 1, AIPatternPowers_Default_G3h);
     Game game = NULL;
     do
     {
@@ -188,18 +187,19 @@ int Run()
         Input(buff, BUFFSIZE);
         if (buff[0] == '1')
         {
+            p2 = NewAIPlayer("AI", 1, AIPatternPowers_Default_WG3h);
             game = NewGame(p1, p2);
             break;
         }
         else if (buff[0] == '2')
         {
+            p2 = NewAIPlayer("AI", 0, AIPatternPowers_Default_WG3h);
             game = NewGame(p2, p1);
             break;
         }
         else if (buff[0] == 'q')
         {
             FreeHumanPlayer(p1);
-            FreeAIPlayer(p2);
             return 1;
         }
         printf("Retry.\n");
@@ -223,11 +223,11 @@ int main(int args, char **argv)
     AIInit();
     // TrainRun();
     // Input(buff, BUFFSIZE);
-    Player p1, p2;
-    p2 = NewAIPlayer("AI0",1,AIPatternPowers_Default_G1);
-    p1 = NewAIPlayer("AI1", 0, AIPatternPowers_Default_G3h);
-    Game game=NewGame(p1,p2);
-    Start(game);
+    // Player p1, p2;
+    // p2 = NewAIPlayer("AI0", 1, AIPatternPowers_Default_G1);
+    // p1 = NewAIPlayer("AI1", 0, AIPatternPowers_Default_G5);
+    // Game game = NewGame(p1, p2);
+    // Start(game);
     while (!Run())
         ;
 

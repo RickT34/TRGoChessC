@@ -8,14 +8,14 @@
 #include "omp.h"
 #include "mt19937.h"
 #include <assert.h>
-#define VariationPoint 3
+#define VariationPoint 2
 #define VariationRange 0.15f
 // #define StartVariationRange 0.1f
 #define AICount 25
-#define GENS 30
+#define GENS 50
 #define HYBRID 0.4
-#define VARIATION 0.1
-#define STARTPATTERN AIPatternPowers_Default_G1
+#define VARIATION 0.2
+#define STARTPATTERN AIPatternPowers_Default_WG3h
 #define RACECount (AICount * (AICount - 1))
 // GAGene = Power*
 
@@ -56,19 +56,21 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
         // PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
         GAScore score = game->history->Count / 100.0;
         score *= score;
-        score = 100.0 * exp(-1.5 * score) + 200.0;
+        GAScore score2 =  exp(-1.5 * score);
+        score = 100.0 * score2 + 400.0;
         if (game->nowPlayerID == 0)
         {
 #pragma omp critical
             {
                 re[i] += score;
+                re[j] += (1-score2)*40.0;
             }
         }
         else
         {
 #pragma omp critical
             {
-                re[j] += score * 1.2f;
+                re[j] += score * 1.2;
             }
         }
         putchar('.');
@@ -83,8 +85,8 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
 
 GAGene GetClone(const GAGene ind)
 {
-    Power *re = malloc(sizeof(Power) * AIPatternLen);
-    for (int i = 0; i < AIPatternLen; ++i)
+    Power *re = malloc(sizeof(Power) * (AIPatternLen+1));
+    for (int i = 0; i <= AIPatternLen; ++i)
     {
         re[i] = ((Power *)ind)[i];
     }
@@ -95,7 +97,8 @@ GAGene GetVariation(const GAGene ind)
     Power *re = GetClone(ind);
     do
     {
-        int k = genrand64_int63() % (AIPatternLen - 1);
+        int k = genrand64_int63() % (AIPatternLen);
+        if(k==AIPatternLen-1)k=AIPatternLen;
         re[k] *= 1.0 + (genrand64_real1() - 0.5) * VariationRange * 2;
     } while (genrand64_int63() % VariationPoint);
 
@@ -103,8 +106,8 @@ GAGene GetVariation(const GAGene ind)
 }
 GAGene GetHybrid(const GAGene ind1, const GAGene ind2)
 {
-    Power *re = malloc(sizeof(Power) * AIPatternLen);
-    for (int i = 0; i < AIPatternLen; ++i)
+    Power *re = malloc(sizeof(Power) * (AIPatternLen+1));
+    for (int i = 0; i <= AIPatternLen; ++i)
     {
         double p = genrand64_real3();
         re[i] = ((Power *)ind1)[i] * p + ((Power *)ind2)[i] * (1 - p);
@@ -116,7 +119,7 @@ void DeleteGene(GAGene ind) { free(ind); }
 void PrintGene(const GAGene gene)
 {
     printf("Gene:  {");
-    for (int i = 0; i < AIPatternLen; ++i)
+    for (int i = 0; i <= AIPatternLen; ++i)
     {
         printf((i == 0 ? "%f" : ", %f"), ((Power *)gene)[i]);
     }

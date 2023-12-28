@@ -23,6 +23,9 @@ const char *AIPatterns_Default[] = {
     "211110",
     "011110",
 
+    "10111",
+    "11011",
+
     "11111"};
 const char *AIPatterns_Pruned[] = {
     "110",
@@ -33,19 +36,21 @@ const char *AIPatterns_Pruned[] = {
     "11111"};
 
 const Power AIPatternPowers_Default[] = {
-    1, 1, 2, 3, 15, 32, 14, 28, 14, 28, 32, 1024, Power_WIN};
+    1, 1, 2, 3, 15, 32, 14, 28, 14, 28, 32, 1024, 32, 32, Power_WIN, 3};
 
 const Power AIPatternPowers_Default_G1[] = {
-    1.264958, 1.128135, 2.360985, 3.413630, 14.196601, 32.206841, 15.003711, 25.843367, 14.462551, 25.108482, 33.186558, 1108.496338, 10000000000.000000}; // Very Good
-const Power AIPatternPowers_Default_G2[] = {
-    1.251160, 1.107565, 2.243129, 3.074561, 15.295946, 32.378300, 15.342386, 25.843367, 14.360447, 26.023911, 33.409294, 1219.467163, 10000000000.000000};
+    1.264958, 1.128135, 2.360985, 3.413630, 14.196601, 32.206841, 15.003711, 25.843367, 14.462551, 25.108482, 33.186558, 1108.496338, 30.056494, 30.056494, 10000000000.000000, 3.0}; // Very Good
 const Power AIPatternPowers_Default_G3h[] = {
-    1.265765, 1.139401, 2.573636, 3.415462, 14.763461, 32.287624, 14.929572, 25.641521, 14.462551, 24.830317, 30.056494, 1164.795654, 10000000000.000000};
+    1.265765, 1.139401, 2.573636, 3.415462, 14.763461, 32.287624, 14.929572, 25.641521, 14.462551, 24.830317, 30.056494, 1164.795654, 10000000000.000000}; // Slightly better than G1
+const Power AIPatternPowers_Default_WG3h[] = {
+    1.265765, 1.139401, 2.573636, 3.415462, 14.763461, 32.287624, 14.929572, 25.641521, 14.462551, 24.830317, 30.056494, 11647.95654, 30.056494, 30.056494, 10000000000.000000, 3.0};
+const Power AIPatternPowers_Default_G4[] = {
+    1.293640, 1.136595, 2.417328, 2.736043, 12.718534, 33.407169, 15.024739, 26.410625, 14.317172, 24.753183, 31.227119, 11647.956055, 33.267681, 29.755487, 10000000000.000000, 3.338750};
+const Power AIPatternPowers_Default_G5[] = {
+    1.294260, 1.114793, 2.557403, 3.114548, 14.960281, 32.287624, 14.933109, 25.657160, 14.476357, 24.658726, 28.046144, 11639.659180, 29.734558, 31.473276, 10000000000.000000, 3.000000};
 
 const Power AIPatternPowersPruned_Default[] = {
     1, 15, 14, 14, 32, 1e10};
-const Power AIPatternPowersPruned_Default_G1[] = {
-    1.149223, 15.488806, 12.214859, 6.216610, 22.963440, 10753844224.000000};
 const Power AIPatternPowersPruned_Default_G2[] = {
     1.168401, 15.162420, 14.000000, 8.567827, 21.539915, 8915616768.000000}; // Good
 
@@ -278,7 +283,7 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)
     ChessBoard cb = CloneChessBoard(ct);
     if (actionHistory->Count == 0)
     {
-        re = GetPoint(LLN/2, LLN/2);
+        re = GetPoint(LLN / 2, LLN / 2);
     }
     else
     {
@@ -399,7 +404,7 @@ AIData NewAIData(const int playerid, const Power *powers)
     {
         for (int j = 0; j < AIPatternLen; ++j)
         {
-            re->patternPowers[pati] = (id == playerid ? powers[j] * AIAttackScale : -powers[j] * AIDefendScale);
+            re->patternPowers[pati] = (id == playerid ? powers[j] * 2 : -powers[j] * powers[AIPatternLen]);
             ++pati;
         }
     }
