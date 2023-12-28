@@ -28,16 +28,6 @@ const char *AIPatterns_Default[] = {
     "11011",
 
     "11111"};
-const char *AIPatterns_Pruned[] = {
-    "110",
-    "1110",
-    "11010",
-    "10110",
-    "11110",
-    "11111"};
-
-const Power AIPatternPowers_Default[] = {
-    1, 1, 2, 3, 15, 32, 14, 28, 14, 28, 32, 1024, 32, 32, Power_WIN, 3};
 
 const Power AIPatternPowers_Default_G1[] = {
     1.264958, 1.128135, 2.360985, 3.413630, 14.196601, 32.206841, 15.003711, 25.843367, 14.462551, 25.108482, 33.186558, 1108.496338, 30.056494, 30.056494, 10000000000.000000, 3.0}; // Very Good
@@ -46,14 +36,10 @@ const Power AIPatternPowers_Default_G3h[] = {
 const Power AIPatternPowers_Default_WG3h[] = {
     1.265765, 1.139401, 2.573636, 3.415462, 14.763461, 32.287624, 14.929572, 25.641521, 14.462551, 24.830317, 30.056494, 11647.95654, 30.056494, 30.056494, 10000000000.000000, 3.0};
 const Power AIPatternPowers_Default_G4[] = {
-    1.293640, 1.136595, 2.417328, 2.736043, 12.718534, 33.407169, 15.024739, 26.410625, 14.317172, 24.753183, 31.227119, 11647.956055, 33.267681, 29.755487, 10000000000.000000, 3.338750};
+    1.177428, 1.115898, 2.845249, 3.375630, 14.605908, 33.485008, 17.334507, 24.666882, 14.288996, 24.590176, 31.825541, 11751.788086, 26.172821, 28.198782, 10000000000.000000, 3.719885};//good
 const Power AIPatternPowers_Default_G5[] = {
-    1.294260, 1.114793, 2.557403, 3.114548, 14.960281, 32.287624, 14.933109, 25.657160, 14.476357, 24.658726, 28.046144, 11639.659180, 29.734558, 31.473276, 10000000000.000000, 3.000000};
+    1.121167, 1.085445, 2.737436, 3.614628, 14.193470, 32.262943, 17.961742, 24.893641, 15.185129, 23.211491, 31.506727, 12089.468750, 26.185627, 29.352303, 10000000000.000000, 3.754817};
 
-const Power AIPatternPowersPruned_Default[] = {
-    1, 15, 14, 14, 32, 1e10};
-const Power AIPatternPowersPruned_Default_G2[] = {
-    1.168401, 15.162420, 14.000000, 8.567827, 21.539915, 8915616768.000000}; // Good
 
 Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)
 {
@@ -94,7 +80,6 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player,
         if (cb[p] != BLANK)
             continue;
         Power ret, power;
-        // PrintChessBoard(cb, ChessBoardStyle_Classic);
         SetChess(cb, p, PlayerChessTypes[player]);
         if (dep == 0)
         {
@@ -128,8 +113,6 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player,
                     ret = *rate;
                 }
             }
-            // PrintChessBoard(cb, ChessBoardStyle_Classic);
-            // PrintNeighborMap(aidata->neighborMap);
             // Pop
             for (int d = 0; d < DireLen; ++d)
                 *(pm->linePower[p][d]) = linep[d];
@@ -159,8 +142,6 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player,
         }
         SetChess(cb, p, BLANK);
     }
-    // if(maxn!=0)printf("%d %d\n",dep,maxn);
-    // printf("Best PointL %d%c",PointTo2C(re));
     return re;
 }
 void SortPoint(Point *points, const int count, const PowerMap pm)
@@ -242,9 +223,6 @@ Point GetBestMove(const AIData aidata, ChessBoard cb, Power *rate, const int pla
             }
         }
 
-        // PrintChessBoard(cb, ChessBoardStyle_Classic);
-        // PrintNeighborMap(aidata->neighborMap);
-
         // Pop
         for (int d = 0; d < DireLen; ++d)
             *(pm->linePower[p][d]) = linep[d];
@@ -273,8 +251,6 @@ Point GetBestMove(const AIData aidata, ChessBoard cb, Power *rate, const int pla
         }
         SetChess(cb, p, BLANK);
     }
-    // if(maxn!=0)printf("%d %d\n",dep,maxn);
-    // printf("Best PointL %d%c",PointTo2C(re));
     return re;
 }
 
@@ -365,13 +341,15 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)
             UpdatePowerPoint(lastpoint, data, ct);
         }
 #ifdef DEBUG
-        // PrintNeighborMap(data->neighborMap);
-        // PrintPowerMap(data->powerMap);
+        PrintNeighborMap(data->neighborMap);
+        PrintPowerMap(data->powerMap);
 #endif
         Power rate;
-        // re = Minimax(data, cb, data->playerid, 0, &rate, Power_MAX, AIDepth);
-        // re = GetBestMove(data, cb, &rate, data->playerid, AIDepth, Power_MAX);
+#ifdef USEPARA
         re = GetBestMovePara(data, cb, &rate, AIDepth);
+#else
+        re = GetBestMove(data, cb, &rate, data->playerid, AIDepth, Power_MAX);
+#endif
 #ifdef DEBUG
         printfD("Rate:%f\n", rate);
 #endif
@@ -473,6 +451,7 @@ void FreeAIPlayer(Player player)
     AIData data = (AIData)player->data;
     FreePowerMap(data->powerMap);
     FreeNeighborMap(data->neighborMap);
+    FreeTrie(data->patterns);
     // FreeZobristTable(data->zobristTable);
     free(data);
     FreePlayer(player);

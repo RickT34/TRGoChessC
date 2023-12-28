@@ -9,15 +9,14 @@
 #include "mt19937.h"
 #include <assert.h>
 #define VariationPoint 2
-#define VariationRange 0.15f
+#define VariationRange 0.1f
 // #define StartVariationRange 0.1f
-#define AICount 25
-#define GENS 50
+#define AICount 35
+#define GENS 100
 #define HYBRID 0.4
-#define VARIATION 0.2
-#define STARTPATTERN AIPatternPowers_Default_WG3h
+#define VARIATION 0.15
+#define STARTPATTERN AIPatternPowers_Default_G4
 #define RACECount (AICount * (AICount - 1))
-// GAGene = Power*
 
 GAScore *GetAllFitness(const GAGene *allind, const int count)
 {
@@ -43,15 +42,12 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
         int i = tasks[tc][0];
         int j = tasks[tc][1];
         // putchar('.');
-        // printf("%d-%d\n",i,j);
         Player aii = NewAIPlayer("", 0, allind[i]);
         Player aij = NewAIPlayer("", 1, allind[j]);
         Game game = NewGame(aii, aij);
         while (game->status != GameStatus_End)
         {
             GameNextTurn(game);
-            // if((game->history->Count)&4)
-            //     putchar('.');
         }
         // PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
         GAScore score = game->history->Count / 100.0;
@@ -74,7 +70,6 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
             }
         }
         putchar('.');
-        // getchar();
         FreeGame(game);
         FreeAIPlayer(aij);
         FreeAIPlayer(aii);

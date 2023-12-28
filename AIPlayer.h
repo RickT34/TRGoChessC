@@ -9,27 +9,19 @@
 #define AIPatternLen 15                 // 使用的匹配模式个数
 #define AIUsePattern AIPatterns_Default // 使用的匹配模式集
 #define AIDepth 6                       // 搜索层数
+#define USEPARA                         //并行计算
 
 /********************可用的匹配模式及权值************************/
 // 标准匹配模式集，个数为 15
 const extern char *AIPatterns_Default[];
 
 // 标准匹配模式集，各代权值
-const extern Power AIPatternPowers_Default[];
 const extern Power AIPatternPowers_Default_G1[];
-const extern Power AIPatternPowers_Default_G2[];
 const extern Power AIPatternPowers_Default_G3h[];
 
 const extern Power AIPatternPowers_Default_WG3h[];
 const extern Power AIPatternPowers_Default_G4[];
 const extern Power AIPatternPowers_Default_G5[];
-// 轻量匹配模式集， 个数为 6
-const extern char *AIPatterns_Pruned[];
-
-// 轻量匹配模式集，各代权值
-const extern Power AIPatternPowersPruned_Default[];
-const extern Power AIPatternPowersPruned_Default_G1[];
-const extern Power AIPatternPowersPruned_Default_G2[];
 
 /***********************AI玩家相关******************************/
 

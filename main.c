@@ -187,13 +187,13 @@ int Run()
         Input(buff, BUFFSIZE);
         if (buff[0] == '1')
         {
-            p2 = NewAIPlayer("AI", 1, AIPatternPowers_Default_WG3h);
+            p2 = NewAIPlayer("AI", 1, AIPatternPowers_Default_G4);
             game = NewGame(p1, p2);
             break;
         }
         else if (buff[0] == '2')
         {
-            p2 = NewAIPlayer("AI", 0, AIPatternPowers_Default_WG3h);
+            p2 = NewAIPlayer("AI", 0, AIPatternPowers_Default_G4);
             game = NewGame(p2, p1);
             break;
         }
@@ -223,8 +223,8 @@ int main(int args, char **argv)
     // TrainRun();
     // Input(buff, BUFFSIZE);
     // Player p1, p2;
-    // p2 = NewAIPlayer("AI0", 1, AIPatternPowers_Default_G1);
-    // p1 = NewAIPlayer("AI1", 0, AIPatternPowers_Default_G5);
+    // p1 = NewAIPlayer("AI0", 0, AIPatternPowers_Default_G5);
+    // p2 = NewAIPlayer("AI1", 1, AIPatternPowers_Default_G4);
     // Game game = NewGame(p1, p2);
     // Start(game);
     while (!Run())
