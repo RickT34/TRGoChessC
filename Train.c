@@ -9,8 +9,7 @@
 #include "mt19937.h"
 #include <assert.h>
 #define VariationPoint 2
-#define VariationRange 0.1f
-// #define StartVariationRange 0.1f
+#define VariationRange 0.15f
 #define AICount 35
 #define GENS 100
 #define HYBRID 0.4
@@ -35,7 +34,7 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
         }
     }
     assert(tc == RACECount);
-    omp_set_num_threads(16);
+    omp_set_num_threads(CoreCount);
 #pragma omp parallel for
     for (tc = 0; tc < RACECount; ++tc)
     {

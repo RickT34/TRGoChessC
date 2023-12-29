@@ -7,7 +7,7 @@
 PowerMap NewPowerMap()
 {
     PowerMap re = malloc(sizeof(*re));
-    memset(re->linePower,0,sizeof(re->linePower));
+    memset(re->linePower, 0, sizeof(re->linePower));
     int pl = 0;
     for (int x = 0; x < LLN; ++x)
     {
@@ -19,14 +19,14 @@ PowerMap NewPowerMap()
                 Point s = CBINF[p].start[d];
                 if (re->linePower[s][d] == NULL)
                 {
-                    re->powers[pl]=0;
+                    re->powers[pl] = 0;
                     re->linePower[s][d] = &re->powers[pl++];
                 }
                 re->linePower[p][d] = re->linePower[s][d];
             }
         }
     }
-    assert(pl==POWERSLEN);
+    assert(pl == POWERSLEN);
     return re;
 }
 
@@ -81,10 +81,11 @@ void PrintPowerMap(PowerMap pm)
     printf("Sum: %f\n", pm->powerSum);
 }
 
-PowerMap ClonePowerMap(const PowerMap pm){
+PowerMap ClonePowerMap(const PowerMap pm)
+{
     PowerMap re = NewPowerMap();
-    memcpy(re->powers,pm->powers,sizeof(re->powers));
-    re->powerSum=pm->powerSum;
+    memcpy(re->powers, pm->powers, sizeof(re->powers));
+    re->powerSum = pm->powerSum;
     return re;
 }
 
@@ -98,7 +99,7 @@ ChessPot NewChessPot()
 ChessPot CloneChessPot(const ChessPot cp)
 {
     ChessPot re = malloc(sizeof(*re));
-    memcpy(re,cp,sizeof(*cp));
+    memcpy(re, cp, sizeof(*cp));
     return re;
 }
 
@@ -116,10 +117,11 @@ NeighborMap NewNeighborMap()
     return re;
 }
 
-NeighborMap CloneNeighborMap(const NeighborMap nbm){
+NeighborMap CloneNeighborMap(const NeighborMap nbm)
+{
     NeighborMap re = malloc(sizeof(*re));
-    memcpy(re,nbm,sizeof(*nbm));
-    re->pot=CloneChessPot(nbm->pot);
+    memcpy(re, nbm, sizeof(*nbm));
+    re->pot = CloneChessPot(nbm->pot);
     return re;
 }
 
@@ -248,6 +250,7 @@ ZobristTable NewZobristTable()
 {
     ZobristTable re = malloc(sizeof(*re));
     memset(re->hashTable, 0, sizeof(re->hashTable));
+    re->count=0;
     re->start = genrand64_int64();
     for (int p = 0; p < 2; ++p)
     {
@@ -266,46 +269,58 @@ void FreeZobristTable(ZobristTable zt)
     free(zt);
 }
 
-int ZobristTableFindAndInsert(ZobristTable zt, const uint64 key)
+HashNode ZobristTableFind(ZobristTable zt, const uint64 key)
 {
-    return 0;
-    int k = key % HASHLEN;
-    if (k == 0)
-        k = 1;
-    if (zt->hashTable[k] == 0)
+    // int k = key & HASHMASK;
+    // while (zt->hashTable[k].key && zt->hashTable[k].key != key)
+    //     k = (k + HASHSTEP) & HASHMASK;
+    // return &zt->hashTable[k];
+    HashNode node = zt->hashTable[key & HASHMASK];
+    while (node != NULL && node->val.key != key)
     {
-        zt->hashTable[k] = key;
-        return 0;
+        node = node->nxt;
     }
-    return 1;
-    while (zt->hashTable[k] != key && zt->hashTable[k] != 0)
-    {
-        k = (k + HASHSTEP) % HASHLEN;
-#ifdef DEBUG
-        putchar('!');
-#endif
-    }
-    if (zt->hashTable[k] == key)
-        return 1;
-    if (zt->hashTable[k] == 0)
-        zt->hashTable[k] = key;
-    return 0;
+    return node;
 }
 
-AIData CloneAIData(const AIData aidata){
-    AIData re=malloc(sizeof(*re));
-    re->powerMap=ClonePowerMap(aidata->powerMap);
-    re->neighborMap=CloneNeighborMap(aidata->neighborMap);
-    re->patterns=aidata->patterns;
-    re->playerid=aidata->playerid;
-    re->needflush=aidata->needflush;
+void ZobristTableInsert(ZobristTable zt, const uint64 key, const Power power)
+{
+    HashNode node = &zt->nodesPool[zt->count++];
+    node->val.key = key;
+    node->val.power = power;
+    int k = key & HASHMASK;
+    node->nxt = zt->hashTable[k];
+    zt->hashTable[k] = node;
+    #ifdef DEBUG
+    assert(zt->count<=HASHPOOLLEN);
+    #endif
+}
+
+AIData CloneAIData(const AIData aidata) // Not Clone TRIE, Zobrist
+{
+    AIData re = malloc(sizeof(*re));
+    re->powerMap = ClonePowerMap(aidata->powerMap);
+    re->neighborMap = CloneNeighborMap(aidata->neighborMap);
+    re->patterns = aidata->patterns;
+    re->playerid = aidata->playerid;
+    re->needflush = aidata->needflush;
+    re->zobristTable=NULL;
     return re;
 }
 
-void PrintAIData(const AIData aidata){
+void PrintAIData(const AIData aidata)
+{
     printf("PowerMap:\n");
     PrintPowerMap(aidata->powerMap);
     printf("NeighborMap:\n");
     PrintNeighborMap(aidata->neighborMap);
-    printf("Playerid: %d, needflush: %d\n",aidata->playerid,aidata->needflush);
+    printf("Playerid: %d, needflush: %d\n", aidata->playerid, aidata->needflush);
+}
+
+void FreeAIData(AIData aidata)
+{
+    FreePowerMap(aidata->powerMap);
+    FreeNeighborMap(aidata->neighborMap);
+    FreeZobristTable(aidata->zobristTable);
+    free(aidata);
 }

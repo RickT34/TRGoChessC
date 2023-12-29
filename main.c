@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+// #define TrainMode
+// #define PKMode
+#define PKAI0 AIPatternPowers_Default_G4
+#define PKAI1 AIPatternPowers_Default_G5
+
 void MakeUI(Game game)
 {
     // system("clear");
@@ -187,13 +192,13 @@ int Run()
         Input(buff, BUFFSIZE);
         if (buff[0] == '1')
         {
-            p2 = NewAIPlayer("AI", 1, AIPatternPowers_Default_G4);
+            p2 = NewAIPlayer("AI", 1, GameUseAIPower);
             game = NewGame(p1, p2);
             break;
         }
         else if (buff[0] == '2')
         {
-            p2 = NewAIPlayer("AI", 0, AIPatternPowers_Default_G4);
+            p2 = NewAIPlayer("AI", 0, GameUseAIPower);
             game = NewGame(p2, p1);
             break;
         }
@@ -214,19 +219,34 @@ int Run()
     return 0;
 }
 
-// #include"AIUtilities.h"
-// #include"mt19937.h"
 int main(int args, char **argv)
 {
+    printf("Initiating...\n");
     ChessBoardInit();
     GameManagerInit();
-    // TrainRun();
-    // Input(buff, BUFFSIZE);
-    // Player p1, p2;
-    // p1 = NewAIPlayer("AI0", 0, AIPatternPowers_Default_G5);
-    // p2 = NewAIPlayer("AI1", 1, AIPatternPowers_Default_G4);
-    // Game game = NewGame(p1, p2);
-    // Start(game);
+#ifdef TrainMode
+    TrainRun();
+    Input(buff, BUFFSIZE);
+#endif
+#ifdef PKMode
+    Player p1, p2;
+    p1 = NewAIPlayer("AI0", 0, PKAI0);
+    p2 = NewAIPlayer("AI1", 1, PKAI1);
+    Game game = NewGame(p1, p2);
+    printf("0 first:\n");
+    Start(game);
+    FreeGame(game);
+    FreeAIPlayer(p1);
+    FreeAIPlayer(p2);
+    p2 = NewAIPlayer("AI0", 1, PKAI0);
+    p1 = NewAIPlayer("AI1", 0, PKAI1);
+    game = NewGame(p1, p2);
+    printf("1 first:\n");
+    Start(game);
+    FreeGame(game);
+    FreeAIPlayer(p1);
+    FreeAIPlayer(p2);
+#endif
     while (!Run())
         ;
 

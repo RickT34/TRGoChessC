@@ -6,6 +6,8 @@
 #include "Globals.h"
 #include "Train.h"
 #include "GA.h"
+
+
 /********************主程序相关**********************/
 
 /// @brief 创建界面

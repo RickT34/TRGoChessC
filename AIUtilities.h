@@ -5,8 +5,8 @@
 #include "Stack.h"
 #include "ChessBoard.h"
 #include "Globals.h"
-/*******************AI算法相关数据结构*******************************/
 
+/*******************AI算法相关数据结构*******************************/
 
 /**********************棋力图相关***********************************/
 #define POWERSLEN ((LLN * 3 - 1) * 2) // 行、列、斜、反斜的整行棋力值个数
@@ -83,15 +83,30 @@ void NeighborMapFlush(NeighborMap nbm, const Stack actionHistory);
 /// @param nbm 动态邻居表
 void PrintNeighborMap(NeighborMap nbm);
 
-/********************Zobrist表相关(弃用)****************************/
-#define HASHLEN 4000006 // 哈希表大小
-#define HASHSTEP 11     // 哈希表失配步长
+/********************Zobrist表相关****************************/
+#define HASHLENBIT 18 // 哈希表大小
+#define HASHMASK ((1 << HASHLENBIT) - 1)
+#define HASHLEN (1 << HASHLENBIT)
+#define HASHPOOLLEN 1000000
 typedef struct
 {
-    uint64 turnTable[2][BLEN]; // 随机数转化表
-    uint64 start;              // 起始随机数
-    uint64 hashTable[HASHLEN]; // 哈希表
-} *ZobristTable;               // Zobrist表
+    uint64 key;
+    Power power;
+} HashVal;
+typedef struct _hashNode *HashNode;
+struct _hashNode
+{
+    HashVal val;
+    HashNode nxt;
+};
+typedef struct
+{
+    uint64 turnTable[2][BLEN];   // 随机数转化表
+    uint64 start;                // 起始随机数
+    HashNode hashTable[HASHLEN]; // 哈希表
+    int count;
+    struct _hashNode nodesPool[HASHPOOLLEN];
+} *ZobristTable;                 // Zobrist表
 
 /// @brief 实例化空白Zobrist表
 /// @return 空白Zobrist表
@@ -103,10 +118,11 @@ void FreeZobristTable(ZobristTable zt);
 /// @param zt Zobrist表
 /// @param key 键值
 /// @return 如果没有查询到，则将键值插入并返回0；否则不进行任何操作，返回1
-int ZobristTableFindAndInsert(ZobristTable zt, const uint64 key);
-
+HashNode ZobristTableFind(ZobristTable zt, const uint64 key);
+void ZobristTableInsert(ZobristTable zt, const uint64 key, const Power power);
 #define ZobristNextKey(zt, key, point, player) ((key) ^ (zt->turnTable[player][point])) // 获取下一个键值
-#define ZobristClean(zt) memset(zt->hashTable, 0, sizeof(zt->hashTable))                // 清空哈希表
+
+#define ZobristClean(zt) memset(zt->hashTable, 0, sizeof(zt->hashTable)),zt->count=0 // 清空哈希表
 
 /**************************AI数据**********************************/
 typedef struct
@@ -116,7 +132,7 @@ typedef struct
     Trie patterns;
     int playerid;
     char needflush;
-    // ZobristTable zobristTable;
+    ZobristTable zobristTable;
 } *AIData;
 
 /// @brief 从棋盘重建棋力图
@@ -127,5 +143,5 @@ void PowerMapFlush(AIData aidata, const ChessBoard cb, const int PatternLen);
 
 AIData CloneAIData(const AIData aidata);
 void PrintAIData(const AIData aidata);
-
+void FreeAIData(AIData aidata);
 #endif

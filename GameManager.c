@@ -144,7 +144,7 @@ void FixPlayer(Player player, int playerid)
     }
     else if (player->type == PlayerType_AI)
     {
-        SetAIPlayer(player, playerid, AIPatternPowers_Default_WG3h);
+        SetAIPlayer(player, playerid, GameUseAIPower);
     }
 }
 
