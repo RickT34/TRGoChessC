@@ -5,7 +5,7 @@
 /*********************全局参数**********************/
 #define AIDepth 6 // 搜索层数
 #define USEPARA   // 并行计算
-#define CoreCount 8
+#define CoreCount 16
 #define GameUseAIPower AIPatternPowers_Default_G4
 // #define DEBUG
 
@@ -13,6 +13,7 @@
 #define Min(x, y) ((x) > (y) ? (y) : (x)) // 最小值
 #define Max(x, y) ((x) > (y) ? (x) : (y)) // 最大值
 #define Abs(x) ((x) > 0 ? (x) : -(x))     // 绝对值
+extern const char *PlayerNames[];
 
 /// @brief 打印数组
 /// @param an 数组

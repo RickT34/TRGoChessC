@@ -136,16 +136,16 @@ int GameSave(Game game, char *file)
     return i;
 }
 
-void FixPlayer(Player player, int playerid)
+int PlayerLoad(Player *player, char *file, int playerid)
 {
-    if (player->type == PlayerType_Human)
-    {
-        SetHumanPlayer(player);
+    char type = file[0] - '0';
+    if(type==PlayerType_Human){
+        *player=NewHumanPlayer(PlayerNames[0]);
     }
-    else if (player->type == PlayerType_AI)
-    {
-        SetAIPlayer(player, playerid, GameUseAIPower);
+    else{
+        *player = NewAIPlayer(PlayerNames[1], playerid, GameUseAIPower);
     }
+    return 1;
 }
 
 int GameLoad(Game *data, char *file)
@@ -163,10 +163,8 @@ int GameLoad(Game *data, char *file)
     re->history->Count = count;
     re->nowPlayerID = 0;
     Player player1, player2;
-    i += PlayerLoad(&player1, file + i);
-    i += PlayerLoad(&player2, file + i);
-    FixPlayer(player1, 0);
-    FixPlayer(player2, 1);
+    i += PlayerLoad(&player1, file + i,0);
+    i += PlayerLoad(&player2, file + i,1);
     re->players[0] = player1;
     re->players[1] = player2;
     i += IntLoad(&re->nowPlayerID, file + i);

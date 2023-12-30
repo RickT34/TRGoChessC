@@ -72,19 +72,16 @@ GAIndividual *GANextGen(const GAConfig config, GAIndividual inds[], const int co
     }
     free(cumsum);
     // 2. Hybrid
-    int selected = elitismcount > 0 ? genrand64_int63() % elitismcount : -1;
+    int selected = -1;
     for (int i = elitismcount; i < count; ++i)
     {
         if (InstanceTest(config->ProbabilityOfHybrid))
         {
             if (selected != -1)
             {
-                if (selected >= elitismcount)
-                {
-                    GAGene son1 = config->GetHybrid(newinds[selected].gene, newinds[i].gene);
-                    config->DeleteGene(newinds[selected].gene);
-                    newinds[selected].gene = son1;
-                }
+                GAGene son1 = config->GetHybrid(newinds[selected].gene, newinds[i].gene);
+                config->DeleteGene(newinds[selected].gene);
+                newinds[selected].gene = son1;
                 GAGene son2 = config->GetHybrid(newinds[selected].gene, newinds[i].gene);
                 config->DeleteGene(newinds[i].gene);
                 newinds[i].gene = son2;

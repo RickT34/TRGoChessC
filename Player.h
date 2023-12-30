@@ -28,11 +28,6 @@ struct _player
 /// @param file 要写人的字符串
 /// @return 写入的字符数
 int PlayerSave(Player player, char *file);
-/// @brief 从字符串读取玩家
-/// @param player 读取的玩家，不用预先实例化
-/// @param file 读取的字符串
-/// @return 读取的字符数
-int PlayerLoad(Player *player, char *file);
 /// @brief 实例化新玩家
 /// @param type 玩家类型
 /// @param name 玩家名字

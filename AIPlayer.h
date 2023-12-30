@@ -20,6 +20,7 @@ const extern Power AIPatternPowers_Default_G3[];
 
 const extern Power AIPatternPowers_Default_G4[];
 const extern Power AIPatternPowers_Default_G5[];
+const extern Power AIPatternPowers_Default_G6[];
 
 /***********************AI玩家相关******************************/
 

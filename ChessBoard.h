@@ -13,11 +13,11 @@ const extern ChessType PlayerChessTypes[2];
 #define BLANK ((ChessType)0)   // 空白
 
 /************************点类型定义**************************/
-typedef unsigned char Point;                                // 将XY坐标压缩成一个int来代表位置点
+typedef unsigned char Point;                      // 将XY坐标压缩成一个int来代表位置点
 #define POINTBITS 4                               // 一个坐标所占比特数，必须满足 (1<<POINTBITS) >= LLN
 #define KEYXMASK ((1 << POINTBITS) - 1)           // X坐标掩码
 #define KEYYMASK (KEYXMASK << POINTBITS)          // Y坐标掩码
-#define PointNULL 0xff                              // NULL点标记
+#define PointNULL 0xff                            // NULL点标记
 #define GetPoint(x, y) (((y) << POINTBITS) | (x)) // 获取位置点
 
 /************************棋盘定义***************************/
@@ -107,12 +107,12 @@ void FreeChessBoardInf(ChessBoardInf ctn);
 void PrintPointInf(const ChessBoardInf ctinf, const Point p);
 
 /***********************邻居表相关*****************************/
-#define NEIGHBORRANGE 1//延伸宽度
+#define NEIGHBORRANGE 1 // 延伸宽度
 typedef struct
 {
-    Point neighbors[8*NEIGHBORRANGE]; // 邻居数量
-    int len;            // 邻居个数
-} *ChessBoardNeighbor;  // 邻居表，储存棋盘上点的相邻几个需要进行搜索的点
+    Point neighbors[8 * NEIGHBORRANGE]; // 邻居数量
+    int len;                            // 邻居个数
+} *ChessBoardNeighbor;                  // 邻居表，储存棋盘上点的相邻几个需要进行搜索的点
 
 /// @brief 实例化新的邻居表
 /// @return 新的邻居表

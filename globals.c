@@ -1,5 +1,7 @@
 #include "Globals.h"
 
+const char* PlayerNames[]={"人类玩家","电脑玩家"};
+
 void printArray(int *an, int start, int len)
 {
     for (int i = 0; i < len; ++i)

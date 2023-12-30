@@ -4,19 +4,20 @@
 #include <string.h>
 
 // #define TrainMode
-#define PKMode
+// #define PKMode
 #define PKAI0 AIPatternPowers_Default_G4
-#define PKAI1 AIPatternPowers_Default_G5
-
+#define PKAI1 AIPatternPowers_Default_G6
+char buff[4096];
+#define BUFFSIZE 4096
 void MakeUI(Game game)
 {
     // system("clear");
-    printf("Round: %d\n", game->history->Count);
+    printf("回合: %d\n", (game->history->Count + 1) / 2);
     PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
-    printf("Next: ");
+    printf("当前: ");
     PrintPlayer(game, GameNextPlayerID(game->nowPlayerID));
     putchar('\n');
-    printf("Input '?' for help.\n");
+    printf("输入 '?' 查看帮助。\n");
 }
 void MakeProcessBar(int p, int len, const int width)
 { // p in [1,len]
@@ -40,24 +41,36 @@ void MakeProcessBar(int p, int len, const int width)
 
 void StartGameRecord(Game game)
 {
-    char buff[64];
-    buff[0] = 0;
+    printf("复盘开始。\n");
     ChessBoard re;
     int flame = game->history->Count;
     GameRecord gr = NewGameRecord(game);
     do
     {
+        printf("输入数字来查看指定帧，输入 (换行) 或'+'查看下一帧，'-'查看上一帧。输入'q'退出。\n");
         re = GameRecordRead(gr, flame - 1);
         if (re != NULL)
         {
-            printf("Recode Flame: %d\n", flame);
+            printf("帧: %d\n", flame);
             PrintChessBoard(re, ChessBoardStyle_Classic);
             MakeProcessBar(flame, gr->datalen, 30);
             FreeChessBoard(re);
             re = NULL;
         }
-        Input(buff, 64);
-        sscanf(buff, "%d", &flame);
+        else
+        {
+            if (flame > 1)
+                flame = game->history->Count;
+            else
+                flame = 1;
+        }
+        Input(buff, BUFFSIZE);
+        if (buff[0] == '+' || buff[0] == '\n')
+            flame += 1;
+        else if (buff[0] == '-')
+            flame -= 1;
+        else
+            sscanf(buff, "%d", &flame);
     } while (buff[0] != 'q');
     MakeUI(game);
 }
@@ -65,15 +78,29 @@ void StartGameRecord(Game game)
 Point GetPointInput(const Game game, const char *s)
 {
     int x, y;
-    char c;
-    if (sscanf(s, "%d%c", &y, &c) != 2)
-        if (sscanf(s, "%c%d", &c, &y) != 2)
-            return PointNULL;
-    x = c - 'a';
-    y -= 1;
+    char c, c2;
+    int ok = 0;
+    if (sscanf(s, "%d%c", &y, &c) == 2)
+    {
+        x = c - 'a';
+        y -= 1;
+        ok = 1;
+    }
+    else if (sscanf(s, "%c%d", &c, &y) == 2)
+    {
+        x = c - 'a';
+        y -= 1;
+        ok = 1;
+    }
+    else if (sscanf(s, "%d%d", &x, &y) != 2)
+    {
+        ok = 1;
+    }
     if (!IsLegalXY(x, y))
-        return PointNULL;
+        ok = 0;
     if (GetChessXY(game->chessboard, x, y) != BLANK)
+        ok = 0;
+    if (!ok)
         return PointNULL;
     return GetPoint(x, y);
 }
@@ -85,13 +112,17 @@ int InputCommamd(Game game, char *buff)
         GameUndo(game);
         if (GameGetNextPlayer(game)->type == PlayerType_AI)
             GameUndo(game);
+        MakeUI(game);
         return 0;
     }
     else if (buff[0] == '>')
     {
         char file[2048];
-        int l = GameSave(game, file);
-        file[l] = 0;
+        file[0] = '|';
+        int l = GameSave(game, file + 1);
+        file[1 + l] = '|';
+        file[2 + l] = 0;
+        printf("保存成功，请保存这段字符串: ");
         puts(file);
         return 0;
     }
@@ -102,9 +133,24 @@ int InputCommamd(Game game, char *buff)
     else if (buff[0] == '<')
     {
         Game loadgame;
-        GameLoad(&loadgame, buff + 1);
-        Start(loadgame);
-        FreeGame(game);
+        int i = 0;
+        while (buff[i] != '|' && i < BUFFSIZE)
+        {
+            ++i;
+        }
+        if (i < BUFFSIZE)
+        {
+            GameLoad(&loadgame, buff + i + 1);
+            printf("读取成功!\n");
+            Start(loadgame);
+            FreeGame(game);
+            printf("正在返回先前对局!\n");
+        }
+        else
+        {
+            printf("读取失败!\n");
+        }
+
         return 0;
     }
     else if (buff[0] == 'q')
@@ -121,11 +167,10 @@ int InputCommamd(Game game, char *buff)
 
 void PrintPlayer(Game game, int id)
 {
-    printf("%s %s", GetChessSkin(PlayerChessTypes[id], ChessBoardStyle_Classic),
+    printf("%s [%s]", GetChessSkin(PlayerChessTypes[id], ChessBoardStyle_Classic),
            game->players[id]->name);
 }
-char buff[4096];
-#define BUFFSIZE 4096
+
 void Start(Game game)
 {
     int ret;
@@ -138,9 +183,9 @@ void Start(Game game)
             if (game->status == GameStatus_End)
             {
                 PrintPlayer(game, game->nowPlayerID);
-                printf(" Win!\n");
+                printf(" 赢了!\n");
             }
-            printf("Game stopped!\n");
+            printf("游戏结束!\n");
             Input(buff, BUFFSIZE);
             comret = InputCommamd(game, buff);
             if (comret == 2)
@@ -159,10 +204,8 @@ void Start(Game game)
                         if (comret == 2)
                             return;
                         p = GetPointInput(game, buff);
-                    }
-                    else
-                    {
-                        MakeUI(game);
+                        if (p == PointNULL)
+                            printf("非法位置，请重试!\n");
                     }
                 }
                 *(Point *)GameGetNextPlayer(game)->data = p;
@@ -176,74 +219,67 @@ void Start(Game game)
 #endif
             ret = GameNextTurn(game);
             PrintPlayer(game, game->nowPlayerID);
-            printf(" on %d%c\n", PointTo2C(((Action)StackTop(game->history))->point));
+            printf(" 落子于 [%d%c]\n", PointTo2C(((Action)StackTop(game->history))->point));
         }
     } while (1);
 }
 
 int Run()
 {
-    Player p1, p2;
-    p1 = NewHumanPlayer("你");
-    Game game = NULL;
-    do
+    Player p[2];
+    p[0] = p[1] = NULL;
+    printf("欢迎!\n输入 'q' 退出:\n");
+    for (int i = 0; i < 2; ++i)
     {
-        printf("Welcome!\n1 for 先手, 2 for 后手, q for 退出:\n");
+        printf("\n请选择");
+        printf(i == 0 ? "先手玩家:\n" : "后手玩家:\n");
+        printf("[1]: 人类玩家\n[2]: 电脑玩家\n\n请选择: ");
         Input(buff, BUFFSIZE);
         if (buff[0] == '1')
         {
-            p2 = NewAIPlayer("AI", 1, GameUseAIPower);
-            game = NewGame(p1, p2);
-            break;
+            p[i] = NewHumanPlayer(PlayerNames[0]);
         }
-        else if (buff[0] == '2')
+        else if (buff[0] = '0')
         {
-            p2 = NewAIPlayer("AI", 0, GameUseAIPower);
-            game = NewGame(p2, p1);
-            break;
+            p[i] = NewAIPlayer(PlayerNames[1], i, GameUseAIPower);
         }
         else if (buff[0] == 'q')
         {
-            FreeHumanPlayer(p1);
-            return 1;
+            break;
         }
-        printf("Retry.\n");
-    } while (1);
-    if (game != NULL)
+        else
+        {
+            printf("请重试!\n");
+            --i;
+        }
+    }
+    if (p[0] != NULL && p[1] != NULL)
     {
+        Game game = NewGame(p[0], p[1]);
         Start(game);
         FreeGame(game);
     }
-    FreeHumanPlayer(p1);
-    FreeAIPlayer(p2);
-    return 0;
-}
-#include "omp.h"
-void test()
-{
-    int ret = 100;
-    int r;
-    omp_set_num_threads(CoreCount);
-#pragma omp parallel for schedule(dynamic) private(r)
-    for (int k = -100; k < 100; ++k)
+    for (int i = 0; i < 2; ++i)
     {
-        r = (k * k+2*k+1)*ret;
-#pragma omp critical
+        if (p[i] != NULL)
         {
-            if (r < ret)
+            if (p[i]->type == PlayerType_Human)
             {
-                ret = r;
+                FreeHumanPlayer(p[i]);
+            }
+            else
+            {
+                FreeAIPlayer(p[i]);
             }
         }
     }
-    printf("%d\n",ret);
-    getchar();
+    return 0;
 }
 
 int main(int args, char **argv)
 {
     // test();
-    printf("Initiating...\n");
+    printf("初始化中...\n");
     ChessBoardInit();
     GameManagerInit();
 #ifdef TrainMode

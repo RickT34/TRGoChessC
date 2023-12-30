@@ -10,10 +10,10 @@
 #include <assert.h>
 #define VariationPoint 2
 #define VariationRange 0.15f
-#define AICount 35
+#define AICount 40
 #define GENS 100
 #define HYBRID 0.4
-#define VARIATION 0.15
+#define VARIATION 0.1
 #define STARTPATTERN AIPatternPowers_Default_G4
 #define RACECount (AICount * (AICount - 1))
 
@@ -104,6 +104,7 @@ GAGene GetHybrid(const GAGene ind1, const GAGene ind2)
     for (int i = 0; i <= AIPatternLen; ++i)
     {
         double p = genrand64_real3();
+        p=1.0/(1+exp(-20.0*(p-0.5)));
         re[i] = ((Power *)ind1)[i] * p + ((Power *)ind2)[i] * (1 - p);
     }
     return re;
