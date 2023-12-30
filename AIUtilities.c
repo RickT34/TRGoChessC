@@ -26,7 +26,9 @@ PowerMap NewPowerMap()
             }
         }
     }
+    #ifdef DEBUG
     assert(pl == POWERSLEN);
+    #endif
     return re;
 }
 
@@ -246,21 +248,39 @@ void PowerMaptest()
     }
 }
 
+uint64 TurnTable[2][BLEN];
+
 ZobristTable NewZobristTable()
 {
+    static char inited = 0;
+    if (!inited)
+    {
+        for (int p = 0; p < 2; ++p)
+        {
+            init_genrand64(3213123442ull ^ p);
+            for (int i = 0; i < BLEN; ++i)
+            {
+                TurnTable[p][i] = genrand64_int64();
+            }
+        }
+        inited = 1;
+    }
+    ZobristTable re = malloc(sizeof(*re));
+    re->turnTable[0] = &TurnTable[0][0];
+    re->turnTable[1] = &TurnTable[1][0];
+    memset(re->hashTable, 0, sizeof(re->hashTable));
+    re->count = 0;
+    re->start = genrand64_int64();
+    return re;
+}
+ZobristTable CloneZobristTable(const ZobristTable zb)
+{ // not clone hashtable
     ZobristTable re = malloc(sizeof(*re));
     memset(re->hashTable, 0, sizeof(re->hashTable));
-    re->count=0;
-    re->start = genrand64_int64();
-    for (int p = 0; p < 2; ++p)
-    {
-        init_genrand64(3213123442ull ^ p);
-        for (int i = 0; i < BLEN; ++i)
-        {
-            re->turnTable[p][i] = genrand64_int64();
-        }
-    }
-
+    re->count = 0;
+    re->start = zb->start;
+    re->turnTable[0] = zb->turnTable[0];
+    re->turnTable[1] = zb->turnTable[1];
     return re;
 }
 
@@ -271,10 +291,6 @@ void FreeZobristTable(ZobristTable zt)
 
 HashNode ZobristTableFind(ZobristTable zt, const uint64 key)
 {
-    // int k = key & HASHMASK;
-    // while (zt->hashTable[k].key && zt->hashTable[k].key != key)
-    //     k = (k + HASHSTEP) & HASHMASK;
-    // return &zt->hashTable[k];
     HashNode node = zt->hashTable[key & HASHMASK];
     while (node != NULL && node->val.key != key)
     {
@@ -291,9 +307,9 @@ void ZobristTableInsert(ZobristTable zt, const uint64 key, const Power power)
     int k = key & HASHMASK;
     node->nxt = zt->hashTable[k];
     zt->hashTable[k] = node;
-    #ifdef DEBUG
-    assert(zt->count<=HASHPOOLLEN);
-    #endif
+#ifdef DEBUG
+    assert(zt->count <= HASHPOOLLEN);
+#endif
 }
 
 AIData CloneAIData(const AIData aidata) // Not Clone TRIE, Zobrist
@@ -304,7 +320,8 @@ AIData CloneAIData(const AIData aidata) // Not Clone TRIE, Zobrist
     re->patterns = aidata->patterns;
     re->playerid = aidata->playerid;
     re->needflush = aidata->needflush;
-    re->zobristTable=NULL;
+    re->zobristTable = CloneZobristTable(aidata->zobristTable);
+
     return re;
 }
 

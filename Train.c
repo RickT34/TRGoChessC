@@ -35,7 +35,7 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
     }
     assert(tc == RACECount);
     omp_set_num_threads(CoreCount);
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic)
     for (tc = 0; tc < RACECount; ++tc)
     {
         int i = tasks[tc][0];

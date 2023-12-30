@@ -29,7 +29,7 @@ ChessBoard NewChessBoard()
     return re;
 }
 
-ChessBoard CloneChessBoard(ChessBoard ct)
+ChessBoard CloneChessBoard(const ChessBoard ct)
 {
     char *re = malloc(BLEN * sizeof(char));
     memcpy(re, ct, BLEN);

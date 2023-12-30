@@ -53,7 +53,7 @@ ChessBoard NewChessBoard();
 /// @brief 克隆一个棋盘
 /// @param ct 要克隆的棋盘
 /// @return 棋盘的克隆
-ChessBoard CloneChessBoard(ChessBoard ct);
+ChessBoard CloneChessBoard(const ChessBoard ct);
 /// @brief 释放棋盘
 /// @param ct 要释放的棋盘
 void FreeChessBoard(ChessBoard ct);

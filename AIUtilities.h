@@ -84,7 +84,7 @@ void NeighborMapFlush(NeighborMap nbm, const Stack actionHistory);
 void PrintNeighborMap(NeighborMap nbm);
 
 /********************Zobrist表相关****************************/
-#define HASHLENBIT 18 // 哈希表大小
+#define HASHLENBIT 19 // 哈希表大小
 #define HASHMASK ((1 << HASHLENBIT) - 1)
 #define HASHLEN (1 << HASHLENBIT)
 #define HASHPOOLLEN 1000000
@@ -101,7 +101,7 @@ struct _hashNode
 };
 typedef struct
 {
-    uint64 turnTable[2][BLEN];   // 随机数转化表
+    uint64* turnTable[2];   // 随机数转化表
     uint64 start;                // 起始随机数
     HashNode hashTable[HASHLEN]; // 哈希表
     int count;
@@ -111,6 +111,7 @@ typedef struct
 /// @brief 实例化空白Zobrist表
 /// @return 空白Zobrist表
 ZobristTable NewZobristTable();
+ZobristTable CloneZobristTable(const ZobristTable zb);
 /// @brief 释放Zobrist表
 /// @param zt Zobrist表
 void FreeZobristTable(ZobristTable zt);

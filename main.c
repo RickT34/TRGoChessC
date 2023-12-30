@@ -4,7 +4,7 @@
 #include <string.h>
 
 // #define TrainMode
-// #define PKMode
+#define PKMode
 #define PKAI0 AIPatternPowers_Default_G4
 #define PKAI1 AIPatternPowers_Default_G5
 
@@ -218,9 +218,31 @@ int Run()
     FreeAIPlayer(p2);
     return 0;
 }
+#include "omp.h"
+void test()
+{
+    int ret = 100;
+    int r;
+    omp_set_num_threads(CoreCount);
+#pragma omp parallel for schedule(dynamic) private(r)
+    for (int k = -100; k < 100; ++k)
+    {
+        r = (k * k+2*k+1)*ret;
+#pragma omp critical
+        {
+            if (r < ret)
+            {
+                ret = r;
+            }
+        }
+    }
+    printf("%d\n",ret);
+    getchar();
+}
 
 int main(int args, char **argv)
 {
+    // test();
     printf("Initiating...\n");
     ChessBoardInit();
     GameManagerInit();
