@@ -9,12 +9,13 @@
 #include "mt19937.h"
 #include <assert.h>
 #define VariationPoint 2
-#define VariationRange 0.15f
-#define AICount 40
-#define GENS 100
+#define VariationRange 0.1f
+#define AICount 50
+#define GENS 50
 #define HYBRID 0.4
 #define VARIATION 0.1
-#define STARTPATTERN AIPatternPowers_Default_G4
+#define STARTPATTERN_A AIPatternPowers_Default_G7
+#define STARTPATTERN_B AIPatternPowers_Default_G5
 #define RACECount (AICount * (AICount - 1))
 
 GAScore *GetAllFitness(const GAGene *allind, const int count)
@@ -52,7 +53,7 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
         GAScore score = game->history->Count / 100.0;
         score *= score;
         GAScore score2 =  exp(-1.5 * score);
-        score = 100.0 * score2 + 400.0;
+        score = 100.0 * score2 + 500.0;
         if (game->nowPlayerID == 0)
         {
 #pragma omp critical
@@ -103,7 +104,7 @@ GAGene GetHybrid(const GAGene ind1, const GAGene ind2)
     Power *re = malloc(sizeof(Power) * (AIPatternLen+1));
     for (int i = 0; i <= AIPatternLen; ++i)
     {
-        double p = genrand64_real3();
+        double p = genrand64_real1();
         p=1.0/(1+exp(-20.0*(p-0.5)));
         re[i] = ((Power *)ind1)[i] * p + ((Power *)ind2)[i] * (1 - p);
     }
@@ -141,10 +142,17 @@ void TrainRun()
     int count = AICount;
     GAGene starts[AICount];
     init_genrand64(time(NULL));
-    starts[0] = GetClone((Power *)STARTPATTERN);
-    for (int i = 1; i < count; ++i)
+    starts[0] = GetClone((Power *)STARTPATTERN_A);
+    starts[1] = GetClone((Power *)STARTPATTERN_B);
+    for (int i = 2; i < count; ++i)
     {
-        starts[i] = GetVariation((GAGene *)STARTPATTERN);
+        int k=genrand64_int63()%4;
+        if(k>1){
+            starts[i]=GetHybrid(starts[0],starts[1]);
+        }
+        else{
+            starts[i]=GetVariation(starts[k]);
+        }
         // starts[i] = GetClone((Power *)STARTPATTERN);
         // if(i==0)continue;
         // Power *re = starts[i];

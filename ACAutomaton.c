@@ -51,7 +51,7 @@ void TrieInsert(Trie root, const char *key, const int len, const int idx) // 将
     }
     root->id = idx;
 }
-void TrieCompile2(Trie tr, Trie root, const Power* powers)
+void TrieCompile2(Trie tr, Trie root, const Power* powers)//用dfs计算节点权值
 {
     Trie temp = tr;
     while (temp != root)
@@ -66,7 +66,7 @@ void TrieCompile2(Trie tr, Trie root, const Power* powers)
             TrieCompile2(tr->next[i], root, powers);
     }
 }
-void TrieCompile(Trie root, const Power* powers) // 用bfs建立失配指针
+void TrieCompile(Trie root, const Power* powers) // 用bfs建立失配指针，节点的失配指针指向前缀节点的nxt指针
 {
     Queue q = NewQueue(100);
     QueuePushback(q, root);
@@ -80,9 +80,7 @@ void TrieCompile(Trie root, const Power* powers) // 用bfs建立失配指针
                 if (temp == root)
                     temp->next[i]->fail = root;
                 else
-                { // 兄弟结点之间不能建立失败指针，所以不断回溯，如果该结点的
-                    // 父节点的失败指针对应的结点next[i]存在,则将这个结点的失败指针连到这里
-                    // 回溯到root都没有，则结点的失败指针直接指向root
+                { 
                     Trie p = temp->fail;
                     while (p)
                     {
@@ -103,7 +101,7 @@ void TrieCompile(Trie root, const Power* powers) // 用bfs建立失配指针
     TrieCompile2(root, root,powers);
 }
 
-Power TrieQuery(const char *strin, const int step, const int len, const Trie root)
+Power TrieQuery(const char *strin, const int step, const int len, const Trie root)//自动机
 {
     Trie p = root;
     Power ret=0;

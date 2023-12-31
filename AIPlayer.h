@@ -6,12 +6,12 @@
 
 /*************************搜索参数*****************************/
 
-#define AIPatternLen 15                 // 使用的匹配模式个数
+#define AIPatternLen 14                 // 使用的匹配模式个数
 #define AIUsePattern AIPatterns_Default // 使用的匹配模式集
 #define ODepth 1
 
 /********************可用的匹配模式及权值************************/
-// 标准匹配模式集，个数为 15
+// 标准匹配模式集，个数为 14
 const extern char *AIPatterns_Default[];
 
 // 标准匹配模式集，各代权值
@@ -21,6 +21,8 @@ const extern Power AIPatternPowers_Default_G3[];
 const extern Power AIPatternPowers_Default_G4[];
 const extern Power AIPatternPowers_Default_G5[];
 const extern Power AIPatternPowers_Default_G6[];
+const extern Power AIPatternPowers_Default_G7[];
+const extern Power AIPatternPowers_Default_G8[];
 
 /***********************AI玩家相关******************************/
 

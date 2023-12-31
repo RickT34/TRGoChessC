@@ -87,7 +87,7 @@ void PrintNeighborMap(NeighborMap nbm);
 #define HASHLENBIT 20 // 哈希表大小
 #define HASHMASK ((1 << HASHLENBIT) - 1)
 #define HASHLEN (1 << HASHLENBIT)
-#define HASHPOOLLEN 4000000
+#define HASHPOOLLEN 5000000
 typedef struct
 {
     uint64 key;

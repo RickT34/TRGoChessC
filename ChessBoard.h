@@ -71,6 +71,7 @@ int ChessBoardLoad(ChessBoard *ct, char *file);
 /*************************棋盘打印相关***********************/
 typedef char *ChessBoardStyle[12];                    // 棋盘样式类型
 const extern ChessBoardStyle ChessBoardStyle_Classic; // 默认的棋盘样式
+const extern ChessBoardStyle ChessBoardStyle_Classic_VS; // 默认的棋盘样式
 
 /// @brief 打印棋盘
 /// @param ct 要打印的棋盘

@@ -3,12 +3,16 @@
 const char DireNames[4] = "XYCD";
 const int DireSteps[4] = {XSTEP, YSTEP, CSTEP, DSTEP};
 const ChessType PlayerChessTypes[2] = {PlayerB, PlayerW};
-const ChessBoardStyle ChessBoardStyle_Classic = {
+const ChessBoardStyle ChessBoardStyle_Classic_VS = {
     "┏━", "┯━", "┓ ",
     "┠─", "┼─", "┨ ",
     "┗━", "┷━", "┛ ",
     "● ", "○ ", "◑ "};
-
+const ChessBoardStyle ChessBoardStyle_Classic = {
+    "┏ ", "┯ ", "┓ ",
+    "┠ ", "┼ ", "┨ ",
+    "┗ ", "┷ ", "┛ ",
+    "●", "○", "◑"};
 
 const char *GetChessSkin(ChessType type, const ChessBoardStyle style)
 {

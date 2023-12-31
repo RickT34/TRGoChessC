@@ -23,12 +23,12 @@ void TrieInsert(Trie root, const char *key, const int len, const int idx);
 /// @brief 构造AC自动机
 /// @param root 字典树的根
 void TrieCompile(Trie root, const Power *powers);
-/// @brief AC自动机总体查询
-/// @param strin 要查询的字符串
+/// @brief AC自动机直线查询，返回一条直线的得分
+/// @param strin 要查询直线起点
 /// @param step 下标增量
 /// @param len 长度
 /// @param root 字典树的根
-/// @param ret 记录结果的数组，不会清空数组，容量至少为 TRIEMAXID
+/// @return 得分
 Power TrieQuery(const char *strin, const int step, const int len, const Trie root);
 
 #endif

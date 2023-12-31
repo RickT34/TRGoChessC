@@ -6,14 +6,15 @@
 // #define TrainMode
 // #define PKMode
 #define PKAI0 AIPatternPowers_Default_G4
-#define PKAI1 AIPatternPowers_Default_G6
+#define PKAI1 AIPatternPowers_Default_G7
+
 char buff[4096];
 #define BUFFSIZE 4096
 void MakeUI(Game game)
 {
     // system("clear");
     printf("回合: %d\n", (game->history->Count + 1) / 2);
-    PrintChessBoard(game->chessboard, ChessBoardStyle_Classic);
+    PrintChessBoard(game->chessboard, ChessBoardUseStyle);
     printf("当前: ");
     PrintPlayer(game, GameNextPlayerID(game->nowPlayerID));
     putchar('\n');
@@ -52,7 +53,7 @@ void StartGameRecord(Game game)
         if (re != NULL)
         {
             printf("帧: %d\n", flame);
-            PrintChessBoard(re, ChessBoardStyle_Classic);
+            PrintChessBoard(re, ChessBoardUseStyle);
             MakeProcessBar(flame, gr->datalen, 30);
             FreeChessBoard(re);
             re = NULL;
@@ -129,6 +130,7 @@ int InputCommamd(Game game, char *buff)
     else if (buff[0] == 'r')
     {
         StartGameRecord(game);
+        return 0;
     }
     else if (buff[0] == '<')
     {
@@ -143,8 +145,9 @@ int InputCommamd(Game game, char *buff)
             GameLoad(&loadgame, buff + i + 1);
             printf("读取成功!\n");
             Start(loadgame);
-            FreeGame(game);
+            FreeGame(loadgame);
             printf("正在返回先前对局!\n");
+            MakeUI(game);
         }
         else
         {
@@ -174,10 +177,11 @@ void PrintPlayer(Game game, int id)
 void Start(Game game)
 {
     int ret;
-    int comret;
+    int comret = 1;
     do
     {
-        MakeUI(game);
+        if (comret)
+            MakeUI(game);
         if (IsGameStopped(game))
         {
             if (game->status == GameStatus_End)
