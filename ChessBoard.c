@@ -7,12 +7,12 @@ const ChessBoardStyle ChessBoardStyle_Classic_VS = {
     "┏━", "┯━", "┓ ",
     "┠─", "┼─", "┨ ",
     "┗━", "┷━", "┛ ",
-    "● ", "○ ", "◑ "};
+    "● ", "○ ", "? "};
 const ChessBoardStyle ChessBoardStyle_Classic = {
     "┏ ", "┯ ", "┓ ",
     "┠ ", "┼ ", "┨ ",
     "┗ ", "┷ ", "┛ ",
-    "●", "○", "◑"};
+    "●", "○", "?"};
 
 const char *GetChessSkin(ChessType type, const ChessBoardStyle style)
 {

@@ -42,6 +42,14 @@ const Power AIPatternPowers_Default_G7[] = {
     1.209906, 1.108449, 3.638782, 3.376079, 14.737780, 32.473679, 17.396755, 14.287220, 24.598774, 31.283337, 10865.589844, 26.473148, 28.358171, 10000000000.000000, 3.902418};//good
 const Power AIPatternPowers_Default_G8[] = {
     1.161530, 1.090055, 3.991720, 3.923287, 14.839741, 34.365246, 17.402912, 14.318685, 24.905704, 31.503153, 10549.862305, 26.342062, 27.894392, 10000000000.000000, 3.866799}; // good
+const Power AIPatternPowers_Default_G9[] = {
+    1.138158, 1.098983, 3.651530, 4.077262, 15.124078, 33.675850, 17.348845, 14.605855, 22.672783, 31.676439, 10345.062500, 24.423454, 30.959070, 10000000000.000000, 3.733398}; // good
+const Power AIPatternPowers_Default_G10[] = {
+    1.191157, 1.088516, 4.123168, 3.911328, 
+    15.135687, 34.287781, 17.497221, 
+    14.601907, 23.710503, 33.663448, 9876.206055, 
+    24.221592, 29.481243, 
+    10000000000.000000, 3.919935}; // good
 Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)//更新点p所在的四条直线评分
 {
     PowerMap pm = aidata->powerMap;
@@ -143,6 +151,43 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player,
         SetChess(cb, p, BLANK);
     }
     return re;
+}
+
+void AItest(AIData data){
+    char buff1[20], buff2[20];
+    int pati = 0;
+    for (int i = 0, id = data->playerid; i < 2; ++i, id = GameNextPlayerID(id))
+    {
+        for (int j = 0; j < AIPatternLen; ++j)
+        {
+            int l = strlen(AIUsePattern[j]);
+            for (int k = 0; k < l; ++k)
+            {
+                switch (AIUsePattern[j][k])
+                {
+                case '1':
+                    buff1[k] = PlayerChessTypes[id];
+                    break;
+                case '2':
+                    buff1[k] = PlayerChessTypes[GameNextPlayerID(id)];
+                    break;
+                case '0':
+                    buff1[k] = BLANK;
+                    break;
+                default:
+                    assert(0);
+                    break;
+                }
+                buff2[l - 1 - k] = buff1[k];
+            }
+            buff1[l] = buff2[l] = 0;
+            if (strcmp(buff1, buff2))
+            {
+                printf("%s : %f\n", buff2, TrieQuery(buff2, 1, l, data->patterns));
+            }
+            printf("%s : %f\n", buff1, TrieQuery(buff1, 1, l, data->patterns));
+        }
+    }
 }
 
 typedef struct
@@ -328,6 +373,7 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)//AI落
 {
     Point re;
     AIData data = (AIData)player->data;
+    // AItest(data);
     ChessBoard cb = CloneChessBoard(ct);
     if (actionHistory->Count == 0)
     {
@@ -349,8 +395,8 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)//AI落
             UpdatePowerPoint(lastpoint, data, ct);
         }
 #ifdef DEBUG
-        // PrintNeighborMap(data->neighborMap);
-        // PrintPowerMap(data->powerMap);
+        PrintNeighborMap(data->neighborMap);
+        PrintPowerMap(data->powerMap);
 #endif
         Power rate;
         ZobristClean(data->zobristTable);
@@ -394,7 +440,7 @@ int IsParadistr(const char *s, int l)//判断是否是回文串
 Trie GetPatternTrie(const char *patterns[], const int patternlen, const Power *powers, const int playerid)//从模式和权值构建AC自动机
 {
     Trie re = NewTrie();
-    char buff1[20], buff2[20];
+    char buff1[10], buff2[10];
     int pati = 0;
     for (int i = 0, id = playerid; i < 2; ++i, id = GameNextPlayerID(id))
     {
@@ -421,9 +467,11 @@ Trie GetPatternTrie(const char *patterns[], const int patternlen, const Power *p
                 buff2[l - 1 - k] = buff1[k];
             }
             buff1[l] = buff2[l] = 0;
-            if (strcmp(buff1, buff2))
-            {
-                TrieInsert(re, buff2, l, pati);
+            for(int i=0;i<l;++i){
+                if(buff1[i]!=buff2[i]){
+                    TrieInsert(re, buff2, l, pati);
+                    break;
+                }
             }
             TrieInsert(re, buff1, l, pati);
             ++pati;

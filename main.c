@@ -286,6 +286,11 @@ int main(int args, char **argv)
     printf("初始化中...\n");
     ChessBoardInit();
     GameManagerInit();
+    // while(1){
+    //     int x,y;
+    //     scanf("%d%d",&x,&y);
+    //     PrintPointInf(CBINF,GetPoint(x,y));
+    // }
 #ifdef TrainMode
     TrainRun();
     Input(buff, BUFFSIZE);

@@ -23,6 +23,8 @@ const extern Power AIPatternPowers_Default_G5[];
 const extern Power AIPatternPowers_Default_G6[];
 const extern Power AIPatternPowers_Default_G7[];
 const extern Power AIPatternPowers_Default_G8[];
+const extern Power AIPatternPowers_Default_G9[];
+const extern Power AIPatternPowers_Default_G10[];
 
 /***********************AI玩家相关******************************/
 
@@ -40,6 +42,5 @@ void FreeAIPlayer(Player player);
 /// @param playerid 在对局中的玩家id
 /// @param powers 使用权值
 void SetAIPlayer(Player player, const int playerid, const Power *powers);
-
 
 #endif

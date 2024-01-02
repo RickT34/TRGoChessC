@@ -105,9 +105,9 @@ Power TrieQuery(const char *strin, const int step, const int len, const Trie roo
 {
     Trie p = root;
     Power ret=0;
-    for (int i = 0; i < len; i++, strin += step)
+    for (int i = 0; i < len; i++)
     {
-        int k = *strin;
+        int k = strin[i*step];
         while (p->next[k] == NULL && p != root)
             p = p->fail;
         p = p->next[k];

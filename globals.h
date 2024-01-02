@@ -6,7 +6,7 @@
 #define AIDepth 6 // 搜索层数
 #define USEPARA   // 并行计算
 #define CoreCount 16
-#define GameUseAIPower AIPatternPowers_Default_G5
+#define GameUseAIPower AIPatternPowers_Default_G10
 #define ChessBoardUseStyle ChessBoardStyle_Classic_VS
 // #define DEBUG
 

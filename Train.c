@@ -13,8 +13,8 @@
 #define AICount 50
 #define GENS 50
 #define HYBRID 0.4
-#define VARIATION 0.1
-#define STARTPATTERN_A AIPatternPowers_Default_G7
+#define VARIATION 0.05
+#define STARTPATTERN_A AIPatternPowers_Default_G9
 #define STARTPATTERN_B AIPatternPowers_Default_G5
 #define RACECount (AICount * (AICount - 1))
 
@@ -53,7 +53,7 @@ GAScore *GetAllFitness(const GAGene *allind, const int count)
         GAScore score = game->history->Count / 100.0;
         score *= score;
         GAScore score2 =  exp(-1.5 * score);
-        score = 100.0 * score2 + 500.0;
+        score = 100.0 * score2 + 400.0;
         if (game->nowPlayerID == 0)
         {
 #pragma omp critical
@@ -105,7 +105,7 @@ GAGene GetHybrid(const GAGene ind1, const GAGene ind2)
     for (int i = 0; i <= AIPatternLen; ++i)
     {
         double p = genrand64_real1();
-        p=1.0/(1+exp(-20.0*(p-0.5)));
+        p=1.0/(1+exp(-30.0*(p-0.5)));
         re[i] = ((Power *)ind1)[i] * p + ((Power *)ind2)[i] * (1 - p);
     }
     return re;
