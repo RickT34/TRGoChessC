@@ -1,6 +1,6 @@
 #include "Globals.h"
 
-const char *PlayerNames[] = {"浜虹被鐜╁", "鐢佃剳鐜╁"};
+const char *PlayerNames[] = {"人类玩家", "电脑玩家"};
 
 void printArray(int *an, int start, int len)
 {

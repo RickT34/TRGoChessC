@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// #define TrainMode
+#define TrainMode
 // #define PKMode
 #define PKAI0 AIPatternPowers_Default_G4
 #define PKAI1 AIPatternPowers_Default_G7
@@ -13,12 +13,12 @@ char buff[4096];
 void MakeUI(Game game)
 {
     // system("clear");
-    printf("å›åˆ: %d\n", (game->history->Count + 1) / 2);
+    printf("»ØºÏ: %d\n", (game->history->Count + 1) / 2);
     PrintChessBoard(game->chessboard, ChessBoardUseStyle);
-    printf("å½“å‰: ");
+    printf("µ±Ç°: ");
     PrintPlayer(game, GameNextPlayerID(game->nowPlayerID));
     putchar('\n');
-    printf("è¾“å…¥ '?' æŸ¥çœ‹å¸®åŠ©ã€‚\n");
+    printf("ÊäÈë '?' ²é¿´°ïÖú¡£\n");
 }
 void MakeProcessBar(int p, int len, const int width)
 { // p in [1,len]
@@ -42,17 +42,17 @@ void MakeProcessBar(int p, int len, const int width)
 
 void StartGameRecord(Game game)
 {
-    printf("å¤ç›˜å¼€å§‹ã€‚\n");
+    printf("¸´ÅÌ¿ªÊ¼¡£\n");
     ChessBoard re;
     int flame = game->history->Count;
     GameRecord gr = NewGameRecord(game);
     do
     {
-        printf("è¾“å…¥æ•°å­—æ¥æŸ¥çœ‹æŒ‡å®šå¸§ï¼Œè¾“å…¥ (æ¢è¡Œ) æˆ–'+'æŸ¥çœ‹ä¸‹ä¸€å¸§ï¼Œ'-'æŸ¥çœ‹ä¸Šä¸€å¸§ã€‚è¾“å…¥'q'é€€å‡ºã€‚\n");
+        printf("ÊäÈëÊı×ÖÀ´²é¿´Ö¸¶¨Ö¡£¬ÊäÈë (»»ĞĞ) »ò'+'²é¿´ÏÂÒ»Ö¡£¬'-'²é¿´ÉÏÒ»Ö¡¡£ÊäÈë'q'ÍË³ö¡£\n");
         re = GameRecordRead(gr, flame - 1);
         if (re != NULL)
         {
-            printf("å¸§: %d\n", flame);
+            printf("Ö¡: %d\n", flame);
             PrintChessBoard(re, ChessBoardUseStyle);
             MakeProcessBar(flame, gr->datalen, 30);
             FreeChessBoard(re);
@@ -123,7 +123,7 @@ int InputCommamd(Game game, char *buff)
         int l = GameSave(game, file + 1);
         file[1 + l] = '|';
         file[2 + l] = 0;
-        printf("ä¿å­˜æˆåŠŸï¼Œè¯·ä¿å­˜è¿™æ®µå­—ç¬¦ä¸²: ");
+        printf("±£´æ³É¹¦£¬Çë±£´æÕâ¶Î×Ö·û´®: ");
         puts(file);
         return 0;
     }
@@ -143,15 +143,15 @@ int InputCommamd(Game game, char *buff)
         if (i < BUFFSIZE)
         {
             GameLoad(&loadgame, buff + i + 1);
-            printf("è¯»å–æˆåŠŸ!\n");
+            printf("¶ÁÈ¡³É¹¦!\n");
             Start(loadgame);
             FreeGame(loadgame);
-            printf("æ­£åœ¨è¿”å›å…ˆå‰å¯¹å±€!\n");
+            printf("ÕıÔÚ·µ»ØÏÈÇ°¶Ô¾Ö!\n");
             MakeUI(game);
         }
         else
         {
-            printf("è¯»å–å¤±è´¥!\n");
+            printf("¶ÁÈ¡Ê§°Ü!\n");
         }
 
         return 0;
@@ -162,7 +162,7 @@ int InputCommamd(Game game, char *buff)
     }
     else if (buff[0] == '?')
     {
-        printf("-\tæ‚”æ£‹\n>\tä¿å­˜\n<\tè¯»å–\nr\tå¤ç›˜\nq\té€€å‡º\n");
+        printf("-\t»ÚÆå\n>\t±£´æ\n<\t¶ÁÈ¡\nr\t¸´ÅÌ\nq\tÍË³ö\n");
         return 0;
     }
     return 1;
@@ -187,9 +187,9 @@ void Start(Game game)
             if (game->status == GameStatus_End)
             {
                 PrintPlayer(game, game->nowPlayerID);
-                printf(" èµ¢äº†!\n");
+                printf(" Ó®ÁË!\n");
             }
-            printf("æ¸¸æˆç»“æŸ!\n");
+            printf("ÓÎÏ·½áÊø!\n");
             Input(buff, BUFFSIZE);
             comret = InputCommamd(game, buff);
             if (comret == 2)
@@ -209,7 +209,7 @@ void Start(Game game)
                             return;
                         p = GetPointInput(game, buff);
                         if (p == PointNULL)
-                            printf("éæ³•ä½ç½®ï¼Œè¯·é‡è¯•!\n");
+                            printf("·Ç·¨Î»ÖÃ£¬ÇëÖØÊÔ!\n");
                     }
                 }
                 *(Point *)GameGetNextPlayer(game)->data = p;
@@ -223,7 +223,7 @@ void Start(Game game)
 #endif
             ret = GameNextTurn(game);
             PrintPlayer(game, game->nowPlayerID);
-            printf(" è½å­äº [%d%c]\n", PointTo2C(((Action)StackTop(game->history))->point));
+            printf(" Âä×ÓÓÚ [%d%c]\n", PointTo2C(((Action)StackTop(game->history))->point));
         }
     } while (1);
 }
@@ -232,12 +232,12 @@ int Run()
 {
     Player p[2];
     p[0] = p[1] = NULL;
-    printf("æ¬¢è¿!\nè¾“å…¥ 'q' é€€å‡º:\n");
+    printf("»¶Ó­!\nÊäÈë 'q' ÍË³ö:\n");
     for (int i = 0; i < 2; ++i)
     {
-        printf("\nè¯·é€‰æ‹©");
-        printf(i == 0 ? "å…ˆæ‰‹ç©å®¶:\n" : "åæ‰‹ç©å®¶:\n");
-        printf("[1]: äººç±»ç©å®¶\n[2]: ç”µè„‘ç©å®¶\n\nè¯·é€‰æ‹©: ");
+        printf("\nÇëÑ¡Ôñ");
+        printf(i == 0 ? "ÏÈÊÖÍæ¼Ò:\n" : "ºóÊÖÍæ¼Ò:\n");
+        printf("[1]: ÈËÀàÍæ¼Ò\n[2]: µçÄÔÍæ¼Ò\n\nÇëÑ¡Ôñ: ");
         Input(buff, BUFFSIZE);
         if (buff[0] == '1')
         {
@@ -249,11 +249,11 @@ int Run()
         }
         else if (buff[0] == 'q')
         {
-            break;
+            return 1;
         }
         else
         {
-            printf("è¯·é‡è¯•!\n");
+            printf("ÇëÖØÊÔ!\n");
             --i;
         }
     }
@@ -283,7 +283,7 @@ int Run()
 int main(int args, char **argv)
 {
     // test();
-    printf("åˆå§‹åŒ–ä¸­...\n");
+    printf("³õÊ¼»¯ÖĞ...\n");
     ChessBoardInit();
     GameManagerInit();
     // while(1){

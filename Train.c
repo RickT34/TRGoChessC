@@ -9,12 +9,12 @@
 #include "mt19937.h"
 #include <assert.h>
 #define VariationPoint 2
-#define VariationRange 0.1f
+#define VariationRange 0.1
 #define AICount 50
 #define GENS 50
 #define HYBRID 0.4
-#define VARIATION 0.05
-#define STARTPATTERN_A AIPatternPowers_Default_G9
+#define VARIATION 0.12
+#define STARTPATTERN_A AIPatternPowers_Default_G4
 #define STARTPATTERN_B AIPatternPowers_Default_G5
 #define RACECount (AICount * (AICount - 1))
 
@@ -120,6 +120,21 @@ void PrintGene(const GAGene gene)
         printf((i == 0 ? "%f" : ", %f"), ((Power *)gene)[i]);
     }
     printf("}\n");
+
+    FILE *fp;
+    fp = fopen("TrainOut.txt", "a");
+    time_t timep;
+    time(&timep);
+    if (!feof(fp))
+    {
+        fprintf(fp, "\nTime: %s, Gene:  {", asctime(gmtime(&timep)));
+        for (int i = 0; i <= AIPatternLen; ++i)
+        {
+            fprintf(fp, (i == 0 ? "%f" : ", %f"), ((Power *)gene)[i]);
+        }
+        fprintf(fp, "}\n");
+    }
+    fclose(fp);
 }
 
 void TrainRun()

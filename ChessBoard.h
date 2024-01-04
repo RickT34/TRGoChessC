@@ -108,7 +108,7 @@ void FreeChessBoardInf(ChessBoardInf ctn);
 void PrintPointInf(const ChessBoardInf ctinf, const Point p);
 
 /***********************邻居表相关*****************************/
-#define NEIGHBORRANGE 1 // 延伸宽度
+#define NEIGHBORRANGE 2 // 延伸宽度
 typedef struct
 {
     Point neighbors[8 * NEIGHBORRANGE]; // 邻居数量

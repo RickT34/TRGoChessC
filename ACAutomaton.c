@@ -5,6 +5,7 @@ struct trienode
 {
     int id;
     Trie next[TRIEMAXFORK];
+    Trie ed[TRIEMAXFORK];
     Trie fail;
     Power powerAdd;
 };
@@ -14,9 +15,9 @@ Trie NewTrie()
     Trie re = (Trie)malloc(sizeof(struct trienode));
     re->fail = NULL;
     re->id = -1;
-    re->powerAdd=0;
+    re->powerAdd = 0;
     for (int i = 0; i < TRIEMAXFORK; ++i)
-        re->next[i] = NULL;
+        re->next[i] = re->ed[i] = NULL;
     return re;
 }
 
@@ -24,8 +25,10 @@ void FreeTrie(Trie root)
 {
     for (int i = 0; i < TRIEMAXFORK; ++i)
     {
-        if (root->next[i] != NULL)
-            FreeTrie(root->next[i]);
+        if (root->ed[i] != NULL)
+        {
+            FreeTrie(root->ed[i]);
+        }
     }
     free(root);
 }
@@ -45,28 +48,42 @@ void TrieInsert(Trie root, const char *key, const int len, const int idx) // 将
         int k = key[i];
         if (root->next[k] == NULL)
         {
-            root->next[k] = NewTrie();
+            root->ed[k] = root->next[k] = NewTrie();
         }
         root = root->next[k];
     }
     root->id = idx;
 }
-void TrieCompile2(Trie tr, Trie root, const Power* powers)//用dfs计算节点权值
+void TrieCompile2(Trie tr, Trie root, const Power *powers) // 用dfs计算节点权值
 {
     Trie temp = tr;
     while (temp != root)
     {
-        if(temp->id!=-1)
-            tr->powerAdd+=powers[temp->id];
+        if (temp->id != -1)
+            tr->powerAdd += powers[temp->id];
         temp = temp->fail;
     }
     for (int i = 0; i < TRIEMAXFORK; ++i)
     {
         if (tr->next[i] != NULL)
             TrieCompile2(tr->next[i], root, powers);
+        else
+        {
+            if (tr == root)
+            {
+                tr->next[i] = root;
+            }
+            else
+            {
+                temp = tr;
+                while (temp->next[i] == NULL && temp != root)
+                    temp = temp->fail;
+                tr->next[i] = temp->next[i];
+            }
+        }
     }
 }
-void TrieCompile(Trie root, const Power* powers) // 用bfs建立失配指针，节点的失配指针指向前缀节点的nxt指针
+void TrieCompile(Trie root, const Power *powers) // 用bfs建立失配指针，节点的失配指针指向前缀节点的nxt指针
 {
     Queue q = NewQueue(100);
     QueuePushback(q, root);
@@ -80,7 +97,7 @@ void TrieCompile(Trie root, const Power* powers) // 用bfs建立失配指针，�
                 if (temp == root)
                     temp->next[i]->fail = root;
                 else
-                { 
+                {
                     Trie p = temp->fail;
                     while (p)
                     {
@@ -98,22 +115,17 @@ void TrieCompile(Trie root, const Power* powers) // 用bfs建立失配指针，�
             }
     }
     FreeQueue(q);
-    TrieCompile2(root, root,powers);
+    TrieCompile2(root, root, powers);
 }
 
-Power TrieQuery(const char *strin, const int step, const int len, const Trie root)//自动机
+Power TrieQuery(const char *strin, const int step, const int len, const Trie root) // 自动机
 {
     Trie p = root;
-    Power ret=0;
-    for (int i = 0; i < len; i++)
+    Power ret = 0;
+    for (int i = 0; i < len; i++, strin += step)
     {
-        int k = strin[i*step];
-        while (p->next[k] == NULL && p != root)
-            p = p->fail;
-        p = p->next[k];
-        if (p == NULL)
-            p = root;
-        ret+= p->powerAdd;
+        p = p->next[*strin];
+        ret += p->powerAdd;
     }
     return ret;
 }

@@ -84,7 +84,7 @@ void NeighborMapFlush(NeighborMap nbm, const Stack actionHistory);
 void PrintNeighborMap(NeighborMap nbm);
 
 /********************Zobrist表相关****************************/
-#define HASHLENBIT 20 // 哈希表大小
+#define HASHLENBIT 21 // 哈希表大小
 #define HASHMASK ((1 << HASHLENBIT) - 1)
 #define HASHLEN (1 << HASHLENBIT)
 #define HASHPOOLLEN 5000000

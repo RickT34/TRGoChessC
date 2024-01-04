@@ -4,15 +4,15 @@ const char DireNames[4] = "XYCD";
 const int DireSteps[4] = {XSTEP, YSTEP, CSTEP, DSTEP};
 const ChessType PlayerChessTypes[2] = {PlayerB, PlayerW};
 const ChessBoardStyle ChessBoardStyle_Classic_VS = {
-    "â”â”", "â”¯â”", "â”“ ",
-    "â” â”€", "â”¼â”€", "â”¨ ",
-    "â”—â”", "â”·â”", "â”› ",
-    "â— ", "â—‹ ", "? "};
+    "©³©¥", "©Ó©¥", "©· ",
+    "©Ä©¤", "©à©¤", "©Ì ",
+    "©»©¥", "©Û©¥", "©¿ ",
+    "¡ñ ", "¡ğ ", "? "};
 const ChessBoardStyle ChessBoardStyle_Classic = {
-    "â” ", "â”¯ ", "â”“ ",
-    "â”  ", "â”¼ ", "â”¨ ",
-    "â”— ", "â”· ", "â”› ",
-    "â—", "â—‹", "?"};
+    "©³ ", "©Ó ", "©· ",
+    "©Ä ", "©à ", "©Ì ",
+    "©» ", "©Û ", "©¿ ",
+    "¡ñ", "¡ğ", "?"};
 
 const char *GetChessSkin(ChessType type, const ChessBoardStyle style)
 {
