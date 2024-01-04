@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TrainMode
+// #define TrainMode
 // #define PKMode
 #define PKAI0 AIPatternPowers_Default_G4
 #define PKAI1 AIPatternPowers_Default_G7
@@ -243,7 +243,7 @@ int Run()
         {
             p[i] = NewHumanPlayer(PlayerNames[0]);
         }
-        else if (buff[0] = '0')
+        else if (buff[0] == '2')
         {
             p[i] = NewAIPlayer(PlayerNames[1], i, GameUseAIPower);
         }

@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 /*********************全局参数**********************/
-#define AIDepth 4 // 搜索层数
-// #define USEPARA   // 并行计算
-#define CoreCount 16
-#define GameUseAIPower AIPatternPowers_Default_G1
+#define AIDepth 7 // 搜索层数
+#define USEPARA   // 并行计算
+#define CoreCount 12
+#define GameUseAIPower AIPatternPowers_Default_G11
 #define ChessBoardUseStyle ChessBoardStyle_Classic
 // #define DEBUG
 

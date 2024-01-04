@@ -4,8 +4,8 @@
 #include <string.h>
 #include "omp.h"
 
-#define Power_MAX (1e30)//最大权值
-#define Power_WIN (1e10)//胜利局面得分下界
+#define Power_MAX (1e30) // 最大权值
+#define Power_WIN (1e10) // 胜利局面得分下界
 #define PatternLen (AIPatternLen * 2)
 // 模式集:在每个模式串中， 1 代表己方棋子, 2 代表对方棋子, 0 代表空白。对称模式串和对方模式串会自动补全
 const char *AIPatterns_Default[] = {
@@ -28,17 +28,18 @@ const char *AIPatterns_Default[] = {
 
     "11111"};
 
-//前面n项与模式串一一对应，最后一项为防守系数
+// 前面n项与模式串一一对应，最后一项为防守系数
 
 const Power AIPatternPowers_Default_G1[] = {
-    1.264958, 1.128135, 2.360985, 3.413630, 14.196601, 32.206841, 15.003711,  14.462551, 25.108482, 33.186558, 1108.496338, 30.056494, 30.056494, 10000000000.000000, 3.0}; // Very Good
+    1.264958, 1.128135, 2.360985, 3.413630, 14.196601, 32.206841, 15.003711, 14.462551, 25.108482, 33.186558, 1108.496338, 30.056494, 30.056494, 10000000000.000000, 3.0}; // Very Good
 const Power AIPatternPowers_Default_G4[] = {
     1.177428, 1.115898, 2.845249, 3.375630, 14.605908, 33.485008, 17.334507, 14.288996, 24.590176, 31.825541, 11751.788086, 26.172821, 28.198782, 10000000000.000000, 3.719885}; // Good
 const Power AIPatternPowers_Default_G5[] = {
     1.256042, 1.100238, 3.712060, 3.774202, 14.848924, 32.423199, 17.403543, 14.365765, 25.519703, 31.661978, 9890.199219, 19.824423, 30.210306, 10000000000.000000, 3.719885}; // Good for second hand
 const Power AIPatternPowers_Default_G7[] = {
-    1.209906, 1.108449, 3.638782, 3.376079, 14.737780, 32.473679, 17.396755, 14.287220, 24.598774, 31.283337, 10865.589844, 26.473148, 28.358171, 10000000000.000000, 3.902418};//good
-Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)//更新点p所在的四条直线评分
+    1.209906, 1.108449, 3.638782, 3.376079, 14.737780, 32.473679, 17.396755, 14.287220, 24.598774, 31.283337, 10865.589844, 26.473148, 28.358171, 10000000000.000000, 3.902418};                                          // good
+const Power AIPatternPowers_Default_G11[] = {1.147176, 1.017057, 2.872098, 3.774109, 14.642408, 39.582565, 17.334492, 16.255480, 24.932312, 31.667524, 11747.007813, 18.771877, 26.783592, 10000000000.000000, 2.079848}; // good
+Power UpdatePowerPoint(const Point p, AIData aidata, const ChessBoard cb)                                                                                                                                                 // 更新点p所在的四条直线评分
 {
     PowerMap pm = aidata->powerMap;
     Power powersum = pm->powerSum;
@@ -67,7 +68,7 @@ Power ComputePowerPoint(const Point p, AIData aidata, const ChessBoard cb) // �
     return powersum;
 }
 Point Minimax(const AIData aidata, ChessBoard cb, const char player,
-              Power *rate, const Power maxpower, const char dep)//普通Minimax算法，带alpha-beta剪枝、胜利局面剪枝
+              Power *rate, const Power maxpower, const char dep) // 普通Minimax算法，带alpha-beta剪枝、胜利局面剪枝
 {
     NeighborMap nbm = aidata->neighborMap;
     ChessPot pot = nbm->pot;
@@ -106,7 +107,7 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player,
                 }
                 else
                 {
-                    ret = *rate;//被剪枝，不更新结果
+                    ret = *rate; // 被剪枝，不更新结果
                 }
                 NeighborMapUndo(aidata->neighborMap, p);
             }
@@ -116,14 +117,14 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player,
             pm->powerSum = powersum;
             // End Pop
         }
-        if (power >= Power_WIN)//如果能胜利就直接返回
+        if (power >= Power_WIN) // 如果能胜利就直接返回
         {
-            *rate = power;
             SetChess(cb, p, BLANK);
             if (power >= maxpower)
             {
                 return PointNULL;
             }
+            *rate = power*dep;
             return p;
         }
         if (re == PointNULL || ret > *rate)
@@ -141,7 +142,8 @@ Point Minimax(const AIData aidata, ChessBoard cb, const char player,
     return re;
 }
 
-void AItest(AIData data){
+void AItest(AIData data)
+{
     char buff1[20], buff2[20];
     int pati = 0;
     for (int i = 0, id = data->playerid; i < 2; ++i, id = GameNextPlayerID(id))
@@ -182,16 +184,15 @@ typedef struct
 {
     Point point;
     Power power;
-} PointWP;//用于点排序
+} PointWP; // 用于点排序
 
 int PointWPComp(const void *a, const void *b)
 {
     return (((PointWP *)b)->power - ((PointWP *)a)->power > 0) ? 1 : -1;
 }
 
-PointWP *GetSortPoint(const ChessPot pot, const ChessBoard cb, const PowerMap pm, int *pcount)//按照点上4条直线的评分平方和从大到小排序点
+void GetSortPoint(const ChessPot pot, const ChessBoard cb, const PowerMap pm, int *pcount, PointWP *re) // 按照点上4条直线的评分平方和从大到小排序点
 {
-    PointWP *re = malloc(sizeof(PointWP) * LLN * LLN);
     int count = 0;
     for (Point p = pot->nxtnode[ChessPotHead]; p != ChessPotTail; p = pot->nxtnode[p])
     {
@@ -207,7 +208,6 @@ PointWP *GetSortPoint(const ChessPot pot, const ChessBoard cb, const PowerMap pm
     }
     *pcount = count;
     qsort(re, count, sizeof(PointWP), PointWPComp);
-    return re;
 }
 Point GetBestMove(const AIData aidata, ChessBoard cb, const int player,
                   Power *rate, const Power maxpower, const char dep, const uint64 zkey) // 优化Minimax算法，使用alpha-beta剪枝、胜利局面剪枝、启发式搜索、Zobrist哈希
@@ -216,7 +216,8 @@ Point GetBestMove(const AIData aidata, ChessBoard cb, const int player,
     ChessPot pot = nbm->pot;
     Point re = PointNULL;
     int count;
-    PointWP *pointwps = GetSortPoint(pot, cb, aidata->powerMap, &count);
+    PointWP pointwps[LLN*LLN];
+    GetSortPoint(pot, cb, aidata->powerMap, &count, pointwps);
     for (int ip = 0; ip < count; ++ip)
     {
         Point p = pointwps[ip].point;
@@ -274,13 +275,12 @@ Point GetBestMove(const AIData aidata, ChessBoard cb, const int player,
         // End Pop
         if (power >= Power_WIN)
         {
-            *rate = power;
             SetChess(cb, p, BLANK);
-            free(pointwps);
             if (power >= maxpower)
             {
                 return PointNULL;
             }
+            *rate = power * dep;
             return p;
         }
         if (re == PointNULL || ret > *rate)
@@ -289,24 +289,23 @@ Point GetBestMove(const AIData aidata, ChessBoard cb, const int player,
             if (*rate >= maxpower)
             {
                 SetChess(cb, p, BLANK);
-                free(pointwps);
                 return PointNULL;
             }
             re = p;
         }
         SetChess(cb, p, BLANK);
     }
-    free(pointwps);
     return re;
 }
 
-Point GetBestMovePara(const AIData aidata, ChessBoard cb, Power *rate, const char dep)//并行的、优化的Minimax算法
+Point GetBestMovePara(const AIData aidata, ChessBoard cb, Power *rate, const char dep) // 并行的、优化的Minimax算法
 {
     ChessPot pot = aidata->neighborMap->pot;
     Point re = PointNULL;
     int player = aidata->playerid;
     int count;
-    PointWP *pointwps = GetSortPoint(pot, cb, aidata->powerMap, &count);
+    PointWP pointwps[LLN*LLN];
+    GetSortPoint(pot, cb, aidata->powerMap, &count, pointwps);
     *rate = 0;
     omp_set_num_threads(CoreCount);
 #pragma omp parallel for schedule(dynamic)
@@ -323,13 +322,13 @@ Point GetBestMovePara(const AIData aidata, ChessBoard cb, Power *rate, const cha
         {
 #pragma omp critical
             {
-                *rate = powernow*1e10;
+                *rate = powernow * 1e10;
                 re = p;
             }
         }
         else
         {
-            Power retb,pset;
+            Power retb, pset;
 #pragma omp critical
             {
                 pset = re == PointNULL ? Power_MAX : -*rate;
@@ -353,11 +352,10 @@ Point GetBestMovePara(const AIData aidata, ChessBoard cb, Power *rate, const cha
         FreeChessBoard(cbb);
         FreeAIData(datab);
     }
-    free(pointwps);
     return re;
 }
 
-Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)//AI落子程序入口
+Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory) // AI落子程序入口
 {
     Point re;
     AIData data = (AIData)player->data;
@@ -370,7 +368,7 @@ Point AIGo(Player player, const ChessBoard ct, const Stack actionHistory)//AI落
     else
     {
         Point lastpoint = ((Action)StackTop(actionHistory))->point;
-        if (data->needflush)//有悔棋、读取游戏情况是需要重建
+        if (data->needflush) // 有悔棋、读取游戏情况是需要重建
         {
 
             NeighborMapFlush(data->neighborMap, actionHistory);
@@ -412,7 +410,7 @@ void AIUndo(Player player, const ChessBoard ct, const Stack actionHistory)
     data->needflush = 1;
 }
 
-int IsParadistr(const char *s, int l)//判断是否是回文串
+int IsParadistr(const char *s, int l) // 判断是否是回文串
 {
     int i = 0, j = l - 1;
     while (i < j)
@@ -425,7 +423,7 @@ int IsParadistr(const char *s, int l)//判断是否是回文串
     return 1;
 }
 
-Trie GetPatternTrie(const char *patterns[], const int patternlen, const Power *powers, const int playerid)//从模式和权值构建AC自动机
+Trie GetPatternTrie(const char *patterns[], const int patternlen, const Power *powers, const int playerid) // 从模式和权值构建AC自动机
 {
     Trie re = NewTrie();
     char buff1[10], buff2[10];
@@ -455,8 +453,10 @@ Trie GetPatternTrie(const char *patterns[], const int patternlen, const Power *p
                 buff2[l - 1 - k] = buff1[k];
             }
             buff1[l] = buff2[l] = 0;
-            for(int i=0;i<l;++i){
-                if(buff1[i]!=buff2[i]){
+            for (int i = 0; i < l; ++i)
+            {
+                if (buff1[i] != buff2[i])
+                {
                     TrieInsert(re, buff2, l, pati);
                     break;
                 }

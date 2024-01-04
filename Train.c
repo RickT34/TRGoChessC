@@ -9,11 +9,11 @@
 #include "mt19937.h"
 #include <assert.h>
 #define VariationPoint 2
-#define VariationRange 0.1
+#define VariationRange 0.2
 #define AICount 50
 #define GENS 50
-#define HYBRID 0.4
-#define VARIATION 0.12
+#define HYBRID 0.3
+#define VARIATION 0.1
 #define STARTPATTERN_A AIPatternPowers_Default_G4
 #define STARTPATTERN_B AIPatternPowers_Default_G5
 #define RACECount (AICount * (AICount - 1))
@@ -114,12 +114,13 @@ void DeleteGene(GAGene ind) { free(ind); }
 
 void PrintGene(const GAGene gene)
 {
+    static int count=0;
     printf("Gene:  {");
     for (int i = 0; i <= AIPatternLen; ++i)
     {
         printf((i == 0 ? "%f" : ", %f"), ((Power *)gene)[i]);
     }
-    printf("}\n");
+    printf("};\n");
 
     FILE *fp;
     fp = fopen("TrainOut.txt", "a");
@@ -127,12 +128,12 @@ void PrintGene(const GAGene gene)
     time(&timep);
     if (!feof(fp))
     {
-        fprintf(fp, "\nTime: %s, Gene:  {", asctime(gmtime(&timep)));
+        fprintf(fp, "\nNo.%d, Time: %s, Gene:  {",++count, asctime(gmtime(&timep)));
         for (int i = 0; i <= AIPatternLen; ++i)
         {
             fprintf(fp, (i == 0 ? "%f" : ", %f"), ((Power *)gene)[i]);
         }
-        fprintf(fp, "}\n");
+        fprintf(fp, "};\n");
     }
     fclose(fp);
 }
@@ -161,13 +162,8 @@ void TrainRun()
     starts[1] = GetClone((Power *)STARTPATTERN_B);
     for (int i = 2; i < count; ++i)
     {
-        int k=genrand64_int63()%4;
-        if(k>1){
-            starts[i]=GetHybrid(starts[0],starts[1]);
-        }
-        else{
-            starts[i]=GetVariation(starts[k]);
-        }
+        int k=genrand64_int63()%2;
+        starts[i]=GetVariation(starts[k]);
         // starts[i] = GetClone((Power *)STARTPATTERN);
         // if(i==0)continue;
         // Power *re = starts[i];

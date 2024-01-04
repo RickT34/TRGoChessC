@@ -25,6 +25,7 @@ const extern Power AIPatternPowers_Default_G7[];
 const extern Power AIPatternPowers_Default_G8[];
 const extern Power AIPatternPowers_Default_G9[];
 const extern Power AIPatternPowers_Default_G10[];
+const extern Power AIPatternPowers_Default_G11[];
 
 /***********************AI玩家相关******************************/
 
