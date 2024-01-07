@@ -3,7 +3,8 @@ project(TRGoChessC VERSION 0.1.0 LANGUAGES C)
 
 include(CTest)
 enable_testing()
-set(CMAKE_C_FLAGS_RELEASE "-O3")
+# set(CMAKE_C_FLAGS_RELEASE "-O3")
+# set(CMAKE_C_FLAGS "-O3")
 
 # set(CMAKE_C_FLAGS_DEBUG "-fsanitize=undefined,address,leak -fno-omit-frame-pointer")
 set(CMAKE_C_FLAGS "-fopenmp")

@@ -8,14 +8,14 @@
 #include "omp.h"
 #include "mt19937.h"
 #include <assert.h>
-#define VariationPoint 2
-#define VariationRange 0.2
+#define VariationPoint 0.4
+#define VariationRange 0.1
 #define AICount 50
-#define GENS 50
+#define GENS 100
 #define HYBRID 0.3
-#define VARIATION 0.1
-#define STARTPATTERN_A AIPatternPowers_Default_G4
-#define STARTPATTERN_B AIPatternPowers_Default_G5
+#define VARIATION 0.14
+#define STARTPATTERN_A AIPatternPowers_Default_G11
+#define STARTPATTERN_B AIPatternPowers_Default_G11
 #define RACECount (AICount * (AICount - 1))
 
 GAScore *GetAllFitness(const GAGene *allind, const int count)
@@ -95,7 +95,7 @@ GAGene GetVariation(const GAGene ind)
         int k = genrand64_int63() % (AIPatternLen);
         if(k==AIPatternLen-1)k=AIPatternLen;
         re[k] *= 1.0 + (genrand64_real1() - 0.5) * VariationRange * 2;
-    } while (genrand64_int63() % VariationPoint);
+    } while (genrand64_real1()<VariationPoint);
 
     return re;
 }
@@ -159,11 +159,11 @@ void TrainRun()
     GAGene starts[AICount];
     init_genrand64(time(NULL));
     starts[0] = GetClone((Power *)STARTPATTERN_A);
-    starts[1] = GetClone((Power *)STARTPATTERN_B);
-    for (int i = 2; i < count; ++i)
+    // starts[1] = GetClone((Power *)STARTPATTERN_B);
+    for (int i = 1; i < count; ++i)
     {
-        int k=genrand64_int63()%2;
-        starts[i]=GetVariation(starts[k]);
+        // int k=genrand64_int63()%2;
+        starts[i]=GetVariation(starts[0]);
         // starts[i] = GetClone((Power *)STARTPATTERN);
         // if(i==0)continue;
         // Power *re = starts[i];

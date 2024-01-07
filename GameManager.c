@@ -123,7 +123,6 @@ int ContinueGame(Game game)
 int GameSave(Game game, char *file)
 {
     int i = 0;
-    i += ChessBoardSave(game->chessboard, file + i);
     i += IntSave(game->history->Count, file + i);
     for (int j = 0; j < game->history->Count; ++j)
     {
@@ -152,13 +151,16 @@ int GameLoad(Game *data, char *file)
 {
     int i = 0;
     Game re = malloc(sizeof(*re));
-    i += ChessBoardLoad(&re->chessboard, file + i);
     re->history = NewStack(300);
     int count;
     i += IntLoad(&count, file + i);
+    re->chessboard=NewChessBoard();
     for (int j = 0; j < count; ++j)
     {
-        i += ActionLoad((Action *)&re->history->Items[j], file + i);
+        Action act;
+        i += ActionLoad(&act, file + i);
+        re->history->Items[j]=act;
+        SetChess(re->chessboard,act->point,PlayerChessTypes[act->playerid]);
     }
     re->history->Count = count;
     re->nowPlayerID = 0;

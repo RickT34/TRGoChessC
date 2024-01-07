@@ -83,18 +83,20 @@ Point GetPointInput(const Game game, const char *s)
     int ok = 0;
     if (sscanf(s, "%d%c", &y, &c) == 2)
     {
-        x = c - 'a';
+        if (c >= 'A' && c <= 'Z')
+            x = c - 'A';
+        else
+            x = c - 'a';
         y -= 1;
         ok = 1;
     }
     else if (sscanf(s, "%c%d", &c, &y) == 2)
     {
-        x = c - 'a';
+        if (c >= 'A' && c <= 'Z')
+            x = c - 'A';
+        else
+            x = c - 'a';
         y -= 1;
-        ok = 1;
-    }
-    else if (sscanf(s, "%d%d", &x, &y) != 2)
-    {
         ok = 1;
     }
     if (!IsLegalXY(x, y))
@@ -118,7 +120,7 @@ int InputCommamd(Game game, char *buff)
     }
     else if (buff[0] == '>')
     {
-        char file[2048];
+        char file[4096];
         file[0] = '|';
         int l = GameSave(game, file + 1);
         file[1 + l] = '|';
